@@ -1,0 +1,312 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <form id="formInfo">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalTitle">公告信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-horizontal">
+
+                                    <div class="form-group">
+                                        <label for="tbxTitle">公告标题(*)</label>
+                                        <input type="text" class="form-control" name="tbxTitle" id="tbxTitle" placeholder="公告标题">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tbxContent">公告内容</label>
+                                        <script id="editor" type="text/plain" style="height:400px;">
+                                        </script>
+                                    </div>
+                                    <span class="hidden" id="NoticeID"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">通知公告管理</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <button id="btnAdd" class="btn btn-info"><i class="glyphicon glyphicon-plus"></i> 新增公告</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>公告标题</th>
+                            <th>内容字数</th>
+                            <th>提交人</th>
+                            <th>提交时间</th>
+                            <th>编辑&删除</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableList"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        共<span id="totalPageCount"></span>页 |
+                        <span id="totalDataCount"></span>条数据
+                        每页<select id="ddlPageSize" style="height:34px;padding:0px" class="form-control">
+                            <option value="5">5</option>
+                            <option selected value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>项
+                    </div>
+                    <div class="form-group" style="height:34px;">
+                        <ul class="btn-group" id="example"></ul>
+                    </div>
+                    <div class="input-group col-md-2 col-lg-1">
+                        <input id="tbxCurPage" value="1" maxlength="7" size="2" class="form-control  search-query text-center" type="text" placeholder="">
+                        <span class="input-group-btn">
+                            <button id="goPage" class="btn btn-primary btn-sm" style="height:34px;" type="button">
+                                转到
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/ueditor/ueditor.config.js"></script>
+<script src="~/ueditor/ueditor.all.min.js"></script>
+<script>
+    $(function () {
+        var ue = UE.getEditor('editor');
+
+        $("#btnAdd").click(function () {
+            clearInfo();
+            $('#myModal').modal('show');
+            $("#modalTitle").text("添加公告");
+        });
+        function clearInfo() {
+            $("#tbxTitle").val("");
+            $("#NoticeID").text("");
+            $("label.error").hide();
+            $(".error").removeClass("error");
+            UE.getEditor("editor").setContent("");
+        }
+        $("#btnSubmit").click(function () {
+            $("#formInfo").validate({
+                rules: {
+                    tbxTitle: { required: true, maxlength: 100 }
+                },
+                submitHandler: function (form) {
+                    if ($("#NoticeID").text() != "") {
+                        Ewin.confirm({ message: "确认要修改公告信息吗？" }).on(function (e) {
+                            if (!e) {
+                                return;
+                            }
+                            else {
+                                var title = $("#tbxTitle").val();
+                                var content = UE.getEditor("editor").getContent();
+                                var contentCount = UE.getEditor("editor").getContentLength(true);
+                                var id = $("#NoticeID").text();
+                                var args = { "id": id, "title": title, "content": content, "contentCount": contentCount };
+                                $.post("/NoticeInfo/Update", encodeURIComponent(JSON.stringify(args)), function (result) {
+                                    if (result == "ok") {
+                                        $("#myModal").modal("hide");
+                                        toastr["success"]("修改公告成功", "提示");
+                                        clearInfo();
+                                        getList($("#tbxCurPage").val(), $("#ddlPageSize").val());
+                                    }
+                                    else {
+                                        $("#myModal").modal("hide");
+                                        toastr["error"]("保存错误，请联系5613877！", "提示");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        Ewin.confirm({ message: "确认要添加公告吗？" }).on(function (e) {
+                            if (!e) {
+                                return;
+                            }
+                            else {
+                                var title = $("#tbxTitle").val();
+                                var content = UE.getEditor("editor").getContent();
+                                var contentCount = UE.getEditor("editor").getContentLength(true);
+                                var args = { "title": title, "content": content, "contentCount": contentCount };
+                                $.post("/NoticeInfo/Insert", encodeURIComponent(JSON.stringify(args)), function (result) {
+                                    if (result == "ok") {
+                                        $("#myModal").modal("hide");
+                                        toastr["success"]("添加公告成功", "提示");
+                                        clearInfo();
+                                        getList(1, $("#ddlPageSize").val());
+                                        $("#tbxCurPage").val("1");
+                                    }
+                                    else {
+                                        $("#myModal").modal("hide");
+                                        toastr["error"]("保存错误，请联系5613877！", "提示");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        getList(1, $("#ddlPageSize").val());
+        function getList(curPage, pageSize) {
+            var args = { "curPage": curPage, "pageSize": pageSize };
+            $.post("/NoticeInfo/GetList", encodeURIComponent(JSON.stringify(args)), function (result) {
+                var userInfo = result["infoList"];//数据列表
+                var count = result["count"];//数据个数
+                var totalPageCount = 0;//总页数
+                if (count % pageSize != 0) {
+                    totalPageCount = count / pageSize + 1;
+                }
+                else {
+                    totalPageCount = count / pageSize;
+                }
+                if (curPage > totalPageCount) {
+                    totalPageCount = totalPageCount - 1;
+                    $("#tbxCurPage").val("1");
+                    getList(1, $("#ddlPageSize").val());
+                }
+                $("#totalPageCount").text(parseInt(totalPageCount));
+                $("#totalDataCount").text(count);
+
+                $("#tableList").html("");
+                $.each(userInfo, function (index, val) {
+                    var milliseconds = parseInt(val["InsertDate"].replace(/\D/igm, ""));
+                    var date = new Date(milliseconds);
+                    var temp = "<tr><td>" + val["NoticeID"] + "</td>";
+                    temp += "<td>" + val["NoticeTitle"] + "</td>";
+                    temp += "<td>" + val["ContentCount"] + "</td>";
+                    temp += "<td>" + val["UserName"] + "</td>";
+                    temp += "<td>" + date.toLocaleString() + "</td>";
+                    temp += "<td><a href='javascript:void(0)' class='btnEdit' data-uid='" + val["NoticeID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    temp += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnDel' data-uid='" + val["NoticeID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    temp += "</tr>";
+                    $("#tableList").append(temp);
+                });
+                var options = {
+                    numberOfPages: 6,
+                    bootstrapMajorVersion: 3,
+                    currentPage: curPage,
+                    totalPages: totalPageCount,
+                    useBootstrapTooltip: false,
+                    itemTexts: function (type, page, current) {
+                        switch (type) {
+                            case "first":
+                                return "首页";
+                            case "prev":
+                                return "上一页";
+                            case "next":
+                                return "下一页";
+                            case "last":
+                                return "尾页";
+                            case "page":
+                                return page;
+                        }
+                    },
+                    alignment: 'right',
+                    tooltipTitles: function (type, page, current) {
+                    },
+                    onPageClicked: function (event, originalEvent, type, page) {
+                        getList(page, pageSize);
+                        $("#tbxCurPage").val(page);
+                    }
+                }
+                $('#example').bootstrapPaginator(options);
+            });
+        }
+        $("#ddlPageSize").change(function () {
+            $("#tbxCurPage").val("1");
+            getList(1, $("#ddlPageSize").val());
+        });
+        $("#goPage").click(function () {
+            if ($("#tbxCurPage").val() == "") {
+                toastr["warning"]("页码不能为空", "提示");
+            }
+            else {
+                var r = /^[0-9]*[1-9][0-9]*$/
+                if (r.test($("#tbxCurPage").val())) {
+                    var goPageNum = parseInt($("#tbxCurPage").val());
+                    var totalPage = parseInt($("#totalPageCount").html());
+                    if (goPageNum > 1 && goPageNum < totalPage) {
+                        getList(goPageNum, $("#ddlPageSize").val());
+                        $("#tbxCurPage").val(goPageNum);
+                    }
+                    else {
+                        toastr["warning"]("亲，页码超过范围！", "提示");
+                        $("#tbxCurPage").val("");
+                    }
+                }
+                else {
+                    toastr["warning"]("亲，只能填写数字！", "提示");
+                    $("#tbxCurPage").val("");
+                }
+            }
+        });
+
+        $(document).on("click", ".btnEdit", function () {
+            $("label.error").hide();
+            $(".error").removeClass("error");
+            var id = $(this).attr("data-uid");
+            $('#myModal').modal('show');
+            $("#modalTitle").text("编辑公告信息");
+            $("#NoticeID").text(id);
+            var args = { "id": id };
+            $.post("/NoticeInfo/GetOne", encodeURIComponent(JSON.stringify(args)), function (result) {
+                $("#tbxTitle").val(result["NoticeTitle"]);
+                UE.getEditor("editor").setContent(result["Content"]);
+            });
+        });
+        $(document).on("click", ".btnDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除公告信息吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "id": id };
+                    $.post("/NoticeInfo/Del", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result == "ok") {
+                            toastr["success"]("删除公告成功", "提示");
+                            getList($("#tbxCurPage").val(), $("#ddlPageSize").val());
+                        }
+                        else {
+                            toastr["error"]("保存错误，请联系5613877！", "提示");
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+

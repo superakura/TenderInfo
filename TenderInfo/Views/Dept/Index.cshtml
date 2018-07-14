@@ -1,0 +1,302 @@
+﻿
+@{
+    ViewBag.Title = "部门信息管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+        <h4>部门列表</h4>
+        <ul class="ztree well" id="DeptList"></ul>
+    </div>
+    <div class="col-md-9">
+        <h2>部门信息管理</h2>
+        <hr />
+        <h4>步骤1：选择要操作的部门:【<span id="selectDept" class="text-danger"></span>】<span id="selectDeptID" class="hidden"></span></h4>
+        <h4>步骤2：对选择的部门进行以下设置</h4>
+        <button id="btnAddDept" class="btn btn-primary no-border">添加子部门</button>
+        <button id="btnEditDept" class="btn btn-success no-border">修改部门</button>
+        <button id="btnDelDept" class="btn btn-danger no-border">删除部门</button>
+        <button id="btnChangeDeptOrder" class="btn btn-info no-border">调整子部门顺序</button>
+        <div id="DeptAdd" class="hidden">
+            <hr />
+            <h4>添加部门信息</h4>
+            <div class="form">
+                <div class="form-group">
+                    <label for="lblAddDeptName" class="control-label">子部门名称</label>
+                    <input type="text" id="lblAddDeptName" class="input-large" />
+                </div>
+                <div class="form-group">
+                    <button id="btnAddDeptSubmit" type="button" class="btn btn-white btn-info btn-bold">
+                        <i class="ace-icon fa fa-check-square-o bigger-120 blue"></i>
+                        提交
+                    </button>
+                    &nbsp;
+                    <button id="btnAddDeptCancle" type="button" class="btn btn-white btn-default btn-bold">
+                        <i class="ace-icon fa fa-times red2"></i>
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="DeptEdit" class="hidden">
+            <hr />
+            <h4>修改部门信息</h4>
+            <div class="form">
+                <div class="form-group">
+                    <label for="lblEditDeptName" class="control-label">部门名称</label>
+                    <input type="text" id="lblEditDeptName" class="input-large" />
+                </div>
+                <div class="form-group">
+                    <label for="lblEditDeptName" class="control-label">上级部门</label>
+                    【<label id="lblEditDeptFatherName" class="control-label text-info"></label>】
+                    <span class="hidden" id="lblEditDeptFatherID"></span>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-sm" id="changeDeptFatherID">修改上级部门</button>
+                </div>
+                <div class="form-group">
+                    <button id="btnEditDeptSubmit" type="button" class="btn btn-white btn-info btn-bold">
+                        <i class="ace-icon fa fa-check-square-o bigger-120 blue"></i>
+                        保存
+                    </button>
+                    &nbsp;
+                    <button id="btnEditDeptCancle" type="button" class="btn btn-white btn-default btn-bold">
+                        <i class="ace-icon fa fa-times red2"></i>
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalEditDept">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="bootbox-close-button close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myTitle">修改上级部门</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <h4>部门列表</h4>
+                                    <ul class="ztree well" id="DeptListDetpFatherChange"></ul>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-horizontal">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="tbxBeforeDeptFatherName">原上级部门</label>
+                                                <br />
+                                                <h3 class="text-info">【<span id="lblBeforeDeptFatherName"></span>】</h3>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="tbxAfterDeptFatherName">点击左侧部门列表选择新上级部门</label>
+                                                <br />
+                                                <h3 class="text-danger">【<span id="lblAfterDeptFatherName"></span>】</h3>
+                                                <span id="lblAfterDeptFatherID" class="hidden"></span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" id="btnChangeDeptFatherSave" class="btn btn-primary">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link href="~/Content/metroStyle/metroStyle.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.ztree.core-3.5.min.js"></script>
+
+<script>
+    $(function () {
+        var setting = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: zTreeOnClick
+            }
+        };
+        var settingChild = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: zTreeChildOnClick
+            }
+        };
+        function zTreeOnClick(event, treeId, treeNode) {
+            $("#DeptAdd,#DeptEdit").removeClass().addClass("hidden");
+            var item = document.getElementById("selectDept");
+            item.innerHTML = treeNode.name;
+            var id = document.getElementById("selectDeptID");
+            id.innerHTML = treeNode.id;
+        };
+        function zTreeChildOnClick(event, treeId, treeNode) {
+            var item = document.getElementById("lblAfterDeptFatherName");
+            item.innerHTML = treeNode.name;
+            var id = document.getElementById("lblAfterDeptFatherID");
+            id.innerHTML = treeNode.id;
+        };
+        LoadDeptList("#DeptList",setting);
+        function LoadDeptList(ele,set) {
+            $("#DeptList").remove("li");
+            $.ajax({
+                url: "/Dept/LoadDeptList",
+                cache: false,
+                dataType: "json",
+                success: function (result) {
+                    $.fn.zTree.init($(ele), set, result);
+                }
+            });
+        };
+        $("#btnAddDept").click(function () {
+
+            if ($("#selectDept").text().length == 0) {
+                toastr["error"]("请先选择一个要操作的部门", "提示");
+            }
+            else {
+                $("#DeptEdit").removeClass().addClass("hidden");
+                $("#DeptAdd").removeClass().addClass("show");
+            }
+        });
+        $("#btnEditDept").click(function () {
+            if ($("#selectDept").text().length == 0) {
+                toastr["error"]("请先选择一个要操作的部门", "提示");
+            }
+            else {
+                if ($("#selectDeptID").text()=="1") {
+                    toastr["error"]("根部门无法编辑", "提示");
+                }
+                else {
+                    $("#DeptAdd").removeClass().addClass("hidden");
+                    $("#DeptEdit").removeClass().addClass("show");
+                    $("#lblEditDeptName").val($("#selectDept").text());
+                    $.get("/Dept/LoadEditDeptInfo", { deptID: $("#selectDeptID").text() }, function (result) {
+                        $("#lblEditDeptFatherName").text(result[0].DeptName);
+                        $("#lblEditDeptFatherID").text(result[0].DeptFatherID);
+                    });
+                }
+            }
+        });
+        $("#btnAddDeptCancle").click(function () {
+            $("#DeptAdd").removeClass().addClass("hidden");
+            $("#btnAddDeptIsOpen").attr("checked", false);
+            $("#lblAddDeptName").val("");
+        });
+        $("#btnAddDeptSubmit").click(function () {
+            if ($("#lblAddDeptName").val().length == 0) {
+                toastr["error"]("子部门名称不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确认要在【" + $("#selectDept").text() + "】中添加子部门【" + $("#lblAddDeptName").val() + "】吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var deptName = $("#lblAddDeptName").val();
+                        var condition = $("#selectDeptID").text();
+                        var args = { "deptName": deptName, "detpFatherID": condition };
+                        $.post("/Dept/AddDept", encodeURI(JSON.stringify(args)), function (result) {
+                            if (result == "ok") {
+                                toastr["info"]("添加成功！", "提示");
+                                LoadDeptList("#DeptList", setting);
+                                $("#lblAddDeptName").val("");
+                            }
+                            else {
+                                toastr["errot"](result, "错误");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        $("#btnEditDeptCancle").click(function () {
+            $("#DeptEdit").removeClass().addClass("hidden");
+        });
+        $("#changeDeptFatherID").click(function () {
+            $("#lblAfterDeptFatherName,#lblAfterDeptFatherID").text("");
+            $("#lblBeforeDeptFatherName").text($("#lblEditDeptFatherName").text());
+            LoadDeptList("#DeptListDetpFatherChange",settingChild);
+            $('#modalEditDept').modal();
+        });
+        $("#btnChangeDeptFatherSave").click(function () {
+            if ($("#lblAfterDeptFatherName").text().length==0) {
+                toastr["error"]("请选择要调动到的上级部门！", "提示");
+            }
+            else{
+                $("#lblEditDeptFatherName").text($("#lblAfterDeptFatherName").text());
+                $("#lblEditDeptFatherID").text($("#lblAfterDeptFatherID").text());
+                $('#modalEditDept').modal("hide");
+            }
+        });
+        $("#btnEditDeptSubmit").click(function () {
+            if ($("#lblEditDeptName").val().length == 0) {
+                toastr["error"]("部门名称不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确定要对部门【" + $("#selectDept").text() + "】进行修改吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var deptName = $("#lblEditDeptName").val();
+                        var detpFatherID = $("#lblEditDeptFatherID").text();
+                        var deptID = $("#selectDeptID").text();
+                        var args = { "deptName": deptName, "detpFatherID": detpFatherID,"deptID":deptID };
+                        $.post("/Dept/EditDept", encodeURI(JSON.stringify(args)), function (result) {
+                            if (result = "ok") {
+                                toastr["info"]("保存成功！", "提示");
+                                LoadDeptList("#DeptList", setting);
+                                $("#selectDept,#selectDeptID").text("");
+                                $("#DeptEdit").removeClass().addClass("hidden");
+                            }
+                            else {
+                                toastr["errot"](result, "错误");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        $("#btnDelDept").click(function () {
+            if ($("#selectDept").text().length==0) {
+                toastr["error"]("请先选择要操作的部门！", "错误");
+            }
+            else {
+                $("#DeptAdd,#DeptEdit").removeClass().addClass("hidden");
+                Ewin.confirm({ message: "确认要删除部门【" + $("#selectDept").text() + "】吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var deptID = $("#selectDeptID").text();
+                        var args = { "deptID": deptID };
+                        $.post("/Dept/DelDept", encodeURI(JSON.stringify(args)), function (result) {
+                            if (result = "ok") {
+                                toastr["info"]("删除成功！", "提示");
+                                LoadDeptList("#DeptList", setting);
+                                $("#selectDeptID,#selectDept").text("");
+                            }
+                            else {
+                                toastr["error"](result, "错误");
+                            }
+                        });
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+

@@ -1,0 +1,78 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>招标管理系统</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <!--[if lt IE 9]>
+        <script src="/Scripts/html5shiv.js"></script>
+        <script src="/Scripts/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="container">
+        <div class="row" style="background-color:deepskyblue">
+            <div class="col-md-12">
+                <h1 style="color:white;font-size:36px;font-weight:bold;" class="lead">招标管理系统</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <h3>通知公告</h3>
+                <hr />
+                <ul class="list-unstyled text-primary" id="noticeList"></ul>
+            </div>
+            <div class="col-md-4 well">
+                <h3>欢迎登录</h3>
+                <hr />
+                <form action="/Home/Login" method="post" role="form">
+                    <div class="form-group">
+                        <label for="tbxUserName">员工编号</label>
+                        <input type="text" class="form-control input-lg" value="" required autofocus id="userNum" name="userNum" placeholder="输入员工编号">
+                    </div>
+                    <div class="form-group">
+                        <label for="tbxPwd">密码</label>
+                        <input type="password" value="" class="form-control input-lg" required id="pwd" name="pwd" placeholder="输入密码">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg btn-block">登录</button>
+                    @Html.ValidationSummary()
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <hr />
+            <small>
+                版权所有：<span class="glyphicon glyphicon-copyright-mark">
+                </span>大庆炼化公司信息中心&nbsp;&nbsp;&nbsp;&nbsp;技术支持：5613877&nbsp;&nbsp;&nbsp;&nbsp;系统要求使用IE9及以上版本或Chrome浏览，系统不支持IE9以下浏览器！
+            </small>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-1.11.3.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script>
+        if (navigator.appName == "Microsoft Internet Explorer" && parseInt(navigator.appVersion.split(";")[1].replace(/[ ]/g, "").replace("MSIE", "")) < 9) {
+            alert("您的浏览器版本过低，请下载IE9及以上版本");
+            window.location.href = "ErrorIE";
+        }
+        $(function () {
+            getNoticeInfo();
+            function getNoticeInfo() {
+                $.post("/NoticeInfo/GetNoticeListForLogin", "", function (result) {
+                    var list = "";
+                    for (var i = 0; i < result.length; i++) {
+                        list += "<li><h3><a href='/NoticeInfo/NoticeShow?id=" + result[i]["NoticeID"] + "' target='_blank'>" + (i + 1) + "、" + result[i]["NoticeTitle"] + "</a></h3></li>";
+                    }
+                    $("#noticeList").empty().append(list);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

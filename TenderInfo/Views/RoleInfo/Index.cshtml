@@ -1,0 +1,200 @@
+﻿
+@{
+    ViewBag.Title = "用户角色管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">用户角色管理</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <button id="btnAdd" class="btn btn-info"><i class="glyphicon glyphicon-plus"></i> 新增</button>
+                        角色名称：<input id="tbxRoleNameSearch" class="form-control" type="text" />
+
+                        <button id="btnSearch" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> 查询</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>角色名称</th>
+                            <th>角色描述</th>
+                            <th>编辑&删除</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableList"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        共<span id="totalPageCount"></span>页 |
+                        <span id="totalDataCount"></span>条数据
+                        每页<select id="ddlPageSize" style="height:34px;padding:0px">
+                            <option value="5">5</option>
+                            <option selected value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>项
+                    </div>
+                    <div class="form-group" style="height:34px;">
+                        <ul class="form-control" id="example"></ul>
+                    </div>
+                    <div class="input-group col-md-2 col-lg-1">
+                        <input id="tbxCurPage" value="1" maxlength="7" size="2" class="form-control  search-query text-center" type="text" placeholder="">
+                        <span class="input-group-btn">
+                            <button id="goPage" class="btn btn-purple btn-sm" style="height:34px;" type="button">
+                                转到
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        };
+        $("#btnAdd").click(function () {
+            window.location.href = "/RoleInfo/RoleInfoAddOrEdit";
+        });
+        var curPageUrl = getUrlParam("curPage");
+        var pageSizeUrl = getUrlParam("pageSize");
+        var searchUrl = getUrlParam("search");
+
+        if (searchUrl != null) {
+            $("#tbxRoleNameSearch").val(searchUrl);
+        }
+        if (curPageUrl != null) {
+            getList(curPageUrl, pageSizeUrl);
+            $("#ddlPageSize").val(pageSizeUrl);
+            $("#tbxCurPage").val(curPageUrl);
+        }
+        else {
+            getList(1, $("#ddlPageSize").val());
+        }
+        function getList(curPage, pageSize) {
+            var name = $("#tbxRoleNameSearch").val();
+
+            var args = { "curPage": curPage, "pageSize": pageSize, "name": name };
+            $.post("/RoleInfo/GetList", encodeURIComponent(JSON.stringify(args)), function (result) {
+                var userInfo = result["infoList"];//数据列表
+                var count = result["count"];//数据个数
+
+                var totalPageCount;//总页数
+                if (count % pageSize != 0) {
+                    totalPageCount = count / pageSize + 1;
+                }
+                else {
+                    totalPageCount = count / pageSize;
+                }
+
+                $("#totalPageCount").text(parseInt(totalPageCount));
+                $("#totalDataCount").text(count);
+
+                $("#tableList").html("");
+                $.each(userInfo, function (index, val) {
+                    var temp = "<tr><td>" + val["RoleID"] + "</td><td>" + val["RoleName"] + "</td>";
+                    temp += "<td>" + val["RoleDescribe"] + "</td>";
+                    temp += "<td><a href='javascript:void(0)' class='btnEdit' data-uid='" + val["RoleID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    temp += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnDel' data-uid='" + val["RoleID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    temp += "</tr>";
+                    $("#tableList").append(temp);
+                });
+                var options = {
+                    numberOfPages: 6,
+                    bootstrapMajorVersion: 3,
+                    currentPage: curPage,
+                    totalPages: totalPageCount,
+                    useBootstrapTooltip: false,
+                    itemTexts: function (type, page, current) {
+                        switch (type) {
+                            case "first":
+                                return "首页";
+                            case "prev":
+                                return "上一页";
+                            case "next":
+                                return "下一页";
+                            case "last":
+                                return "尾页";
+                            case "page":
+                                return page;
+                        }
+                    },
+                    alignment: 'right',
+                    tooltipTitles: function (type, page, current) {
+                    },
+                    onPageClicked: function (event, originalEvent, type, page) {
+                        getList(page, pageSize);
+                        $("#tbxCurPage").val(page);
+                    }
+                }
+                $('#example').bootstrapPaginator(options);
+            });
+        }
+        $("#ddlPageSize").change(function () {
+            $("#tbxCurPage").val("1");
+            getList(1, $("#ddlPageSize").val());
+        });
+        $("#goPage").click(function () {
+            if ($("#tbxCurPage").val() == "") {
+                toastr["warning"]("页码不能为空", "提示");
+            }
+            else {
+                var r = /^[0-9]*[1-9][0-9]*$/
+                if (r.test($("#tbxCurPage").val())) {
+                    var goPageNum = parseInt($("#tbxCurPage").val());
+                    var totalPage = parseInt($("#totalPageCount").html());
+                    if (goPageNum > 1 && goPageNum < totalPage) {
+                        getList(goPageNum, $("#ddlPageSize").val());
+                        $("#tbxCurPage").val(goPageNum);
+                    }
+                    else {
+                        toastr["warning"]("亲，页码超过范围！", "提示");
+                        $("#tbxCurPage").val("");
+                    }
+                }
+                else {
+                    toastr["warning"]("亲，只能填写数字！", "提示");
+                    $("#tbxCurPage").val("");
+                }
+            }
+        });
+        $(document).on("click", ".btnEdit", function () {
+            //alert("编辑" + $(this).attr("data-uid"));
+            var id = $(this).attr("data-uid");
+            window.location.href = "/RoleInfo/RoleInfoAddOrEdit?id=" + id + "&curPage=" + $("#tbxCurPage").val() + "&pageSize=" + $("#ddlPageSize").val() + "&search=" + $("#tbxRoleNameSearch").val();
+        });
+        $(document).on("click", ".btnDel", function () {
+            alert("删除" + $(this).attr("data-uid"));
+        });
+        $("#btnSearch").click(function () {
+            getList(1, $("#ddlPageSize").val());
+        });
+    });
+</script>
+

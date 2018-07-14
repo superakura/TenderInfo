@@ -1,0 +1,387 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>@ViewBag.Title</title>
+    @System.Web.Optimization.Styles.Render("~/Content/LayoutCss")
+    <!--[if lt IE 9]>
+        <script src="~/Scripts/html5shiv.js"></script>
+        <script src="~/Scripts/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .toast-center-center {
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -150px;
+        }
+        hr {margin-top: 5px;margin-bottom: 5px;}
+        label.error {color: red;}
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    @System.Web.Optimization.Scripts.Render("~/bundles/LayoutJS")
+    <div class="wrapper">
+        <!-- 顶端信息 -->
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="index2.html" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><b>菜单</b></span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>招标管理系统</b></span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li><span class="navbar-text" style="color:white" id="lblUserName"></span></li>
+                        <li><a href="#" id="btnLogOut"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
+                        <!-- Control Sidebar Toggle Button -->
+                        <li>
+                            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <!-- 左侧导航 -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" id="menuList" data-widget="tree"></ul>
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- 主要内容区域 -->
+        <div class="content-wrapper">
+            <section class="content">
+                @RenderBody()
+            </section>
+        </div>
+
+        <!-- 底部区域 -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <b>Version</b> 1.0.0
+            </div>
+            <strong>Copyright &copy; @DateTime.Now.Year</strong> 大庆炼化公司 信息中心
+        </footer>
+
+        <!-- 控制侧边栏 -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- Home tab content -->
+                <div class="tab-pane" id="control-sidebar-home-tab">
+                    <h3 class="control-sidebar-heading">Recent Activity</h3>
+                    <ul class="control-sidebar-menu">
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                                <div class="menu-info">
+                                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+                                    <p>Will be 23 on April 24th</p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="menu-icon fa fa-user bg-yellow"></i>
+                                <div class="menu-info">
+                                    <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
+                                    <p>New phone +1(800)555-1234</p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                                <div class="menu-info">
+                                    <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
+                                    <p>nora@example.com</p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="menu-icon fa fa-file-code-o bg-green"></i>
+                                <div class="menu-info">
+                                    <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
+                                    <p>Execution time 5 seconds</p>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.control-sidebar-menu -->
+                    <h3 class="control-sidebar-heading">Tasks Progress</h3>
+                    <ul class="control-sidebar-menu">
+                        <li>
+                            <a href="javascript:void(0)">
+                                <h4 class="control-sidebar-subheading">
+                                    Custom Template Design
+                                    <span class="label label-danger pull-right">70%</span>
+                                </h4>
+                                <div class="progress progress-xxs">
+                                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <h4 class="control-sidebar-subheading">
+                                    Update Resume
+                                    <span class="label label-success pull-right">95%</span>
+                                </h4>
+                                <div class="progress progress-xxs">
+                                    <div class="progress-bar progress-bar-success" style="width: 95%"></div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <h4 class="control-sidebar-subheading">
+                                    Laravel Integration
+                                    <span class="label label-warning pull-right">50%</span>
+                                </h4>
+                                <div class="progress progress-xxs">
+                                    <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <h4 class="control-sidebar-subheading">
+                                    Back End Framework
+                                    <span class="label label-primary pull-right">68%</span>
+                                </h4>
+                                <div class="progress progress-xxs">
+                                    <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.control-sidebar-menu -->
+                </div>
+                <!-- /.tab-pane -->
+                <!-- Stats tab content -->
+                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+                <!-- /.tab-pane -->
+                <!-- Settings tab content -->
+                <div class="tab-pane" id="control-sidebar-settings-tab">
+                    <form method="post">
+                        <h3 class="control-sidebar-heading">General Settings</h3>
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Report panel usage
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+                            <p>
+                                Some information about this general settings option
+                            </p>
+                        </div>
+                        <!-- /.form-group -->
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Allow mail redirect
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+                            <p>
+                                Other sets of options are available
+                            </p>
+                        </div>
+                        <!-- /.form-group -->
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Expose author name in posts
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+                            <p>
+                                Allow the user to show his name in blog posts
+                            </p>
+                        </div>
+                        <!-- /.form-group -->
+                        <h3 class="control-sidebar-heading">Chat Settings</h3>
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Show me as online
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+                        </div>
+                        <!-- /.form-group -->
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Turn off notifications
+                                <input type="checkbox" class="pull-right">
+                            </label>
+                        </div>
+                        <!-- /.form-group -->
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Delete chat history
+                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
+                            </label>
+                        </div>
+                        <!-- /.form-group -->
+                    </form>
+                </div>
+                <!-- /.tab-pane -->
+            </div>
+        </aside>
+
+        <!-- Add the sidebar's background. This div must be placed
+        immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+
+        <script>
+            var ngConfig = {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                transformRequest: function (obj) {
+                    var str = [];
+                    for (var p in obj) {
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                    return str.join("&");
+                }
+            };
+
+            //设置全局Ajax超时转跳
+            $.ajaxSetup({
+                statusCode: {
+                    499: function () {
+                        toastr.error("登录超时，请重新登录！", "提示");
+                        setTimeout(function () {
+                            window.location.href = "/Home/Login";
+                        }, 1500);
+                    }
+                }
+            });
+
+            //获取cookie
+            function getCookie(cname) {
+                var name = cname + "=";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1);
+                    if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+                }
+                return "";
+            }
+
+            //设置cookie
+            function setCookie(cname, cvalue, exMinute) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exMinute * 60 * 1000));
+                var expires = "expires=" + d.toUTCString();
+                document.cookie = cname + "=" + cvalue + "; " + expires;
+            }
+
+            //toastr提示控件设置
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-center-center",
+                "preventDuplicates": true,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "2000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+            //json日期时间格式化
+            function getJsonDateTime(jsonDate) {
+                var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
+                var date = new Date(milliseconds);
+                return date.toLocaleString();
+            }
+
+            //json日期格式化
+            function getJsonDate(jsonDate) {
+                var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
+                var date = new Date(milliseconds);
+                return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
+            }
+
+
+            $(document).ready(function () {
+                $('.sidebar-menu').tree();
+
+                //退出系统按钮
+                $("#btnLogOut").click(function () {
+                    Ewin.confirm({ message: "确认要退出系统吗？" }).on(function (e) {
+                        if (!e) {
+                            return;
+                        }
+                        else {
+                            window.location.href = "/Home/LoginOut";
+                        }
+                    });
+                });
+
+                //从cookie中读取用户姓名和菜单
+                $("#lblUserName").text("欢迎：" + decodeURIComponent(getCookie("cUserName")));
+
+                //从数据库中获取菜单
+                $.post("/Home/GetMenu", "", function (result) {
+                    console.log(result);
+                    var menuInfo = "";
+                    $.each(result, function (indexInArray, valueOfElement) {
+                        var url = valueOfElement[4];
+                        var icon = valueOfElement[3];
+                        var text = valueOfElement[6];
+                        var subMenu = valueOfElement[7];
+                        if (subMenu.length > 0) {
+                            menuInfo += "<li class='treeview'><a href='#'><i class='" + icon + "'></i> <span> " + text + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a>";
+                            var chidMenuInfo = "<ul class='treeview-menu'>";
+                            $.each(subMenu, function (index, value) {
+                                chidMenuInfo += "<li><a href='" + value.MenuUrl + "'><i class='" + value.MenuIcon + "'></i> <span> " + value.MenuName + " </span></a></li>";
+                            });
+                            chidMenuInfo += "</ul></li>";
+                            menuInfo += chidMenuInfo;
+                        }
+                        else {
+                            menuInfo += "<li><a href='" + url + "'><i class='" + icon + "'></i><span> " + text + " </span></a></li>";
+                        }
+                    });
+                    $("#menuList").empty().append(menuInfo);
+                    //设置菜单活动项
+                    var string = document.location.pathname;
+                    var url = string.split("/");
+                    if ($('a[href*="' + "/" + url[1] + '"]').size() > 1) {
+                        $('a[href="' + "/" + url[1] + "/" + url[2] + '"]').parents('.treeview-menu').parent().addClass('active').siblings().removeClass('active');
+
+                        $('a[href="' + "/" + url[1] + "/" + url[2] + '"]').parent().addClass('active').siblings().removeClass('active');
+                    }
+                    else {
+                        $($('a[href*="' + "/" + url[1] + '"]')).parents('.treeview-menu').parent().addClass('active').siblings().removeClass('active');
+
+                        $($('a[href*="' + "/" + url[1] + '"]')).parent().addClass('active').siblings().removeClass('active');
+                    }
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

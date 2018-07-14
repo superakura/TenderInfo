@@ -1,0 +1,194 @@
+﻿
+@{
+    ViewBag.Title = "编辑角色信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">角色信息</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-6">
+                <button id="btnSubmit" class="btn btn-primary">保存</button>
+                <button id="btnBack" class="btn bg-navy">返回</button>
+                <form id="formInfo">
+
+                    <div class="form-group">
+                        <label for="tbxRoleName">角色名称(*)</label>
+                        <input type="text" class="form-control" name="tbxRoleName" id="tbxRoleName" placeholder="角色名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="tbxRoleDesc">角色描述</label>
+                        <textarea id="tbxRoleDesc" class="form-control" placeholder="角色描述" rows="3" cols="20"></textarea>
+                    </div>
+                    <span id="RoleID" class="hidden"></span>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr class="bg-success">
+                            <th colspan="6" class="text-center">角色所包含的权限信息</th>
+                        </tr>
+                        <tr class="bg-success">
+                            <th>
+                                <input id="cbxAll" type="checkbox" />全选
+                            </th>
+                            <th>ID</th>
+                            <th>权限名称</th>
+                            <th>权限类别</th>
+                            <th>描述</th>
+                            <th>互斥编号</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("#cbxAll").click(function () {
+            if (this.checked) {
+                $("input[name='checkname']").prop('checked', true)
+            } else {
+                $("input[name='checkname']").prop('checked', false)
+            }
+        });
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return ""; //返回参数值
+        };
+
+        $("#RoleID").text(getUrlParam("id"));
+
+        function GetAuthorityListAll() {
+            $.post("/AuthorityInfo/GetListAll", "", function (result) {
+                $("#tableList").html("");
+                $.each(result, function (index, val) {
+                    var temp = "<tr><td><input id='" + val["AuthorityID"] + "' value='" + val["AuthorityID"] + "' name='checkname' type='checkbox' /></td>";
+                    temp += "<td>" + val["AuthorityID"] + "</td><td>" + val["AuthorityName"] + "</td>";
+                    temp += "<td>" + val["AuthorityType"] + "</td>";
+                    temp += "<td>" + val["AuthorityDescribe"] + "</td>";
+                    temp += "<td>" + val["ConflictCode"] + "</td>";
+                    temp += "</tr>";
+                    $("#tableList").append(temp);
+                });
+            });
+        }
+        function GetAuthoritySingle() {
+            var id = getUrlParam("id");
+            var args = { "id": id };
+            $.post("/RoleInfo/GetOne", encodeURIComponent(JSON.stringify(args)), function (result) {
+                var roleInfo = result["roleInfo"];
+                var roleAuthority = result["roleAuthority"];
+                $("#tbxRoleName").val(roleInfo["RoleName"]);
+                $("#tbxRoleDesc").val(roleInfo["RoleDescribe"]);
+
+                $.each(roleAuthority, function (index, val) {
+                    $("input[id=" + val["AuthorityID"] + "]:checkbox").attr("checked", "checked");
+                });
+            });
+        }
+        if ($("#RoleID").text() != "") {
+            GetAuthorityListAll();
+            GetAuthoritySingle();
+        }
+        else {
+            GetAuthorityListAll();
+        }
+        $("#btnBack").click(function () {
+            var curPage = getUrlParam("curPage");
+            var pageSize = getUrlParam("pageSize");
+            var search = getUrlParam("search");
+            if (curPage!=null) {
+                window.location.href = "/RoleInfo/Index?" + "curPage=" + curPage + "&pageSize=" + pageSize + "&search=" + search;
+            }
+            else {
+                window.location.href = "/RoleInfo/Index";
+            }
+        });
+        $("#btnSubmit").click(function () {
+            var name = $("#tbxRoleName").val();
+            if (name.length == 0) {
+                toastr["error"]("角色名称不能为空!","提示");
+            }
+            else {
+                var num = 0;
+                $("input[name='checkname']:checked").each(function () {
+                    num += 1;
+                })
+                if (num != 0) {
+                    var desc = $("#tbxRoleDesc").val();
+                    if ($("#RoleID").text() != "") {
+                        Ewin.confirm({ message: "确认要修改角色【" + name + "】的信息吗？" }).on(function (e) {
+                            if (!e) {
+                                return;
+                            }
+                            else {
+                                var authorityList = {};
+                                $("input[name='checkname']:checked").each(function () {
+                                    authorityList[$(this).val()] = $(this).val();
+                                });
+                                var args = { "id": $("#RoleID").text(), "name": name, "desc": desc, "authorityList": authorityList };
+                                $.post("/RoleInfo/Update", encodeURIComponent(JSON.stringify(args)), function (result) {
+                                    if (result == "ok") {
+                                        toastr["success"]("修改角色【" + name + "】成功", "提示");
+                                        setTimeout(function () {
+                                            window.location.href = "/RoleInfo/Index";
+                                        }, 2000);
+                                    }
+                                    else {
+                                        toastr["error"]("保存错误，请联系5613877！", "提示");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        Ewin.confirm({ message: "确认要增加角色【" + name + "】吗？" }).on(function (e) {
+                            if (!e) {
+                                return;
+                            }
+                            else {
+                                var authorityList = {};
+                                $("input[name='checkname']:checked").each(function () {
+                                    authorityList[$(this).val()] = $(this).val();
+                                });
+                                var args = { "name": name, "desc": desc, "authorityList": authorityList };
+                                $.post("/RoleInfo/Insert", encodeURIComponent(JSON.stringify(args)), function (result) {
+    console.log(result);
+                                    if (result == "ok") {
+                                        toastr["success"]("添加角色【" + name + "】成功", "提示");
+                                        setTimeout(function () {
+                                            window.location.href = "/RoleInfo/Index";
+                                        }, 2000);
+                                    }
+                                    else {
+                                        toastr["error"]("保存错误，请联系5613877！", "提示");
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                }
+                else {
+                    toastr["error"]("至少选择一项权限信息！");
+                }
+            }
+        });
+    });
+</script>
+

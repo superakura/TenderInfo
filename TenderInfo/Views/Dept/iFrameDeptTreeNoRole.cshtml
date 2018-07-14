@@ -1,0 +1,52 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>iFrameDeptTree</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/metroStyle/metroStyle.css" rel="stylesheet" />
+</head>
+<body>
+    @*<h5>部门列表</h5>*@
+    <ul class="ztree well" id="DeptList"></ul>
+    <script src="~/Scripts/jquery-1.11.3.min.js"></script>
+    <script src="~/Scripts/jquery.ztree.core-3.5.min.js"></script>
+    <script>
+        $(function () {
+            var setting = {
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                },
+                callback: {
+                    onClick: zTreeOnClick
+                }
+            };
+            function zTreeOnClick(event, treeId, treeNode) {
+                $(window.parent.document).find("#selectDept").text(treeNode.name);
+                $(window.parent.document).find("#selectDeptID").text(treeNode.id);
+                window.parent.onTreeClick();
+            };
+            LoadDeptList("#DeptList", setting);
+            function LoadDeptList(ele, set) {
+                $("#DeptList").remove("li");
+                $.ajax({
+                    url: "/Dept/LoadDeptListNoRole",
+                    cache: false,
+                    dataType: "json",
+                    success: function (result) {
+                        $.fn.zTree.init($(ele), set, result);
+                    }
+                });
+            };
+        });
+    </script>
+</body>
+</html>
