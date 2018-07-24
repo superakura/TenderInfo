@@ -28,11 +28,13 @@ namespace TenderInfo.Models
         public virtual DbSet<NoticeInfo> NoticeInfo { get; set; }//通知公告信息表
         public virtual DbSet<UserDept> UserDept { get; set; }//用户部门关系表
         public virtual DbSet<Log> Log { get; set; }//日志信息表
-    }
 
-    //public class MyEntity
-    //{
-    //    public int Id { get; set; }
-    //    public string Name { get; set; }
-    //}
+        public virtual DbSet<AccountMaterial> AccountMaterial { get; set; }//招标台账信息表--（物资）
+        public virtual DbSet<AccountMaterialChild> AccountMaterialChild { get; set; }//招标台账信息子表--（物资）
+        public virtual DbSet<AccountProject> AccountProject { get; set; }//招标台账信息表--（工程、服务）
+        public virtual DbSet<AccountProjectChild> AccountProjectChild { get; set; }//招标台账信息子表--（工程、服务）
+
+        public virtual DbSet<ProgressMaterial> ProgressMaterial { get; set; }//招标进度--（工程、服务）
+        public virtual DbSet<ProgressProject> ProgressProject { get; set; }//招标进度--（物资、框架）
+    }
 }
