@@ -39,6 +39,30 @@
             }
         };
 
+        var editTenderStartDateEvents = {
+            'click .editTenderDate': function (e, value, row, index) {
+                $("#tbxEditTenderDate").val("");
+                $("label.error").hide();
+                $(".error").removeClass("error");
+
+                $.post("/SampleDelegation/GetEditTenderDateLog", { "id": row.SampleDelegationID }, function (result) {
+                    var list = "";
+                    $.each(result, function (indexInArray, val) {
+                        list += "<tr><td>" + (indexInArray+1) + "</td><td>" + val.InputPersonName + "</td><td>" + getJsonDateTime(val.InputDateTime) + "</td><td>" + val.LogContent + "</td></tr>";
+                    });
+                    $("#editTenderDateLogTable").empty().append(list);
+                });
+
+                $('#EditTenderDateModal').modal('show');
+                $("#lblOldTenderStartDate").text(getJsonDate(row.StartTenderDate));
+                $("#EditTenderDateInfoID").val(row.SampleDelegationID);
+
+                if (pageRole == "样品检测业务员查看") {
+                    $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
+                }
+            }
+        };
+
         function loadColumns() {
             var tempArray = [
                 {
@@ -77,8 +101,16 @@
                     formatter: function (value, row, index) {
                         var milliseconds = parseInt(value.replace(/\D/igm, ""));
                         var date = new Date(milliseconds);
-                        return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
-                    }
+                        var dateInfo = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
+                        if (pageRole == "一次编码表录入" || pageRole == "样品检测业务员查看") {
+                            return '<a class="editTenderDate" href="javascript: void (0)" title="修改招标开始时间">' + dateInfo + '</a>';
+                        }
+                        else {
+                            
+                            return dateInfo;
+                        }
+                    },
+                    events: editTenderStartDateEvents
                 },
                 {
                     field: 'SampleDelegationState',

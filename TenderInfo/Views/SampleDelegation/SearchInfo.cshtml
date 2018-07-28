@@ -50,6 +50,11 @@
         return temp;
     };
     $(document).ready(function () {
+        //日期比较，返回true、false
+        function CompareDate(d1, d2) {
+            return ((new Date(d1.replace(/-/g, "\/"))) <= (new Date(d2.replace(/-/g, "\/"))));
+        }
+
         $("#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch").datetimepicker({
             language: 'zh-CN',
             weekStart: 1,
@@ -64,12 +69,25 @@
 
         //搜索按钮
         $("#btnSearch").click(function () {
-            $("#bsTable").bootstrapTable('refresh');
+            var inputTimeStart = $("#tbxStartTenderDateBeginSearch").val();
+            var inputTimeEnd = $("#tbxStartTenderDateEndSearch").val();
+            if (inputTimeStart != "" || inputTimeEnd != "") {
+                if (CompareDate(inputTimeStart, inputTimeEnd)) {
+                    $("#bsTable").bootstrapTable('refresh');
+                }
+                else {
+                    toastr.error("日期范围必须填写完整，结束日期必须大于开始日期！", "提示");
+                    $("#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch").val("");
+                }
+            }
+            else {
+                $("#bsTable").bootstrapTable('refresh');
+            }
         });
 
         //重置按钮
         $("#btnReset").click(function () {
-            $("#tbxSampleNameSearch,#tbxStartTenderDateSearch,#ddlProjectResponsiblePersonSearch").val("");
+            $("#tbxSampleNameSearch,#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch,#ddlSampleDelegationStateSearch,#ddlProjectResponsiblePersonSearch").val("");
             $("#bsTable").bootstrapTable('refresh');
         });
     });

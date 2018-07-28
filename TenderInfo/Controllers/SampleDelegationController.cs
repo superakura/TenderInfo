@@ -297,7 +297,61 @@ namespace TenderInfo.Controllers
                        join ra in db.RoleAuthority on r.RoleID equals ra.RoleID
                        where ra.AuthorityID == 48//样品检测业务员查看
                        select new { u.UserID, u.UserName, u.UserNum };
+
+            var user = App_Code.Commen.GetUserFromSession();
+            if (User.IsInRole("样品检测业务员查看"))
+            {
+                list = list.Where(w => w.UserID == user.UserID);
+            }
             return Json(list);
+        }
+
+        [HttpPost]
+        public JsonResult EditTenderStartDate()
+        {
+            try
+            {
+                var user = App_Code.Commen.GetUserFromSession();
+                var id = 0;
+                int.TryParse(Request.Form["EditTenderDateInfoID"], out id);
+                var editTenderStartDate =Convert.ToDateTime(Request.Form["tbxEditTenderDate"]);
+
+                var sampleDelegation = db.SampleDelegation.Find(id);
+                var log = new Models.Log();
+                log.InputDateTime = DateTime.Now;
+                log.InputPersonID = user.UserID;
+                log.InputPersonName = user.UserName;
+                log.LogDataID = id;
+                log.LogType = "修改招标开始时间";
+                log.LogContent = "招标开始时间由【" + sampleDelegation.StartTenderDate.Value.ToShortDateString() + "】修改为【" + editTenderStartDate.ToShortDateString() + "】";
+                log.LogReason = sampleDelegation.StartTenderDate.Value.ToShortDateString() + "#" + editTenderStartDate.ToShortDateString();//记录用，原招标开始时间，用#分隔，修改后的招标开始时间
+                db.Log.Add(log);
+
+                sampleDelegation.StartTenderDate = editTenderStartDate;
+
+                db.SaveChanges();
+                return Json(new { state = "ok" });
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult GetEditTenderDateLog()
+        {
+            try
+            {
+                var id = 0;
+                int.TryParse(Request.Form["id"], out id);
+
+                return Json(db.Log.Where(w => w.LogType == "修改招标开始时间" && w.LogDataID == id).OrderByDescending(o=>o.InputDateTime).ToList());
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
         }
     }
 }
