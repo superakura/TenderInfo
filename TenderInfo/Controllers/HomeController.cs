@@ -196,5 +196,10 @@ namespace TenderInfo.Controllers
         {
             return View();
         }
+
+        public JsonResult GetTestUserList()
+        {
+            return Json(db.UserInfo.Select(s=>new { s.UserNum,s.UserName}).ToList());
+        }
     }
 }

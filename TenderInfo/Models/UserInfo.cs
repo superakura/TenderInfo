@@ -45,7 +45,7 @@ namespace TenderInfo.Models
         [Required]
         public int UserDeptID { get; set; }//用户部门ID外键
 
-        [ForeignKey("UserDeptID")]
-        public DeptInfo DeptInfo { get; set; }
+        //[ForeignKey("UserDeptID")]
+        //public DeptInfo DeptInfo { get; set; }
     }
 }

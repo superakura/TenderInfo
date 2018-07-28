@@ -49,5 +49,11 @@ namespace TenderInfo.Models
 
         [StringLength(1000)]
         public string Remark { get; set; }//备注
+
+        [StringLength(100)]
+        public string IsOver { get; set; }//是否已结束
+
+        [StringLength(100)]
+        public string YearInfo { get; set; }//年度信息
     }
 }

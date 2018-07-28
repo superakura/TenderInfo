@@ -35,9 +35,7 @@ namespace TenderInfo.App_Start
                       "~/AdminLTE-dist/js/demo.js",
 
                       "~/Scripts/toastr.min.js",
-                      "~/Scripts/Ewin.js",
-
-                      "~/Scripts/angular.min.js"));
+                      "~/Scripts/Ewin.js"));
         }
     }
 }

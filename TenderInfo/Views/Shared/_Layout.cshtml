@@ -345,7 +345,6 @@
 
                 //从数据库中获取菜单
                 $.post("/Home/GetMenu", "", function (result) {
-                    console.log(result);
                     var menuInfo = "";
                     $.each(result, function (indexInArray, valueOfElement) {
                         var url = valueOfElement[4];

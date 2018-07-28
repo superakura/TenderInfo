@@ -33,7 +33,7 @@ namespace TenderInfo
             if (isAjax == "XMLHttpRequest")
             {
                 var url = Context.Request.RawUrl;
-                if (url == "/NoticeInfo/GetNoticeListForLogin" || url == "/NoticeInfo/GetNoticeInfoForLogin")
+                if (url == "/NoticeInfo/GetNoticeListForLogin" || url == "/NoticeInfo/GetNoticeInfoForLogin" || url == "/Home/GetTestUserList")
                 {
                     return;
                 }

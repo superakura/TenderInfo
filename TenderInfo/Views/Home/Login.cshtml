@@ -33,13 +33,15 @@
                 <h3>欢迎登录</h3>
                 <hr />
                 <form action="/Home/Login" method="post" role="form">
-                    <div class="form-group">
+                    @*<div class="form-group">
                         <label for="tbxUserName">员工编号</label>
                         <input type="text" class="form-control input-lg" value="" required autofocus id="userNum" name="userNum" placeholder="输入员工编号">
-                    </div>
+                    </div>*@
+                    <select id="userNum" name="userNum" class="form-control input-lg">
+                    </select>
                     <div class="form-group">
                         <label for="tbxPwd">密码</label>
-                        <input type="password" value="" class="form-control input-lg" required id="pwd" name="pwd" placeholder="输入密码">
+                        <input type="password" value="test" class="form-control input-lg" required id="pwd" name="pwd" placeholder="输入密码">
                     </div>
                     <button type="submit" class="btn btn-success btn-lg btn-block">登录</button>
                     @Html.ValidationSummary()
@@ -62,14 +64,24 @@
             window.location.href = "ErrorIE";
         }
         $(function () {
-            getNoticeInfo();
-            function getNoticeInfo() {
+            GetNoticeInfo();
+            function GetNoticeInfo() {
                 $.post("/NoticeInfo/GetNoticeListForLogin", "", function (result) {
                     var list = "";
                     for (var i = 0; i < result.length; i++) {
                         list += "<li><h3><a href='/NoticeInfo/NoticeShow?id=" + result[i]["NoticeID"] + "' target='_blank'>" + (i + 1) + "、" + result[i]["NoticeTitle"] + "</a></h3></li>";
                     }
                     $("#noticeList").empty().append(list);
+                });
+            }
+            GetTestUserList();
+            function GetTestUserList() {
+                $.post("/Home/GetTestUserList", "", function (result) {
+                    var list = "";
+                    $.each(result, function (indexInArray, valueOfElement) {
+                        list += "<option value='" + valueOfElement.UserNum+"'>" + valueOfElement.UserName + "</option>";
+                    });
+                    $("#userNum").empty().append(list);
                 });
             }
         });

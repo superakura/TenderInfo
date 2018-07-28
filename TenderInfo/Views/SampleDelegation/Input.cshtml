@@ -1,0 +1,369 @@
+﻿
+@{
+    ViewBag.Title = "样品检测信息录入";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="modal fade" id="FirstCodeModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">一次编码表、送样委托单录入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="FirstCodeForm" method="post" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="tbxSampleName">样品名称<span class="text-danger">(必填)</span></label>
+                                        <input type="text" class="form-control" name="tbxSampleName" id="tbxSampleName" placeholder="样品名称">
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="tbxStartTenderDate">开标时间<span class="text-danger">(必填)</span></label>
+                                        <input type="text" class="form-control" name="tbxStartTenderDate" id="tbxStartTenderDate" placeholder="开标时间">
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="ddlProjectResponsiblePerson">招标负责人</label>
+                                        <select id="ddlProjectResponsiblePerson" name="ddlProjectResponsiblePerson" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="ddlSampleDelegationAcceptPerson">技术处送样委托单接收人</label>
+                                        <select id="ddlSampleDelegationAcceptPerson" name="ddlSampleDelegationAcceptPerson" class="form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="firstCodingFile">一次编码表<span class="text-danger">(必填)</span></label>
+                                        <input id="firstCodingFile" name="firstCodingFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="sampleDelegationFirstFile">送样委托单<span class="text-danger">(必填)</span></label>
+                                        <input id="sampleDelegationFirstFile" name="sampleDelegationFirstFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnFirstSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SecondCodeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">二次编码表、送样委托单录入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="SecondCodeForm" method="post" enctype="multipart/form-data">
+                            <input id="secondInfoID" name="secondInfoID" class="hidden" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="callout callout-success">
+                                        <h4>招标中心送样委托单</h4>
+                                        <p><a id="lblSampleDelegationFirstFileName" href="#">送样委托单</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="callout callout-info">
+                                        <h4>二次编码表模板</h4>
+                                        <p><a href="#">二次编码表模板</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="secondCodingFile">二次编码表<span class="text-danger">(必填)</span></label>
+                                        <input id="secondCodingFile" name="secondCodingFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="sampleDelegationFile">送样委托单<span class="text-danger">(必填)</span></label>
+                                        <input id="sampleDelegationFile" name="sampleDelegationFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnSecondSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="CheckReportModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">检验报告录入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="CheckReportForm" method="post" enctype="multipart/form-data">
+                            <input id="CheckReportInfoID" name="CheckReportInfoID" class="hidden" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="callout callout-success">
+                                        <h4>送样委托单</h4>
+                                        <p><a id="lblSampleDelegationFileName" href="#">送样委托单</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="checkReportFile">检验报告<span class="text-danger">(必填)</span></label>
+                                        <input id="checkReportFile" name="checkReportFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnCheckReportSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">样品检测信息录入</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        @Html.Partial("SearchInfo")
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                @if (User.IsInRole("一次编码表录入"))
+                {
+                    <div id="toolbar" class="btn-group">
+                        <button id="btnAdd" type="button" class="btn btn-info">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                    </div>
+                }
+                @Html.Partial("TableInfo")
+            </div>
+        </div>
+    </div>
+</div>
+<span id="userRole">@ViewBag.PageRole</span>
+
+<script>
+    $(function () {
+        //加载项目负责人列表
+        GetProjectResponsiblePersonList("search");
+        function GetProjectResponsiblePersonList(type) {
+            $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<option value='" + valueOfElement.UserNum + "'>" + valueOfElement.UserName + "</option>";
+                });
+                if (type == "search") {
+                    $("#ddlProjectResponsiblePersonSearch").append(list);
+                }
+                else {
+                    $("#ddlProjectResponsiblePerson").empty().append(list);
+                }
+            });
+        }
+
+        //加载技术处接收人员列表
+        function GetAcceptUserList() {
+            $.post("/SampleDelegation/GetAcceptPersonList", "", function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<option value='" + valueOfElement.UserNum + "'>" + valueOfElement.UserName + "</option>";
+                });
+                $("#ddlSampleDelegationAcceptPerson").empty().append(list);
+            });
+        }
+
+        //清空FirstCodeModal表单函数
+        function clearFirstCodeModal() {
+            $("#tbxSampleName,#tbxStartTenderDate,#firstCodingFile,#sampleDelegationFirstFile").val("");
+            $("label.error").hide();
+            $(".error").removeClass("error");
+        }
+
+        $("#tbxStartTenderDate").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0,
+            format: 'yyyy-mm-dd'
+        });
+
+        //新增按钮
+        $("#btnAdd").click(function () {
+            clearFirstCodeModal();
+            GetAcceptUserList("modal");
+            GetProjectResponsiblePersonList();
+            $('#FirstCodeModal').modal('show');
+        });
+
+        //对FirstCodeForm表单进行前端验证
+        var validFirstCode = $("#FirstCodeForm").validate({
+            rules: {
+                tbxSampleName: { required: true, maxlength: 100 },
+                tbxStartTenderDate: { required: true, maxlength: 20 },
+                firstCodingFile: { required: true },
+                sampleDelegationFirstFile: { required: true }
+            }
+        });
+
+        //对SecondCodeForm表单进行前端验证
+        var validSecondCode = $("#SecondCodeForm").validate({
+            rules: {
+                secondCodingFile: { required: true },
+                sampleDelegationFile: { required: true }
+            }
+        });
+
+        //对CheckReportForm表单进行前端验证
+        var validCheckReport = $("#CheckReportForm").validate({
+            rules: {
+                checkReportFile: { required: true }
+            }
+        });
+
+        //一次编码表提交按钮
+        $("#btnFirstSubmit").click(function () {
+            if (validFirstCode.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#FirstCodeForm").ajaxSubmit({
+                            url: "/SampleDelegation/UploadFirstCodingFile",
+                            type: "post",
+                            success: function (result) {
+                                if (result.state == "ok") {
+                                    $("#FirstCodeModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            };
+        });
+
+        //二次编码表提交按钮
+        $("#btnSecondSubmit").click(function () {
+            if (validSecondCode.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#SecondCodeForm").ajaxSubmit({
+                            url: "/SampleDelegation/UploadSecondCodingFile",
+                            type: "post",
+                            success: function (result) {
+                                if (result.state == "ok") {
+                                    $("#SecondCodeModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            };
+        });
+
+        //二次编码表提交按钮
+        $("#btnCheckReportSubmit").click(function () {
+            if (validCheckReport.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#CheckReportForm").ajaxSubmit({
+                            url: "/SampleDelegation/UploadCheckReportFile",
+                            type: "post",
+                            success: function (result) {
+                                if (result.state == "ok") {
+                                    $("#CheckReportModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            };
+        });
+    });
+</script>
+

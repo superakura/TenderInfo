@@ -1,0 +1,282 @@
+﻿<table id="bsTable"></table>
+<script>
+    $(function () {
+        var pageRole = $("#userRole").text();
+
+        var operateEvents = {
+            'click .edit': function (e, value, row, index) {
+                if (row.SampleDelegationState == "一次编码表上传完成") {
+                    if (pageRole == "二次编码表录入") {
+                        $("#secondCodingFile,#sampleDelegationFile").val("");
+                        $("label.error").hide();
+                        $(".error").removeClass("error");
+
+                        $('#SecondCodeModal').modal('show');
+                        $("#lblSampleDelegationFirstFileName").text(row.SampleDelegationFileNameOne).attr("href", "/FileUpload/" + row.SampleDelegationFileNameOne);
+                        $("#secondInfoID").val(row.SampleDelegationID);
+                    }
+                    else {
+                        toastr.error("只有技术处人员可执行二次编码表录入操作！", "提示");
+                    }
+                }
+                if (row.SampleDelegationState == "二次编码表上传完成") {
+                    if (pageRole == "检验报告录入") {
+                        $("#checkReportFile").val("");
+                        $("label.error").hide();
+                        $(".error").removeClass("error");
+
+                        $('#CheckReportModal').modal('show');
+                        $("#lblSampleDelegationFileName").text(row.SampleDelegationFileName).attr("href", "/FileUpload/" + row.SampleDelegationFileNameOne);
+                        $("#CheckReportInfoID").val(row.SampleDelegationID);
+                    }
+                    else {
+                        toastr.error("只有质检人员可执行检验报告录入操作！", "提示");
+                    }
+                }
+                if (row.SampleDelegationState == "检验报告上传完成") {
+                    toastr.error("流程已结束！", "提示");
+                }
+            }
+        };
+
+        function loadColumns() {
+            var tempArray = [
+                {
+                    checkbox: true
+                },
+                {
+                    title: '序号',
+                    formatter: function (value, row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field: 'SampleDelegationID',
+                    title: '数据ID',
+                    visible: false
+                },
+                {
+                    field: 'SampleName',
+                    title: '样品名称',
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        if (pageRole == "二次编码表录入" || pageRole == "检验报告录入") {
+                            return '<a class="edit" href="javascript: void (0)" title="edit">' + value + '</a>';
+                        }
+                        else {
+                            return value;
+                        }
+                    },
+                    events: operateEvents
+                },
+                {
+                    field: 'StartTenderDate',
+                    title: '开标时间',
+                    visible: true,
+                    width: 120,
+                    formatter: function (value, row, index) {
+                        var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                        var date = new Date(milliseconds);
+                        return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
+                    }
+                },
+                {
+                    field: 'SampleDelegationState',
+                    title: '进度',
+                    visible: true,
+                    width: 100,
+                    formatter: function (value, row, index) {
+                        switch (value) {
+                            case "一次编码表上传完成":
+                                return "<span class='label label-warning'>一次编码表完成</span>";
+                                break;
+                            case "二次编码表上传完成":
+                                return "<span class='label label-primary'>二次编码表完成</span>";
+                                break;
+                            case "检验报告上传完成":
+                                return "<span class='label label-success'>检验报告完成</span>";
+                                break;
+                        }
+                    }
+                },
+                {
+                    field: 'ProjectResponsiblePersonName',
+                    title: '招标负责人',
+                    formatter: function (value, row, index) {
+                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.ProjectResponsiblePersonPhone + "'>" + value + "</a>";
+                        return person;
+                    }
+                },
+                {
+                    field: 'SampleDelegationAcceptPersonName',
+                    title: '技术处接收人',
+                    formatter: function (value, row, index) {
+                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.SampleDelegationAcceptPersonPhone + "'>" + value + "</a>";
+                        return person;
+                    }
+                },
+                {
+                    field: 'SampleDelegationFileName',
+                    title: '送样委托单',
+                    formatter: function (value, row, index) {
+                        return "<a target='_blank' href='/FileUpload/" + value + "'>" + value + "</a>";
+                    }
+                },
+                {
+                    field: 'SampleDelegationInputPersonName',
+                    title: '送样委托单上传人员',
+                    visible: false
+                },
+                {
+                    field: 'SampleDelegationInputDate',
+                    title: '送样委托单上传时间',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(value);
+                    }
+                },
+                {
+                    field: 'FirstCodingFileName',
+                    title: '一次编码表',
+                    formatter: function (value, row, index) {
+                        return "<a target='_blank' href='/FileUpload/" + value + "'>" + value + "</a>";
+                    }
+                },
+                {
+                    field: 'FirstCodingInputPersonName',
+                    title: '一次编码表上传人员',
+                    visible: false
+                },
+                {
+                    field: 'FirstCodingInputDate',
+                    title: '一次编码表上传时间',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        if (value == null) {
+                            return "";
+                        }
+                        else {
+                            var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                            var date = new Date(milliseconds);
+                            return date.toLocaleString();
+                        }
+                    }
+                },
+                {
+                    field: 'SecondCodingFileName',
+                    title: '二次编码表',
+                    formatter: function (value, row, index) {
+                        return "<a target='_blank' href='/FileUpload/" + value + "'>" + (value == null ? "" : value) + "</a>";
+                    }
+                },
+                {
+                    field: 'SecondCodingInputPersonName',
+                    title: '二次编码表上传人员',
+                    visible: false
+                },
+                {
+                    field: 'SecondCodingInputDate',
+                    title: '二次编码表上传时间',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        if (value == null) {
+                            return "";
+                        }
+                        else {
+                            var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                            var date = new Date(milliseconds);
+                            return date.toLocaleString();
+                        }
+                    }
+                },
+                {
+                    field: 'CheckReportFileName',
+                    title: '检验报告',
+                    formatter: function (value, row, index) {
+                        return "<a target='_blank' href='/FileUpload/" + value + "'>" + (value == null ? "" : value) + "</a>";
+                    }
+                },
+                {
+                    field: 'CheckReportInputPersonName',
+                    title: '检验报告上传人员',
+                    visible: false
+                },
+                {
+                    field: 'CheckReportInputDate',
+                    title: '检验报告上传时间',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        if (value == null) {
+                            return "";
+                        }
+                        else {
+                            var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                            var date = new Date(milliseconds);
+                            return date.toLocaleString();
+                        }
+                    }
+                }];
+            switch ($("#userRole").text()) {
+                case "检验报告录入":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index != 11 && index != 12 && index != 13 && index != 14 && index != 15 && index != 16
+                    });
+                    break;
+                case "二次编码表录入":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index != 11 && index != 12 && index != 13
+                    });
+                    break;
+                case "样品检测业务员查看":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index != 8 && index != 9 && index != 10
+                    });
+                    break;
+                default:
+                    return tempArray;
+                    break;
+            };
+        };
+
+        var columns = loadColumns();
+        //console.log(columns);
+
+        //初始化BS-Table
+        $('#bsTable').bootstrapTable({
+            url: '/SampleDelegation/GetList',         //请求后台的URL（*）
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'post',                     //请求方式（*）
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: false,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            queryParams: queryParams,           //传递参数（*）
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [5, 10, 15, 20],        //可供选择的每页的行数（*）
+            search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: false,                //是否启用点击选中行
+            //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "SampleDelegationID",                     //每一行的唯一标识，一般为主键列
+            showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                   //是否显示父子表
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+            showExport: false,                     //是否显示导出
+            columns: columns,
+            fixedColumns: true,
+            fixedNumber: 3
+        })
+            .on('all.bs.table', function (e, name, args) {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+    });
+</script>

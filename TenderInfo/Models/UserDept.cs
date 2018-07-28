@@ -17,7 +17,7 @@ namespace TenderInfo.Models
 
         public int DeptID { get; set; }//部门表ID
 
-        [ForeignKey("DeptID")]
-        public DeptInfo DeptInfo { get; set; }
+        //[ForeignKey("DeptID")]
+        //public DeptInfo DeptInfo { get; set; }
     }
 }

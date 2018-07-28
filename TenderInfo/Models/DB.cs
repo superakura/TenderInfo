@@ -36,5 +36,8 @@ namespace TenderInfo.Models
 
         public virtual DbSet<ProgressMaterial> ProgressMaterial { get; set; }//招标进度--（工程、服务）
         public virtual DbSet<ProgressProject> ProgressProject { get; set; }//招标进度--（物资、框架）
+
+        //public virtual DbSet<TechnicSpecificationApprove> TechnicSpecificationApprove { get; set; }//技术规格书审批表
+        public virtual DbSet<SampleDelegation> SampleDelegation { get; set; }//送样委托表
     }
 }

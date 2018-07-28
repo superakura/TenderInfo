@@ -1,0 +1,76 @@
+﻿
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="tbxSampleNameSearch">样品名称：</label>
+                <input type="text" id="tbxSampleNameSearch" class="form-control" placeholder="样品名称">
+            </div>
+            <div class="form-group">
+                <label for="ddlProjectResponsiblePersonSearch">招标负责人：</label>
+                <select id="ddlProjectResponsiblePersonSearch" class="form-control">
+                    <option value="" selected>全部</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ddlSampleDelegationStateSearch">进度：</label>
+                <select id="ddlSampleDelegationStateSearch" class="form-control">
+                    <option value="" selected>全部</option>
+                    <option value="一次编码表上传完成">一次编码表完成</option>
+                    <option value="二次编码表上传完成">二次编码表完成</option>
+                    <option value="检验报告上传完成">检验报告完成</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tbxStartTenderDateSearch">开标时间范围：</label>
+                <input type="text" class="form-control" id="tbxStartTenderDateBeginSearch" placeholder="开标时间开始">--
+                <input type="text" class="form-control" id="tbxStartTenderDateEndSearch" placeholder="开标时间结束">
+            </div>
+            <button type="button" id="btnSearch" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+            <button type="button" id="btnReset" class="btn bg-navy">
+                <span class="glyphicon glyphicon-repeat"></span> 重置
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    var queryParams = function (params) {
+        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            limit: params.limit,   //页面大小
+            offset: params.offset,  //页码
+            sampleName: $("#tbxSampleNameSearch").val(),//样品名称
+            sampleDelegationState: $("#ddlSampleDelegationStateSearch").val(),//进度，状态
+            startTenderDateBegin: $("#tbxStartTenderDateBeginSearch").val(),//开标日期开始
+            startTenderDateEnd: $("#tbxStartTenderDateEndSearch").val(),//开标日期结束
+            projectResponsiblePerson: $("#ddlProjectResponsiblePersonSearch").val()//招标项目负责人
+        };
+        return temp;
+    };
+    $(document).ready(function () {
+        $("#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0,
+            format: 'yyyy-mm-dd'
+        });
+
+        //搜索按钮
+        $("#btnSearch").click(function () {
+            $("#bsTable").bootstrapTable('refresh');
+        });
+
+        //重置按钮
+        $("#btnReset").click(function () {
+            $("#tbxSampleNameSearch,#tbxStartTenderDateSearch,#ddlProjectResponsiblePersonSearch").val("");
+            $("#bsTable").bootstrapTable('refresh');
+        });
+    });
+</script>
