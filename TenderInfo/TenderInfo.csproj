@@ -572,6 +572,7 @@
     <Compile Include="Controllers\DeptController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NoticeInfoController.cs" />
+    <Compile Include="Controllers\ProgressInfoController.cs" />
     <Compile Include="Controllers\RoleInfoController.cs" />
     <Compile Include="Controllers\SampleDelegationController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
@@ -611,6 +612,10 @@
     <Compile Include="Migrations\201807260523156_edit7.Designer.cs">
       <DependentUpon>201807260523156_edit7.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807300054130_edit8.cs" />
+    <Compile Include="Migrations\201807300054130_edit8.Designer.cs">
+      <DependentUpon>201807300054130_edit8.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountProject.cs" />
     <Compile Include="Models\AccountProjectChild.cs" />
@@ -622,6 +627,7 @@
     <Compile Include="Models\DeptInfo.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
+    <Compile Include="Models\ProgressInfo.cs" />
     <Compile Include="Models\ProgressProject.cs" />
     <Compile Include="Models\RoleAuthority.cs" />
     <Compile Include="Models\RoleInfo.cs" />
@@ -651,6 +657,13 @@
     <Content Include="Views\SampleDelegation\Input.cshtml" />
     <Content Include="Views\SampleDelegation\SearchInfo.cshtml" />
     <Content Include="Views\SampleDelegation\TableInfo.cshtml" />
+    <Content Include="Views\ProgressInfo\ProgressMaterial.cshtml" />
+    <Content Include="Views\ProgressInfo\ProgressProject.cshtml" />
+    <Content Include="Views\ProgressInfo\ProgressFrame.cshtml" />
+    <Content Include="Views\ProgressInfo\SearchInfoMaterial.cshtml" />
+    <Content Include="Views\ProgressInfo\TableInfoMaterial.cshtml" />
+    <Content Include="Views\ProgressInfo\SearchInfoProject.cshtml" />
+    <Content Include="Views\ProgressInfo\TableInfoProject.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -690,6 +703,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807260523156_edit7.resx">
       <DependentUpon>201807260523156_edit7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807300054130_edit8.resx">
+      <DependentUpon>201807300054130_edit8.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

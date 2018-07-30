@@ -1,0 +1,109 @@
+﻿
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="tbxSampleNameSearch">类型：</label>
+                <select id="ddlProjectResponsiblePersonSearch" class="form-control">
+                    <option value="化工三剂" selected>化工三剂</option>
+                    <option value="动设备">动设备</option>
+                    <option value="静设备">静设备</option>
+                    <option value="仪表及配件类">仪表及配件类</option>
+                    <option value="电气及元件类">电气及元件类</option>
+                    <option value="工矿材料类">工矿材料类</option>
+                    <option value="劳保消防类">劳保消防类</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tbxSampleNameSearch">是否完成：</label>
+                <select id="ddlProjectResponsiblePersonSearch" class="form-control">
+                    <option value="未完成" selected>未完成</option>
+                    <option value="已完成">已完成</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tbxSampleNameSearch">拟招标项目名称或物资名称：</label>
+                <input type="text" id="tbxSampleNameSearch" class="form-control" placeholder="项目名称或物资名称">
+            </div>
+            <div class="form-group">
+                <label for="ddlProjectResponsiblePersonSearch">招标负责人：</label>
+                <select id="ddlProjectResponsiblePersonSearch" class="form-control">
+                    <option value="" selected>全部</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tbxSampleNameSearch">合同签订部门项目责任人：</label>
+                <input type="text" id="tbxSampleNameSearch" class="form-control" placeholder="合同签订部门项目责任人">
+            </div>
+            <div class="form-group">
+                <label for="tbxStartTenderDateSearch">中标通知书发出时间：</label>
+                <input type="text" class="form-control" id="tbxStartTenderDateBeginSearch" placeholder="中标通知书发出时间开始">--
+                <input type="text" class="form-control" id="tbxStartTenderDateEndSearch" placeholder="中标通知书发出时间结束">
+            </div>
+            <span id="typeSearch" class="hidden">@ViewData["type"]</span>
+            <button type="button" id="btnSearch" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+            <button type="button" id="btnReset" class="btn bg-navy">
+                <span class="glyphicon glyphicon-repeat"></span> 重置
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    var queryParams = function (params) {
+        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            limit: params.limit,   //页面大小
+            offset: params.offset,  //页码
+            sampleName: $("#tbxSampleNameSearch").val(),//样品名称
+            sampleDelegationState: $("#ddlSampleDelegationStateSearch").val(),//进度，状态
+            startTenderDateBegin: $("#tbxStartTenderDateBeginSearch").val(),//开标日期开始
+            startTenderDateEnd: $("#tbxStartTenderDateEndSearch").val(),//开标日期结束
+            projectResponsiblePerson: $("#ddlProjectResponsiblePersonSearch").val()//招标项目负责人
+        };
+        return temp;
+    };
+    $(document).ready(function () {
+        //日期比较，返回true、false
+        function CompareDate(d1, d2) {
+            return ((new Date(d1.replace(/-/g, "\/"))) <= (new Date(d2.replace(/-/g, "\/"))));
+        }
+
+        $("#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0,
+            format: 'yyyy-mm-dd'
+        });
+
+        //搜索按钮
+        $("#btnSearch").click(function () {
+            var inputTimeStart = $("#tbxStartTenderDateBeginSearch").val();
+            var inputTimeEnd = $("#tbxStartTenderDateEndSearch").val();
+            if (inputTimeStart != "" || inputTimeEnd != "") {
+                if (CompareDate(inputTimeStart, inputTimeEnd)) {
+                    $("#bsTable").bootstrapTable('refresh');
+                }
+                else {
+                    toastr.error("日期范围必须填写完整，结束日期必须大于开始日期！", "提示");
+                    $("#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch").val("");
+                }
+            }
+            else {
+                $("#bsTable").bootstrapTable('refresh');
+            }
+        });
+
+        //重置按钮
+        $("#btnReset").click(function () {
+            $("#tbxSampleNameSearch,#tbxStartTenderDateBeginSearch,#tbxStartTenderDateEndSearch,#ddlSampleDelegationStateSearch,#ddlProjectResponsiblePersonSearch").val("");
+            $("#bsTable").bootstrapTable('refresh');
+        });
+    });
+</script>
