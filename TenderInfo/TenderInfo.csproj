@@ -368,6 +368,7 @@
     <Content Include="bootstrap-table-dist\locale\bootstrap-table-zh-TW.js" />
     <Content Include="bootstrap-table-dist\locale\bootstrap-table-zh-TW.min.js" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="Content\bootstrap-table-fixed-columns.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -409,6 +410,7 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.zh-CN.js" />
+    <Content Include="Scripts\bootstrap-table-fixed-columns.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\Ewin.js" />
@@ -616,6 +618,10 @@
     <Compile Include="Migrations\201807300054130_edit8.Designer.cs">
       <DependentUpon>201807300054130_edit8.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808010019186_edit9.cs" />
+    <Compile Include="Migrations\201808010019186_edit9.Designer.cs">
+      <DependentUpon>201808010019186_edit9.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountProject.cs" />
     <Compile Include="Models\AccountProjectChild.cs" />
@@ -706,6 +712,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807300054130_edit8.resx">
       <DependentUpon>201807300054130_edit8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808010019186_edit9.resx">
+      <DependentUpon>201808010019186_edit9.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

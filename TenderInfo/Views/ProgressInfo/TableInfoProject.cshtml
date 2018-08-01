@@ -66,132 +66,242 @@
         };
 
         function loadColumns() {
+            //var tempArray = [
+            //    [
+            //        {
+            //            checkbox: true,
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle"
+            //        },
+            //        {
+            //            title: '序号',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            formatter: function (value, row, index) {
+            //                return index + 1;
+            //            }
+            //        },
+            //        {
+            //            field: 'ProgressInfoID',
+            //            title: '数据ID',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            visible: false
+            //        },
+            //        {
+            //            field: 'ProgressTypeChild',
+            //            title: '类型',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            visible: true
+            //        },
+            //        {
+            //            field: 'ProjectName',
+            //            title: '拟招标项目名称或物资名称',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            visible: true
+            //        },
+            //        {
+            //            field: 'IsOver',
+            //            title: '是否已完成',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            visible: false
+            //        },
+            //        {
+            //            field: 'InvestPrice',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            title: '投资金额（万元）'
+            //        },
+            //        {
+            //            field: 'ProjectResponsiblePerson',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            title: '招标项目负责人'
+            //        },
+            //        {
+            //            field: 'ContractResponsiblePerson',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            title: '合同签订部门项目责任人'
+            //        },
+            //        {
+            //            title: '项目前期对接进度',
+            //            colspan: 2,
+            //            rowspan: 1,
+            //            align:"center"
+            //        },
+            //        {
+            //            title: '项目实施进度',
+            //            colspan: 5,
+            //            rowspan: 1,
+            //            align: "center"
+            //        },
+            //        {
+            //            field: 'OtherExplain',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            title: '其他需说明情况'
+            //        },
+            //        {
+            //            field: 'Remark',
+            //            rowspan: 2,
+            //            colspan: 1,
+            //            valign: "middle",
+            //            title: '备注'
+            //        }
+            //    ],
+            //    [
+
+            //        {
+            //            field: 'ContractDeptContactDate',
+            //            title: '接到合同签订部门（电话或邮件）时间'
+            //        },
+            //        {
+            //            field: 'ProjectExplain',
+            //            title: '项目对接需说明情况'
+            //        },
+            //        {
+            //            field: 'ProgramAcceptDate',
+            //            title: '招标方案接收时间'
+            //        },
+            //        {
+            //            field: 'TenderFileSaleStartDate',
+            //            title: '发售招标文件开始日期'
+            //        },
+            //        {
+            //            field: 'TenderFileSaleEndDate',
+            //            title: '发售招标文件截止日期'
+            //        },
+            //        {
+            //            field: 'TenderStartDate',
+            //            title: '开标日期'
+            //        },
+            //        {
+            //            field: 'TenderSuccessFileDate',
+            //            title: '中标通知书发出时间'
+            //        }
+            //    ]
+            //];
             var tempArray = [
                 [
                     {
-                        checkbox: true,
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle"
-                    },
-                    {
-                        title: '序号',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        formatter: function (value, row, index) {
-                            return index + 1;
-                        }
-                    },
-                    {
-                        field: 'ProgressInfoID',
-                        title: '数据ID',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        visible: false
-                    },
-                    {
-                        field: 'ProgressTypeChild',
-                        title: '类型',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        visible: true
-                    },
-                    {
-                        field: 'ProjectName',
-                        title: '拟招标项目名称或物资名称',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        visible: true
-                    },
-                    {
-                        field: 'IsOver',
-                        title: '是否已完成',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        visible: false
-                    },
-                    {
-                        field: 'InvestPrice',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        title: '投资金额（万元）'
-                    },
-                    {
-                        field: 'ProjectResponsiblePerson',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        title: '招标项目负责人'
-                    },
-                    {
-                        field: 'ContractResponsiblePerson',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        title: '合同签订部门项目责任人'
+                        title: '',
+                        colspan: 5,
+                        align: "center"
                     },
                     {
                         title: '项目前期对接进度',
                         colspan: 2,
-                        rowspan: 1,
-                        align:"center"
+                        align: "center"
                     },
                     {
                         title: '项目实施进度',
                         colspan: 5,
-                        rowspan: 1,
                         align: "center"
                     },
                     {
+                        title: '',
+                        colspan: 2,
+                        align: "center"
+                    }
+                ],
+                [
+                    {
+                        title: '序号',
+                        valign: "middle",
+                        width: 44,
+                        formatter: function (value, row, index) {
+                            return index + 1;
+                        }
+                    },
+                    //{
+                    //    field: 'ProgressTypeChild',
+                    //    title: '类型',
+                    //    valign: "middle",
+                    //    width: 45,
+                    //    visible: true
+                    //},
+                    {
+                        field: 'ProjectName',
+                        title: '拟招标项目名称或物资名称',
+                        valign: "middle",
+                        width: 185,
+                        visible: true
+                    },
+                    {
+                        field: 'ProjectResponsiblePerson',
+                        valign: "middle",
+                        width: 115,
+                        title: '招标项目负责人'
+                    },
+                    {
+                        field: 'ContractResponsiblePerson',
+                        valign: "middle",
+                        width: 171,
+                        title: '合同签订部门项目责任人'
+                    },
+                    {
+                        field: 'InvestPrice',
+                        valign: "middle",
+                        title: '投资金额（万元）'
+                    },
+                    {
+                        field: 'ContractDeptContactDate',
+                        valign: "middle",
+                        title: '接到合同签订部门（电话或邮件）时间'
+                    },
+                    {
+                        field: 'ProjectExplain',
+                        valign: "middle",
+                        title: '项目对接需说明情况'
+                    },
+                    {
+                        field: 'ProgramAcceptDate',
+                        valign: "middle",
+                        title: '招标方案接收时间'
+                    },
+                    {
+                        field: 'TenderFileSaleStartDate',
+                        valign: "middle",
+                        title: '发售招标文件开始日期'
+                    },
+                    {
+                        field: 'TenderFileSaleEndDate',
+                        valign: "middle",
+                        title: '发售招标文件截止日期'
+                    },
+                    {
+                        field: 'TenderStartDate',
+                        valign: "middle",
+                        title: '开标日期'
+                    },
+                    {
+                        field: 'TenderSuccessFileDate',
+                        valign: "middle",
+                        title: '中标通知书发出时间'
+                    },
+                    {
                         field: 'OtherExplain',
-                        rowspan: 2,
-                        colspan: 1,
                         valign: "middle",
                         title: '其他需说明情况'
                     },
                     {
                         field: 'Remark',
-                        rowspan: 2,
-                        colspan: 1,
                         valign: "middle",
                         title: '备注'
-                    }
-                ],
-                [
-
-                    {
-                        field: 'ContractDeptContactDate',
-                        title: '接到合同签订部门（电话或邮件）时间'
-                    },
-                    {
-                        field: 'ProjectExplain',
-                        title: '项目对接需说明情况'
-                    },
-                    {
-                        field: 'ProgramAcceptDate',
-                        title: '招标方案接收时间'
-                    },
-                    {
-                        field: 'TenderFileSaleStartDate',
-                        title: '发售招标文件开始日期'
-                    },
-                    {
-                        field: 'TenderFileSaleEndDate',
-                        title: '发售招标文件截止日期'
-                    },
-                    {
-                        field: 'TenderStartDate',
-                        title: '开标日期'
-                    },
-                    {
-                        field: 'TenderSuccessFileDate',
-                        title: '中标通知书发出时间'
                     }
                 ]
             ];
@@ -202,7 +312,7 @@
 
         //初始化BS-Table
         $('#bsTable').bootstrapTable({
-            url: '/ProgressInfo/GetListMaterial',         //请求后台的URL（*）
+            url: '/ProgressInfo/GetList',         //请求后台的URL（*）
             contentType: 'application/x-www-form-urlencoded',
             method: 'post',                     //请求方式（*）
             toolbar: '#toolbar',                //工具按钮用哪个容器
@@ -222,7 +332,7 @@
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: false,                //是否启用点击选中行
-            //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
             uniqueId: "ProgressInfoID",           //每一行的唯一标识，一般为主键列
             showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图

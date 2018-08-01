@@ -304,8 +304,8 @@
             paginationNextText: "下一页",
             showExport: false,                     //是否显示导出
             columns: columns,
-            fixedColumns: true,
-            fixedNumber: 3
+            fixedColumns: false,
+            fixedNumber: 4
         })
             .on('all.bs.table', function (e, name, args) {
                 $('[data-toggle="tooltip"]').tooltip();

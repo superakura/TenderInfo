@@ -1,42 +1,11 @@
-﻿
-<table id="bsTable"></table>
+﻿<table id="bsTable"></table>
 <script>
     $(function () {
         var pageRole = $("#userRole").text();
 
         var operateEvents = {
             'click .edit': function (e, value, row, index) {
-                if (row.SampleDelegationState == "一次编码表上传完成") {
-                    if (pageRole == "二次编码表录入") {
-                        $("#secondCodingFile,#sampleDelegationFile").val("");
-                        $("label.error").hide();
-                        $(".error").removeClass("error");
-
-                        $('#SecondCodeModal').modal('show');
-                        $("#lblSampleDelegationFirstFileName").text(row.SampleDelegationFileNameOne).attr("href", "/FileUpload/" + row.SampleDelegationFileNameOne);
-                        $("#secondInfoID").val(row.SampleDelegationID);
-                    }
-                    else {
-                        toastr.error("只有技术处人员可执行二次编码表录入操作！", "提示");
-                    }
-                }
-                if (row.SampleDelegationState == "二次编码表上传完成") {
-                    if (pageRole == "检验报告录入") {
-                        $("#checkReportFile").val("");
-                        $("label.error").hide();
-                        $(".error").removeClass("error");
-
-                        $('#CheckReportModal').modal('show');
-                        $("#lblSampleDelegationFileName").text(row.SampleDelegationFileName).attr("href", "/FileUpload/" + row.SampleDelegationFileNameOne);
-                        $("#CheckReportInfoID").val(row.SampleDelegationID);
-                    }
-                    else {
-                        toastr.error("只有质检人员可执行检验报告录入操作！", "提示");
-                    }
-                }
-                if (row.SampleDelegationState == "检验报告上传完成") {
-                    toastr.error("流程已结束！", "提示");
-                }
+                //$('#NewProgressModal').modal('show');
             }
         };
 
@@ -68,33 +37,22 @@
             var tempArray = [
                 [
                     {
-                        checkbox: true,
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle"
-                    },
-                    {
                         title: '序号',
                         rowspan: 2,
                         colspan: 1,
                         valign: "middle",
+                        width: 45,
                         formatter: function (value, row, index) {
                             return index + 1;
                         }
-                    },
-                    {
-                        field: 'ProgressInfoID',
-                        title: '数据ID',
-                        rowspan: 2,
-                        colspan: 1,
-                        valign: "middle",
-                        visible: false
                     },
                     {
                         field: 'ProgressTypeChild',
                         title: '类型',
                         rowspan: 2,
                         colspan: 1,
+                        width: 45,
+                        height:81,
                         valign: "middle",
                         visible: true
                     },
@@ -103,8 +61,13 @@
                         title: '拟招标项目名称或物资名称',
                         rowspan: 2,
                         colspan: 1,
+                        width: 185,
                         valign: "middle",
-                        visible: true
+                        visible: true,
+                        formatter: function (value, row, index) {
+                            return '<a class="edit" href="javascript: void (0)" title="edit">' + value + '</a>';
+                        },
+                        events: operateEvents
                     },
                     {
                         field: 'IsOver',
@@ -172,6 +135,136 @@
                 [
                     {
                         field: 'TechnicalSpecificationAddDate',
+                        valign: "middle",
+                        title: '技术规格书（技术文件、图纸等）提报时间'
+                    },
+                    {
+                        field: 'TechnicalSpecificationExplain',
+                        valign: "middle",
+                        title: '技术规格书（技术文件、图纸等）对接需说明情况'
+                    },
+                    {
+                        field: 'TechnicalSpecificationApproveDate',
+                        valign: "middle",
+                        title: '技术规格书（技术文件、图纸等）定稿时间'
+                    },
+                    {
+                        field: 'SynthesizeEvaluationRuleApproveDate',
+                        valign: "middle",
+                        title: '综合法评标标准定稿时间'
+                    },
+                    {
+                        field: 'TenderProgramAuditDate',
+                        valign: "middle",
+                        title: '招标方案联审时间'
+                    },
+                    {
+                        field: 'ProgramAcceptDate',
+                        valign: "middle",
+                        title: '招标方案接收时间'
+                    },
+                    {
+                        field: 'TenderFileSaleStartDate',
+                        valign: "middle",
+                        title: '发售招标文件开始日期'
+                    },
+                    {
+                        field: 'TenderFileSaleEndDate',
+                        valign: "middle",
+                        title: '发售招标文件截止日期'
+                    },
+                    {
+                        field: 'TenderStartDate',
+                        valign: "middle",
+                        title: '开标日期'
+                    },
+                    {
+                        field: 'TenderSuccessFileDate',
+                        valign: "middle",
+                        title: '中标通知书发出时间'
+                    }
+                ]
+            ];
+            return tempArray;
+        };
+        function loadColumns2() {
+            var tempArray = [
+                [
+                    {
+                        title: '',
+                        colspan:7,
+                        align: "center"
+                    },
+                    {
+                        title: '项目前期对接进度',
+                        colspan: 5,
+                        align: "center"
+                    },
+                    {
+                        title: '项目实施进度',
+                        colspan: 5,
+                        align: "center"
+                    },
+                    {
+                        title: '',
+                        colspan: 2,
+                        align: "center"
+                    }
+                ],
+                [
+                    {
+                        title: '序号',
+                        valign: "middle",
+                        formatter: function (value, row, index) {
+                            return index + 1;
+                        }
+                    },
+                    {
+                        field: 'ProgressInfoID',
+                        title: '数据ID',
+                        valign: "middle",
+                        visible: false
+                    },
+                    {
+                        field: 'ProgressTypeChild',
+                        title: '类型',
+                        valign: "middle",
+                        visible: true
+                    },
+                    {
+                        field: 'ProjectName',
+                        title: '拟招标项目名称或物资名称',
+                        valign: "middle",
+                        visible: true
+                    },
+                    {
+                        field: 'IsOver',
+                        title: '是否已完成',
+                        valign: "middle",
+                        visible: false
+                    },
+                    {
+                        field: 'InvestPrice',
+                        valign: "middle",
+                        title: '投资金额（万元）'
+                    },
+                    {
+                        field: 'ProjectResponsiblePerson',
+                        valign: "middle",
+                        title: '招标项目负责人'
+                    },
+                    {
+                        field: 'ContractResponsiblePerson',
+                        valign: "middle",
+                        title: '合同签订部门项目责任人'
+                    },
+                    {
+                        field: 'MaterialCount',
+                        valign: "middle",
+                        title: '物资数量'
+                    },
+                    {
+                        field: 'TechnicalSpecificationAddDate',
                         title: '技术规格书（技术文件、图纸等）提报时间'
                     },
                     {
@@ -209,6 +302,16 @@
                     {
                         field: 'TenderSuccessFileDate',
                         title: '中标通知书发出时间'
+                    },
+                    {
+                        field: 'OtherExplain',
+                        valign: "middle",
+                        title: '其他需说明情况'
+                    },
+                    {
+                        field: 'Remark',
+                        valign: "middle",
+                        title: '备注'
                     }
                 ]
             ];
@@ -219,7 +322,7 @@
 
         //初始化BS-Table
         $('#bsTable').bootstrapTable({
-            url: '/ProgressInfo/GetListMaterial',         //请求后台的URL（*）
+            url: '/ProgressInfo/GetList',         //请求后台的URL（*）
             contentType: 'application/x-www-form-urlencoded',
             method: 'post',                     //请求方式（*）
             toolbar: '#toolbar',                //工具按钮用哪个容器
@@ -239,7 +342,7 @@
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: false,                //是否启用点击选中行
-            //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
             uniqueId: "ProgressInfoID",                     //每一行的唯一标识，一般为主键列
             showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图

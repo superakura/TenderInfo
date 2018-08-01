@@ -3,6 +3,63 @@
     ViewBag.Title = "招标进度--物资";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="modal fade" id="NewProgressModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">新建招标进度</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="NewProgressForm" method="post" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlProgressTypeChild">类型：</label>
+                                        <select id="ddlProgressTypeChild" class="form-control">
+                                            <option value="化工三剂" selected>化工三剂</option>
+                                            <option value="动设备">动设备</option>
+                                            <option value="静设备">静设备</option>
+                                            <option value="仪表及配件类">仪表及配件类</option>
+                                            <option value="电气及元件类">电气及元件类</option>
+                                            <option value="工矿材料类">工矿材料类</option>
+                                            <option value="劳保消防类">劳保消防类</option>
+                                            <option value="其他">其他</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxProjectName">拟招标项目名称或物资名称<span class="text-danger">(必填)</span></label>
+                                        <input id="tbxProjectName" name="tbxProjectName" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxContractResponsiblePerson">合同签订部门项目责任人<span class="text-danger">(必填)</span></label>
+                                        <input id="tbxContractResponsiblePerson" name="tbxContractResponsiblePerson" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnFirstSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">招标进度--物资</h3>
@@ -30,4 +87,11 @@
         </div>
     </div>
 </div>
-
+<script>
+    $(function () {
+        //新增按钮
+        $("#btnAdd").click(function () {
+            $('#NewProgressModal').modal('show');
+        });
+    });
+</script>

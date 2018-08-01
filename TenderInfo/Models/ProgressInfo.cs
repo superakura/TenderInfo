@@ -26,7 +26,9 @@ namespace TenderInfo.Models
         public string InvestPrice { get; set; }//投资金额（万元）
 
         [StringLength(200)]
-        public string ProjectResponsiblePerson { get; set; }//招标项目负责人
+        public string ProjectResponsiblePersonName { get; set; }//招标项目负责人姓名
+
+        public int ProjectResponsiblePersonID { get; set; }//招标项目负责人ID
 
         [StringLength(100)]
         public string ContractResponsiblePerson { get; set; }//合同签订部门项目责任人
@@ -79,5 +81,7 @@ namespace TenderInfo.Models
 
         [StringLength(100)]
         public string YearInfo { get; set; }//年度信息
+
+        public DateTime? InputDateTime { get; set; }//更新时间
     }
 }

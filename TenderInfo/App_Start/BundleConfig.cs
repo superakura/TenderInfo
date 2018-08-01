@@ -14,6 +14,7 @@ namespace TenderInfo.App_Start
                 "~/Content/bootstrap.min.css",
                 "~/Content/bootstrap-datetimepicker.min.css",
                 "~/bootstrap-table-dist/bootstrap-table.min.css",
+                "~/Content/bootstrap-table-fixed-columns.css",
                 "~/Content/font-awesome/css/font-awesome.min.css",
                 "~/AdminLTE-dist/css/AdminLTE.min.css",
                 "~/AdminLTE-dist/css/skins/_all-skins.min.css",
@@ -28,6 +29,7 @@ namespace TenderInfo.App_Start
                       "~/Scripts/bootstrap.min.js",
                       "~/bootstrap-table-dist/bootstrap-table.min.js",
                       "~/bootstrap-table-dist/locale/bootstrap-table-zh-CN.min.js",
+                      "~/Scripts/bootstrap-table-fixed-columns.js",
                       "~/Scripts/bootstrap-datetimepicker.min.js",
                       "~/Scripts/bootstrap-datetimepicker.zh-CN.js",
 
