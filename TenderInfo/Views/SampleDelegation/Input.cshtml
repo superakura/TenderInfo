@@ -94,14 +94,6 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
-                                    <div class="callout callout-info">
-                                        <h4>二次编码表模板</h4>
-                                        <p><a href="#">二次编码表模板</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label for="secondCodingFile">二次编码表<span class="text-danger">(必填)</span></label>
@@ -194,7 +186,23 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="tbxEditTenderDate">修改招标开始时间<span class="text-danger">(必填)</span></label>
-                                        <input type="text" class="form-control" id="tbxEditTenderDate" name="tbxEditTenderDate" placeholder="修改招标开始时间">
+                                        <input type="text" class="form-control date" id="tbxEditTenderDate" name="tbxEditTenderDate" placeholder="修改招标开始时间">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEditTenderDateReason">修改原因<span class="text-danger">(必填)</span></label>
+                                        <textarea id="tbxEditTenderDateReason" name="tbxEditTenderDateReason"  class="form-control" rows="2" cols="20"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="editTenderDateFile">说明文件<span class="text-danger">(必填)</span></label>
+                                        <input type="file" class="form-control" id="editTenderDateFile" name="editTenderDateFile" placeholder="修改招标开始时间说明文件">
                                     </div>
                                 </div>
                             </div>
@@ -203,11 +211,13 @@
                     <div id="editLog">
                         <table class="table table-condensed table-hover">
                             <thead>
-                                <tr>
+                                <tr class="bg-success">
                                     <th>序号</th>
                                     <th>操作人</th>
                                     <th>操作时间</th>
                                     <th>内容</th>
+                                    <th>原因</th>
+                                    <th>说明文件</th>
                                 </tr>
                             </thead>
                             <tbody id="editTenderDateLogTable"></tbody>
@@ -261,7 +271,7 @@
             $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
-                    list += "<option value='" + valueOfElement.UserNum + "'>" + valueOfElement.UserName + "</option>";
+                    list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
                 });
                 if (type == "search") {
                     $("#ddlProjectResponsiblePersonSearch").append(list);
@@ -277,7 +287,7 @@
             $.post("/SampleDelegation/GetAcceptPersonList", "", function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
-                    list += "<option value='" + valueOfElement.UserNum + "'>" + valueOfElement.UserName + "</option>";
+                    list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
                 });
                 $("#ddlSampleDelegationAcceptPerson").empty().append(list);
             });
@@ -292,14 +302,13 @@
 
         $("#tbxStartTenderDate,#tbxEditTenderDate").datetimepicker({
             language: 'zh-CN',
-            weekStart: 1,
+            //weekStart: 1,
             todayBtn: 1,
             autoclose: 1,
-            todayHighlight: 1,
-            startView: 2,
-            minView: 2,
+            todayHighlight: true,
+            minView: 0,
             forceParse: 0,
-            format: 'yyyy-mm-dd'
+            format: 'yyyy-mm-dd hh:ii'
         });
 
         //新增按钮
@@ -338,7 +347,9 @@
         //对EditTenderDate表单进行前端验证
         var validCheckReport = $("#EditTenderDateForm").validate({
             rules: {
-                tbxEditTenderDate: { required: true }
+                tbxEditTenderDate: { required: true },
+                tbxEditTenderDateReason: { required: true },
+                editTenderDateFile: { required: true }
             }
         });
 

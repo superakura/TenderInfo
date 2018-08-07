@@ -432,6 +432,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.ztree.all-3.5.min.js" />
     <Content Include="Scripts\jquery.ztree.core-3.5.min.js" />
+    <Content Include="Scripts\moment-with-locales.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\toastr.min.js" />
@@ -622,6 +623,14 @@
     <Compile Include="Migrations\201808010019186_edit9.Designer.cs">
       <DependentUpon>201808010019186_edit9.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808030216468_edit10.cs" />
+    <Compile Include="Migrations\201808030216468_edit10.Designer.cs">
+      <DependentUpon>201808030216468_edit10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808070019417_edit11.cs" />
+    <Compile Include="Migrations\201808070019417_edit11.Designer.cs">
+      <DependentUpon>201808070019417_edit11.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountProject.cs" />
     <Compile Include="Models\AccountProjectChild.cs" />
@@ -715,6 +724,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808010019186_edit9.resx">
       <DependentUpon>201808010019186_edit9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808030216468_edit10.resx">
+      <DependentUpon>201808030216468_edit10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808070019417_edit11.resx">
+      <DependentUpon>201808070019417_edit11.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

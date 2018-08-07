@@ -30,6 +30,7 @@ namespace TenderInfo.App_Start
                       "~/bootstrap-table-dist/bootstrap-table.min.js",
                       "~/bootstrap-table-dist/locale/bootstrap-table-zh-CN.min.js",
                       "~/Scripts/bootstrap-table-fixed-columns.js",
+                      "~/Scripts/moment-with-locales.js",
                       "~/Scripts/bootstrap-datetimepicker.min.js",
                       "~/Scripts/bootstrap-datetimepicker.zh-CN.js",
 

@@ -48,18 +48,43 @@
                 $.post("/SampleDelegation/GetEditTenderDateLog", { "id": row.SampleDelegationID }, function (result) {
                     var list = "";
                     $.each(result, function (indexInArray, val) {
-                        list += "<tr><td>" + (indexInArray+1) + "</td><td>" + val.InputPersonName + "</td><td>" + getJsonDateTime(val.InputDateTime) + "</td><td>" + val.LogContent + "</td></tr>";
+                        list += "<tr><td>" + (indexInArray+1) + "</td><td>" + val.InputPersonName + "</td><td>" + getJsonDateTime(val.InputDateTime) + "</td><td>" + val.LogContent + "</td>";
+                        list += "<td>" + val.LogReason + "</td><td><a target='_blank' href='" + val.Col1 + "'>" + val.Col1 + "</a></td><td></tr>";
                     });
                     $("#editTenderDateLogTable").empty().append(list);
                 });
 
+                var milliseconds = parseInt(row.StartTenderDate.replace(/\D/igm, ""));
+                var date = new Date(milliseconds);
+                var dateInfo = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日 ' + date.getHours() + ":" + date.getMinutes();
                 $('#EditTenderDateModal').modal('show');
-                $("#lblOldTenderStartDate").text(getJsonDate(row.StartTenderDate));
+                $("#lblOldTenderStartDate").text(dateInfo);
                 $("#EditTenderDateInfoID").val(row.SampleDelegationID);
 
                 if (pageRole == "样品检测业务员查看") {
                     $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
                 }
+            }
+        };
+
+        var delEvents = {
+            'click .del': function (e, value, row, index) {
+                Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $.post("/SampleDelegation/Del", { "id": row.SampleDelegationID }, function (result) {
+                            if (result == "ok") {
+                                toastr.success("操作成功！", "提示");
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                            else {
+                                toastr.error(result, "提示");
+                            }
+                        });
+                    }
+                });
             }
         };
 
@@ -70,6 +95,7 @@
                 },
                 {
                     title: '序号',
+                    align: "center",
                     formatter: function (value, row, index) {
                         return index + 1;
                     }
@@ -80,15 +106,62 @@
                     visible: false
                 },
                 {
+                    title: '删除',
+                    formatter: function (value, row, index) {
+                        switch (pageRole) {
+                            case "一次编码表录入":
+                                return '<a class="del" href="javascript: void (0)" title="删除"><i class="glyphicon glyphicon-trash"></i></a>';
+                                break;
+                            case "二次编码表录入":
+                                if (row.SampleDelegationState != "二次编码表上传完成") {
+                                    return "";
+                                }
+                                else {
+                                    return '<a class="del" href="javascript: void (0)" title="删除"><i class="glyphicon glyphicon-trash"></i></a>';
+                                }
+                                break;
+                            case "检验报告录入":
+                                if (row.SampleDelegationState != "检验报告上传完成") {
+                                    return "";
+                                }
+                                else {
+                                    return '<a class="del" href="javascript: void (0)" title="删除"><i class="glyphicon glyphicon-trash"></i></a>';
+                                }
+                                break;
+                            default:
+                                return "";
+                                break;
+                        }
+                        return '<a class="del" href="javascript: void (0)" title="删除"><i class="glyphicon glyphicon-trash"></i></a>';
+                    },
+                    align: "center",
+                    events: delEvents
+                },
+                {
                     field: 'SampleName',
                     title: '样品名称',
                     visible: true,
                     formatter: function (value, row, index) {
-                        if (pageRole == "二次编码表录入" || pageRole == "检验报告录入") {
-                            return '<a class="edit" href="javascript: void (0)" title="edit">' + value + '</a>';
-                        }
-                        else {
-                            return value;
+                        switch (pageRole) {
+                            case "二次编码表录入":
+                                if (row.SampleDelegationState != "一次编码表上传完成") {
+                                    return value;
+                                }
+                                else {
+                                    return '<a class="edit" href="javascript: void (0)" title="edit">' + value + '</a>';
+                                }
+                                break;
+                            case "检验报告录入":
+                                if (row.SampleDelegationState != "二次编码表上传完成") {
+                                    return value;
+                                }
+                                else {
+                                    return '<a class="edit" href="javascript: void (0)" title="edit">' + value + '</a>';
+                                }
+                                break;
+                            default:
+                                return value;
+                                break;
                         }
                     },
                     events: operateEvents
@@ -97,16 +170,15 @@
                     field: 'StartTenderDate',
                     title: '开标时间',
                     visible: true,
-                    width: 120,
+                    width: 150,
                     formatter: function (value, row, index) {
                         var milliseconds = parseInt(value.replace(/\D/igm, ""));
                         var date = new Date(milliseconds);
-                        var dateInfo = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
+                        var dateInfo = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日 ' + date.getHours() + ":" + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
                         if (pageRole == "一次编码表录入" || pageRole == "样品检测业务员查看") {
                             return '<a class="editTenderDate" href="javascript: void (0)" title="修改招标开始时间">' + dateInfo + '</a>';
                         }
                         else {
-                            
                             return dateInfo;
                         }
                     },
@@ -248,24 +320,27 @@
                         }
                     }
                 }];
+            console.log(tempArray);
             switch ($("#userRole").text()) {
                 case "检验报告录入":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 11 && index != 12 && index != 13 && index != 14 && index != 15 && index != 16
+                        return index != 12 && index != 13 && index != 14 && index != 15 && index != 16 && index != 17
                     });
                     break;
                 case "二次编码表录入":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 11 && index != 12 && index != 13
+                        return index != 12 && index != 13 && index != 14 && index != 18 && index != 19 && index != 20
                     });
                     break;
                 case "样品检测业务员查看":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 8 && index != 9 && index != 10
+                        return index != 3 &&index != 9 && index != 10 && index != 11
                     });
                     break;
-                default:
-                    return tempArray;
+                case "一次编码表录入":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index != 15 && index != 16 && index != 17 && index != 18 && index != 19 && index != 20
+                    });
                     break;
             };
         };

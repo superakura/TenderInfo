@@ -31,8 +31,6 @@ namespace TenderInfo.Models
         [StringLength(50)]
         public string InputPersonName { get; set; }//操作人员姓名
 
-        public int InputPersonNameID { get; set; }//操作人员ID
-
         public DateTime InputDateTime { get; set; }//操作日期
 
         [StringLength(500)]

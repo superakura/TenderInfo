@@ -75,6 +75,7 @@ namespace TenderInfo.Models
 
         public DateTime? CheckReportInputDate { get; set; }//检验报告上传时间
 
+        [StringLength(200)]
         public string SampleDelegationState { get; set; }//送样委托状态
     }
 }
