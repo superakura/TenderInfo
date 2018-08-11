@@ -33,18 +33,55 @@ namespace TenderInfo.Controllers
             int.TryParse(Request.Form["limit"], out limit);
             var offset = 0;
             int.TryParse(Request.Form["offset"], out offset);
-            var sampleName = Request.Form["sampleName"];//样品名称
+
+            var progressType = Request.Form["progressType"];//子类
+            var progressTypeChild = Request.Form["progressTypeChild"];//子类
+            var isOver = Request.Form["isOver"];//是否完成
+            var projectName = Request.Form["projectName"];//项目名称
+            var projectResponsiblePerson = 0;//项目负责人
+            int.TryParse(Request.Form["projectResponsiblePerson"], out projectResponsiblePerson);
+            var contractResponsiblePerson = Request.Form["contractResponsiblePerson"];//项目负责人
+
+            var tenderSuccessFileDateBegin = Request.Form["tenderSuccessFileDateBegin"];//招标开始时间范围Begin
+            var tenderSuccessFileDateEnd = Request.Form["tenderSuccessFileDateEnd"];//招标开始时间范围End
 
             var userInfo = App_Code.Commen.GetUserFromSession();
 
             var result = from p in db.ProgressInfo
+                         where p.ProgressType==progressType
                          select p;
 
             if (User.IsInRole("招标管理"))
             {
-                result = result.Where(w=>w.ProjectResponsiblePersonID==userInfo.UserID);
+                result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
             }
-            return Json(new { total = result.Count(), rows = result.OrderBy(o=>o.ProgressInfoID).Skip(offset).Take(limit).ToList() });
+            if (isOver != string.Empty)
+            {
+                result = result.Where(w => w.IsOver == isOver);
+            }
+            if (progressTypeChild != string.Empty)
+            {
+                result = result.Where(w => w.ProgressTypeChild == progressTypeChild);
+            }
+            if (projectName != string.Empty)
+            {
+                result = result.Where(w => w.ProjectName.Contains(projectName));
+            }
+            if (projectResponsiblePerson != 0)
+            {
+                result = result.Where(w => w.ProjectResponsiblePersonID == projectResponsiblePerson);
+            }
+            if (contractResponsiblePerson != string.Empty)
+            {
+                result = result.Where(w => w.ContractResponsiblePerson.Contains(contractResponsiblePerson));
+            }
+            if (!string.IsNullOrEmpty(tenderSuccessFileDateBegin) & !string.IsNullOrEmpty(tenderSuccessFileDateEnd))
+            {
+                var dateStart = Convert.ToDateTime(tenderSuccessFileDateBegin);
+                var dateEnd = Convert.ToDateTime(tenderSuccessFileDateEnd);
+                result = result.Where(w => System.Data.Entity.DbFunctions.DiffDays(w.TenderFileSaleStartDate, dateStart) <= 0 && System.Data.Entity.DbFunctions.DiffMinutes(w.TenderFileSaleEndDate, dateEnd) >= 0);
+            }
+            return Json(new { total = result.Count(), rows = result.OrderBy(o => o.ProgressInfoID).Skip(offset).Take(limit).ToList() });
         }
 
         [HttpPost]
@@ -66,6 +103,9 @@ namespace TenderInfo.Controllers
                 info.ProgressType = progressType;
                 info.ProjectResponsiblePersonID = user.UserID;
                 info.ProjectResponsiblePersonName = user.UserName;
+                info.IsOver = "未完成";
+                info.InputDateTime = DateTime.Now;
+                info.YearInfo = DateTime.Now.Year.ToString();
 
                 db.ProgressInfo.Add(info);
                 db.SaveChanges();
@@ -107,24 +147,35 @@ namespace TenderInfo.Controllers
                 info.ProgressTypeChild = Request.Form["ddlProgressTypeChildEdit"];
                 info.ProjectName = Request.Form["tbxProjectNameEdit"];
                 info.InvestPrice = Request.Form["tbxInvestPriceEdit"];
-                info.MaterialCount = Request.Form["tbxMaterialCountEdit"];
                 info.ContractResponsiblePerson = Request.Form["tbxContractResponsiblePersonEdit"];
 
-                info.TechnicalSpecificationAddDate = Request.Form["tbxTechnicalSpecificationAddDateEdit"];
-                info.TechnicalSpecificationExplain = Request.Form["tbxTechnicalSpecificationExplainEdit"];
-                if (Request.Form["tbxTechnicalSpecificationApproveDateEdit"] != string.Empty)
+                #region 项目前期对接进度
+                if (Request.Form["tbxProgressTypeEdit"] == "工程")
                 {
-                    info.TechnicalSpecificationApproveDate = Convert.ToDateTime(Request.Form["tbxTechnicalSpecificationApproveDateEdit"]);
+                    info.ContractDeptContactDate = Request.Form["tbxContractDeptContactDateEdit"];
+                    info.ProjectExplain = Request.Form["tbxProjectExplainEdit"];
                 }
-                if (Request.Form["tbxSynthesizeEvaluationRuleApproveDateEdit"] != string.Empty)
+                else
                 {
-                    info.SynthesizeEvaluationRuleApproveDate = Convert.ToDateTime(Request.Form["tbxSynthesizeEvaluationRuleApproveDateEdit"]);
-                }
-                if (Request.Form["tbxTenderProgramAuditDateEdit"] != string.Empty)
-                {
-                    info.TenderProgramAuditDate = Convert.ToDateTime(Request.Form["tbxTenderProgramAuditDateEdit"]);
-                }
+                    info.MaterialCount = Request.Form["tbxMaterialCountEdit"];//物资数量
 
+                    info.TechnicalSpecificationAddDate = Request.Form["tbxTechnicalSpecificationAddDateEdit"];
+                    info.TechnicalSpecificationExplain = Request.Form["tbxTechnicalSpecificationExplainEdit"];
+                    if (Request.Form["tbxTechnicalSpecificationApproveDateEdit"] != string.Empty)
+                    {
+                        info.TechnicalSpecificationApproveDate = Convert.ToDateTime(Request.Form["tbxTechnicalSpecificationApproveDateEdit"]);
+                    }
+                    if (Request.Form["tbxSynthesizeEvaluationRuleApproveDateEdit"] != string.Empty)
+                    {
+                        info.SynthesizeEvaluationRuleApproveDate = Convert.ToDateTime(Request.Form["tbxSynthesizeEvaluationRuleApproveDateEdit"]);
+                    }
+                    if (Request.Form["tbxTenderProgramAuditDateEdit"] != string.Empty)
+                    {
+                        info.TenderProgramAuditDate = Convert.ToDateTime(Request.Form["tbxTenderProgramAuditDateEdit"]);
+                    }
+                }
+                #endregion
+                #region 项目实施进度
                 if (Request.Form["tbxProgramAcceptDateEdit"] != string.Empty)
                 {
                     info.ProgramAcceptDate = Convert.ToDateTime(Request.Form["tbxProgramAcceptDateEdit"]);
@@ -145,6 +196,7 @@ namespace TenderInfo.Controllers
                 {
                     info.TenderSuccessFileDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessFileDateEdit"]);
                 }
+                #endregion
 
                 info.OtherExplain = Request.Form["tbxOtherExplainEdit"];
                 info.Remark = Request.Form["tbxRemarkEdit"];
@@ -153,6 +205,33 @@ namespace TenderInfo.Controllers
                 info.YearInfo = DateTime.Now.Year.ToString();
                 info.IsOver = Request.Form["tbxTenderSuccessFileDateEdit"].Trim() != string.Empty ? "已完成" : "未完成";
 
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string Del()
+        {
+            try
+            {
+                var id = 0;
+                int.TryParse(Request.Form["id"], out id);
+                var progressInfo = db.ProgressInfo.Find(id);
+                db.ProgressInfo.Remove(progressInfo);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var logInfo = new Models.Log();
+                logInfo.InputDateTime = DateTime.Now;
+                logInfo.InputPersonID = userInfo.UserID;
+                logInfo.InputPersonName = userInfo.UserName;
+                logInfo.LogContent = "删除项目："+progressInfo.ProjectName+"-"+"类型：【"+progressInfo.ProgressType+"】【"+progressInfo.ProgressTypeChild+"】";
+                logInfo.LogType = "删除招标进度";
+                db.Log.Add(logInfo);
                 db.SaveChanges();
                 return "ok";
             }

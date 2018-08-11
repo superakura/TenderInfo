@@ -3,6 +3,7 @@
     ViewBag.Title = "招标进度--框架";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@Html.Partial("ModalMaterial")
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">招标进度--框架</h3>
@@ -13,7 +14,7 @@
         </div>
     </div>
     <div class="box-body">
-        @Html.Partial("SearchInfoMaterial", ViewData["type"] = "frame")
+        @Html.Partial("SearchInfoMaterial", ViewData["type"] = "框架")
         <hr />
         <div class="row">
             <div class="col-md-12">

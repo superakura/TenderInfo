@@ -679,6 +679,7 @@
     <Content Include="Views\ProgressInfo\TableInfoMaterial.cshtml" />
     <Content Include="Views\ProgressInfo\SearchInfoProject.cshtml" />
     <Content Include="Views\ProgressInfo\TableInfoProject.cshtml" />
+    <Content Include="Views\ProgressInfo\ModalMaterial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

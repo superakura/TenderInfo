@@ -12,7 +12,7 @@
                 $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
                 $("#tbxInvestPriceEdit").val(row.InvestPrice);
                 $("#tbxMaterialCountEdit").val(row.MaterialCount);
-                $("#tbxProjectResponsiblePersonEdit").val(row.ProjectResponsiblePersonName);
+                $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
                 $("#tbxContractResponsiblePersonEdit").val(row.ContractResponsiblePerson);
 
                 $("#tbxTechnicalSpecificationAddDateEdit").val(row.TechnicalSpecificationAddDate);
@@ -29,6 +29,10 @@
 
                 $("#tbxOtherExplainEdit").val(row.OtherExplain);
                 $("#tbxRemarkEdit").val(row.Remark);
+
+                if ($("#userRole").text().trim() != "招标管理") {
+                    $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
+                }
             }
         };
 
@@ -50,9 +54,10 @@
                         title: '类型',
                         rowspan: 2,
                         colspan: 1,
-                        width: 45,
-                        height: 81,
-                        //switchable: false,
+                        //width: 45,
+                        width: 100,
+                        //height: 81,
+                        switchable: false,
                         valign: "middle",
                         visible: true
                     },
@@ -122,6 +127,7 @@
                         rowspan: 2,
                         colspan: 1,
                         valign: "middle",
+                        visible: false,
                         title: '其他需说明情况'
                     },
                     {
@@ -129,7 +135,8 @@
                         rowspan: 2,
                         colspan: 1,
                         valign: "middle",
-                        title: '备注'
+                        title: '备注',
+                        visible: false
                     }
                 ],
                 [
@@ -146,42 +153,130 @@
                     {
                         field: 'TechnicalSpecificationApproveDate',
                         valign: "middle",
-                        title: '技术规格书（技术文件、图纸等）定稿时间'
+                        title: '技术规格书（技术文件、图纸等）定稿时间',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'SynthesizeEvaluationRuleApproveDate',
                         valign: "middle",
-                        title: '综合法评标标准定稿时间'
+                        title: '综合法评标标准定稿时间',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'TenderProgramAuditDate',
                         valign: "middle",
-                        title: '招标方案联审时间'
+                        title: '招标方案联审时间',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'ProgramAcceptDate',
                         valign: "middle",
-                        title: '招标方案接收时间'
+                        title: '招标方案接收时间',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'TenderFileSaleStartDate',
                         valign: "middle",
-                        title: '发售招标文件开始日期'
+                        title: '发售招标文件开始日期',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'TenderFileSaleEndDate',
                         valign: "middle",
-                        title: '发售招标文件截止日期'
+                        title: '发售招标文件截止日期',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'TenderStartDate',
                         valign: "middle",
-                        title: '开标日期'
+                        title: '开标日期',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     },
                     {
                         field: 'TenderSuccessFileDate',
                         valign: "middle",
-                        title: '中标通知书发出时间'
+                        title: '中标通知书发出时间',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
                     }
                 ]
             ];
@@ -317,7 +412,6 @@
             ];
             return tempArray;
         };
-
         function loadColumns3() {
             var tempArray = [
                 {
