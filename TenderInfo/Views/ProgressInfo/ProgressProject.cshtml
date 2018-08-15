@@ -3,7 +3,7 @@
     ViewBag.Title = "招标进度--工程、服务";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<span id="userRole">
+<span id="userRole" class="hidden">
     @if (User.IsInRole("招标管理"))
     {
         @:招标管理

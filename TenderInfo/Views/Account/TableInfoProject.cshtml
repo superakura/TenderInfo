@@ -1,0 +1,452 @@
+﻿
+<link href="~/Content/bootstrap-table-fixed-columns2.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-table-fixed-columns2.js"></script>
+<table id="bsTable"></table>
+<script>
+    var editModel = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        $("#EditProgressModal").modal("show");
+
+        $("#tbxProgressIDEdit").val(row.ProgressInfoID);
+        $("#tbxProgressTypeEdit").val($("#typeSearch").text());
+
+        $("#tbxProjectNameEdit").val(row.ProjectName);
+        $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
+        $("#tbxInvestPriceEdit").val(row.InvestPrice);
+        $("#tbxMaterialCountEdit").val(row.MaterialCount);
+        $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
+        $("#tbxContractResponsiblePersonEdit").val(row.ContractResponsiblePerson);
+
+        $("#tbxTechnicalSpecificationAddDateEdit").val(row.TechnicalSpecificationAddDate);
+        $("#tbxTechnicalSpecificationExplainEdit").val(row.TechnicalSpecificationExplain);
+        $("#tbxTechnicalSpecificationApproveDateEdit").val(row.TechnicalSpecificationApproveDate == null ? "" : getJsonDateShort(row.TechnicalSpecificationApproveDate));
+        $("#tbxSynthesizeEvaluationRuleApproveDateEdit").val(row.SynthesizeEvaluationRuleApproveDate == null ? "" : getJsonDateShort(row.SynthesizeEvaluationRuleApproveDate));
+        $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate == null ? "" : getJsonDateShort(row.TenderProgramAuditDate));
+
+        $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
+        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
+        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
+        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
+        $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
+
+        $("#tbxOtherExplainEdit").val(row.OtherExplain);
+        $("#tbxRemarkEdit").val(row.Remark);
+
+        if ($("#userRole").text().trim() != "招标管理") {
+            $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
+        }
+    }
+    $(function () {
+        var columns = [
+            [
+                {
+                    title: '序号',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    width: 45,
+                    formatter: function (value, row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field: 'ProjectName',
+                    title: '项目名称',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    visible: true
+                },
+                {
+                    field: 'TenderFileNum',
+                    title: '项目文件编号',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    visible: true
+                },
+                {
+                    field: 'IsOnline',
+                    title: '线上/线下',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle"
+                },
+                {
+                    field: 'ProjectResponsiblePerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标项目负责人'
+                },
+                {
+                    field: 'UsingDept',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '使用单位'
+                },
+                {
+                    field: 'ProjectResponsibleDept',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '项目主责部门'
+                },
+                {
+                    field: 'ApplyPerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '申请人'
+                },
+                {
+                    field: 'InvestPlanApproveNum',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '投资计划批复文号'
+                },
+                {
+                    field: 'InvestSource',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '资金来源'
+                },
+                {
+                    field: 'TenderRange',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标范围'
+                },
+                {
+                    field: 'ProjectTimeLimit',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '工期'
+                },
+                {
+                    field: 'ProgramAcceptDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '收到申请日期（线上项目填方案分派日期）'
+                },
+                {
+                    field: 'TenderProgramAuditDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '联审日期'
+                },
+                {
+                    field: 'TenderFileSaleStartDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '发售招标文件开始日期'
+                },
+                {
+                    field: 'TenderFileSaleEndDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '发售招标文件截止日期'
+                },
+                {
+                    field: 'TenderStartDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '开标日期'
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '购买招标文件潜在投标人'
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '投标人'
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '报价（万元）'
+                },
+                {
+                    field: 'TenderSuccessPerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '中标人名称'
+                },
+                {
+                    field: 'PlanInvestPrice',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '预计投资（万元）'
+                },
+                {
+                    field: 'TenderRestrictUnitPrice',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标控制单价（万元）'
+                },
+                {
+                    field: 'TenderSuccessPrice',
+                    title: '中标金额（万元）',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle"
+                },
+                {
+                    field: 'SaveCapital',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '节约资金（万元）'
+                },
+                {
+                    title: '评标委员会',
+                    colspan: 5,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    title: '招标文件联审',
+                    colspan: 4,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    field: 'TenderFailReason',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标失败原因'
+                },
+                {
+                    title: '澄清（修改）',
+                    colspan: 8,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    title: '异议处理',
+                    colspan: 9,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    field: 'ContractNum',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '合同编号'
+                },
+                {
+                    field: 'ContractPrice',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '合同金额'
+                },
+                {
+                    field: 'RelativePerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '相对人名称'
+                },
+                {
+                    field: 'TenderInfo',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标情况'
+                },
+                {
+                    field: 'TenderRemark',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '备注'
+                }
+            ],
+            [
+                {
+                    valign: "middle",
+                    title: '姓名',
+                },
+                {
+                    valign: "middle",
+                    title: '单位',
+                },
+                {
+                    valign: "middle",
+                    title: '是否评标委员会主任',
+                },
+                {
+                    field: 'EvaluationTime',
+                    valign: "middle",
+                    title: '评审时间（小时）',
+                },
+                {
+                    valign: "middle",
+                    title: '评审费'
+                },
+                {
+                    valign: "middle",
+                    title: '姓名'
+                },
+                {
+                    valign: "middle",
+                    title: '单位'
+                },
+                {
+                    field: 'TenderFileAuditTime',
+                    valign: "middle",
+                    title: '联审时间（小时）',
+                },
+                {
+                    valign: "middle",
+                    title: '费用'
+                },
+                {
+                    field: 'ClarifyLaunchPerson',
+                    valign: "middle",
+                    title: '提起人'
+                },
+                {
+                    field: 'ClarifyLaunchDate',
+                    valign: "middle",
+                    title: '提出时间',
+                },
+                {
+                    field: 'ClarifyReason',
+                    valign: "middle",
+                    title: '事由'
+                },
+                {
+                    field: 'ClarifyAcceptDate',
+                    valign: "middle",
+                    title: '受理时间',
+                },
+                {
+                    field: 'ClarifyDisposePerson',
+                    valign: "middle",
+                    title: '处理人'
+                },
+                {
+                    field: 'IsClarify',
+                    valign: "middle",
+                    title: '澄清/修改'
+                },
+                {
+                    field: 'ClarifyDisposeInfo',
+                    valign: "middle",
+                    title: '处理情况'
+                },
+                {
+                    field: 'ClarifyReplyDate',
+                    valign: "middle",
+                    title: '答复时间'
+                },
+                {
+                    field: 'DissentLaunchPerson',
+                    valign: "middle",
+                    title: '提起人'
+                },
+                {
+                    field: 'DissentLaunchPersonPhone',
+                    valign: "middle",
+                    title: '联系方式'
+                },
+                {
+                    field: 'DissentLaunchDate',
+                    valign: "middle",
+                    title: '异议时间'
+                },
+                {
+                    field: 'DissentReason',
+                    valign: "middle",
+                    title: '事由'
+                },
+                {
+                    field: 'DissentAcceptDate',
+                    valign: "middle",
+                    title: '受理时间'
+                },
+                {
+                    field: 'DissentAcceptPerson',
+                    valign: "middle",
+                    title: '受理人'
+                },
+                {
+                    field: 'DissentDisposePerson',
+                    valign: "middle",
+                    title: '处理人'
+                },
+                {
+                    field: 'DissentDisposeInfo',
+                    valign: "middle",
+                    title: '处理情况'
+                },
+                {
+                    field: 'DissentReplyDate',
+                    valign: "middle",
+                    title: '答复时间'
+                }
+            ]
+        ];
+        //初始化BS-Table
+        $('#bsTable').bootstrapTable({
+            url: '/Account/GetList',         //请求后台的URL（*）
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'post',                     //请求方式（*）
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: false,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            queryParams: queryParams,           //传递参数（*）
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [5, 10, 15, 20],        //可供选择的每页的行数（*）
+            search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: false,                //是否启用点击选中行
+            height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "AccountProjectID",          //每一行的唯一标识，一般为主键列
+            showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                   //是否显示父子表
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+            showExport: false,                     //是否显示导出
+            fixedColumns: true,
+            fixedNumber: 3,
+            columns: columns
+
+        })
+            .on('all.bs.table', function (e, name, args) {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+    });
+</script>

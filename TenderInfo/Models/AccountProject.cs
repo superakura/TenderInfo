@@ -24,7 +24,9 @@ namespace TenderInfo.Models
         public string IsOnline { get; set; }//线上/线下
 
         [StringLength(200)]
-        public string ProjectResponsiblePerson { get; set; }//招标项目负责人
+        public string ProjectResponsiblePersonName { get; set; }//招标项目负责人姓名
+
+        public int ProjectResponsiblePersonID { get; set; }//招标项目负责人ID
 
         [StringLength(200)]
         public string ProjectResponsibleDept { get; set; }//项目主责部门
@@ -138,8 +140,12 @@ namespace TenderInfo.Models
         [StringLength(500)]
         public string TenderRemark { get; set; }//备注
 
-        public DateTime InputDate { get; set; }//信息录入日期时间
+        public DateTime? InputDate { get; set; }//台账信息变更日期时间
 
-        public int InputPerson { get; set; }//信息录入人员
+        public int InputPersonID { get; set; }//台账信息变更人员ID
+
+        public DateTime? InsertDate { get; set; }//建立台账信息日期时间
+
+        public int InsertPersonID { get; set; }//建立台账信息人员
     }
 }

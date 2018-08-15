@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "招标管理台账--物资";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">招标管理台账--物资</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="tbxProjectNameSearch">项目名称：</label>
+                        <input type="text" id="tbxProjectNameSearch" class="form-control" placeholder="项目名称">
+                    </div>
+                    <button type="button" id="btnSearch" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-search"></span> 查询
+                    </button>
+                    <button type="button" id="btnReset" class="btn bg-navy">
+                        <span class="glyphicon glyphicon-repeat"></span> 重置
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                @if (User.IsInRole("新建招标台账"))
+                {
+                    <div id="toolbar" class="btn-group">
+                        <button id="btnAdd" type="button" class="btn btn-info">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                    </div>
+                }
+                @Html.Partial("TableInfoMaterial")
+            </div>
+        </div>
+    </div>
+</div>

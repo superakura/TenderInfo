@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Project";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">招标管理台账--工程</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        @Html.Partial("SearchInfoProject", ViewData["type"] = "工程")
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                @if (User.IsInRole("新建招标台账"))
+                {
+                    <div id="toolbar" class="btn-group">
+                        <button id="btnAdd" type="button" class="btn btn-info">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                    </div>
+                }
+                @Html.Partial("TableInfoProject")
+            </div>
+        </div>
+    </div>
+</div>
+

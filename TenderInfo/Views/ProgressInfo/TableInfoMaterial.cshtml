@@ -1,5 +1,41 @@
-﻿<table id="bsTable"></table>
+﻿<link href="~/Content/bootstrap-table-fixed-columns2.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-table-fixed-columns2.js"></script>
+<table id="bsTable"></table>
 <script>
+    var editModel = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        $("#EditProgressModal").modal("show");
+
+        $("#tbxProgressIDEdit").val(row.ProgressInfoID);
+        $("#tbxProgressTypeEdit").val($("#typeSearch").text());
+
+        $("#tbxProjectNameEdit").val(row.ProjectName);
+        $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
+        $("#tbxInvestPriceEdit").val(row.InvestPrice);
+        $("#tbxMaterialCountEdit").val(row.MaterialCount);
+        $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
+        $("#tbxContractResponsiblePersonEdit").val(row.ContractResponsiblePerson);
+
+        $("#tbxTechnicalSpecificationAddDateEdit").val(row.TechnicalSpecificationAddDate);
+        $("#tbxTechnicalSpecificationExplainEdit").val(row.TechnicalSpecificationExplain);
+        $("#tbxTechnicalSpecificationApproveDateEdit").val(row.TechnicalSpecificationApproveDate == null ? "" : getJsonDateShort(row.TechnicalSpecificationApproveDate));
+        $("#tbxSynthesizeEvaluationRuleApproveDateEdit").val(row.SynthesizeEvaluationRuleApproveDate == null ? "" : getJsonDateShort(row.SynthesizeEvaluationRuleApproveDate));
+        $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate == null ? "" : getJsonDateShort(row.TenderProgramAuditDate));
+
+        $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
+        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
+        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
+        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
+        $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
+
+        $("#tbxOtherExplainEdit").val(row.OtherExplain);
+        $("#tbxRemarkEdit").val(row.Remark);
+
+        if ($("#userRole").text().trim() != "招标管理") {
+            $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
+        }
+    }
     $(function () {
         var operateEvents = {
             'click .editProgress': function (e, value, row, index) {
@@ -17,15 +53,15 @@
 
                 $("#tbxTechnicalSpecificationAddDateEdit").val(row.TechnicalSpecificationAddDate);
                 $("#tbxTechnicalSpecificationExplainEdit").val(row.TechnicalSpecificationExplain);
-                $("#tbxTechnicalSpecificationApproveDateEdit").val(row.TechnicalSpecificationApproveDate==null?"":getJsonDateShort(row.TechnicalSpecificationApproveDate));
-                $("#tbxSynthesizeEvaluationRuleApproveDateEdit").val(row.SynthesizeEvaluationRuleApproveDate==null?"":getJsonDateShort(row.SynthesizeEvaluationRuleApproveDate));
-                $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate==null?"":getJsonDateShort(row.TenderProgramAuditDate));
+                $("#tbxTechnicalSpecificationApproveDateEdit").val(row.TechnicalSpecificationApproveDate == null ? "" : getJsonDateShort(row.TechnicalSpecificationApproveDate));
+                $("#tbxSynthesizeEvaluationRuleApproveDateEdit").val(row.SynthesizeEvaluationRuleApproveDate == null ? "" : getJsonDateShort(row.SynthesizeEvaluationRuleApproveDate));
+                $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate == null ? "" : getJsonDateShort(row.TenderProgramAuditDate));
 
-                $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate==null?"":getJsonDateShort(row.ProgramAcceptDate));
-                $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate==null?"":getJsonDateShort(row.TenderFileSaleStartDate));
-                $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate==null?"":getJsonDateShort(row.TenderFileSaleEndDate));
-                $("#tbxTenderStartDateEdit").val(row.TenderStartDate==null?"":getJsonDateShort(row.TenderStartDate));
-                $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate==null?"":getJsonDateShort(row.TenderSuccessFileDate));
+                $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
+                $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
+                $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
+                $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
+                $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
 
                 $("#tbxOtherExplainEdit").val(row.OtherExplain);
                 $("#tbxRemarkEdit").val(row.Remark);
@@ -69,10 +105,10 @@
                         width: 185,
                         valign: "middle",
                         visible: true,
-                        formatter: function (value, row, index) {
-                            return '<a class="editProgress" href="javascript:void (0)" title="编辑">' + value + '</a>';
-                        },
-                        events: operateEvents
+                        formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                            var html = '<button type="button" onclick="editModel(' + row.ProgressInfoID + ')" class="btn btn-link">' + row.ProjectName + '</button >';
+                            return html;
+                        }
                     },
                     {
                         field: 'IsOver',
@@ -282,246 +318,6 @@
             ];
             return tempArray;
         };
-        function loadColumns2() {
-            var tempArray = [
-                [
-                    {
-                        title: '',
-                        colspan: 7,
-                        align: "center"
-                    },
-                    {
-                        title: '项目前期对接进度',
-                        colspan: 5,
-                        align: "center"
-                    },
-                    {
-                        title: '项目实施进度',
-                        colspan: 5,
-                        align: "center"
-                    },
-                    {
-                        title: '',
-                        colspan: 2,
-                        align: "center"
-                    }
-                ],
-                [
-                    {
-                        title: '序号',
-                        valign: "middle",
-                        formatter: function (value, row, index) {
-                            return index + 1;
-                        }
-                    },
-                    {
-                        field: 'ProgressInfoID',
-                        title: '数据ID',
-                        valign: "middle",
-                        visible: false
-                    },
-                    {
-                        field: 'ProgressTypeChild',
-                        title: '类型',
-                        valign: "middle",
-                        visible: true
-                    },
-                    {
-                        field: 'ProjectName',
-                        title: '拟招标项目名称或物资名称',
-                        valign: "middle",
-                        visible: true
-                    },
-                    {
-                        field: 'IsOver',
-                        title: '是否已完成',
-                        valign: "middle",
-                        visible: false
-                    },
-                    {
-                        field: 'InvestPrice',
-                        valign: "middle",
-                        title: '投资金额（万元）'
-                    },
-                    {
-                        field: 'ProjectResponsiblePerson',
-                        valign: "middle",
-                        title: '招标项目负责人'
-                    },
-                    {
-                        field: 'ContractResponsiblePerson',
-                        valign: "middle",
-                        title: '合同签订部门项目责任人'
-                    },
-                    {
-                        field: 'MaterialCount',
-                        valign: "middle",
-                        title: '物资数量'
-                    },
-                    {
-                        field: 'TechnicalSpecificationAddDate',
-                        title: '技术规格书（技术文件、图纸等）提报时间'
-                    },
-                    {
-                        field: 'TechnicalSpecificationExplain',
-                        title: '技术规格书（技术文件、图纸等）对接需说明情况'
-                    },
-                    {
-                        field: 'TechnicalSpecificationApproveDate',
-                        title: '技术规格书（技术文件、图纸等）定稿时间'
-                    },
-                    {
-                        field: 'SynthesizeEvaluationRuleApproveDate',
-                        title: '综合法评标标准定稿时间'
-                    },
-                    {
-                        field: 'TenderProgramAuditDate',
-                        title: '招标方案联审时间'
-                    },
-                    {
-                        field: 'ProgramAcceptDate',
-                        title: '招标方案接收时间'
-                    },
-                    {
-                        field: 'TenderFileSaleStartDate',
-                        title: '发售招标文件开始日期'
-                    },
-                    {
-                        field: 'TenderFileSaleEndDate',
-                        title: '发售招标文件截止日期'
-                    },
-                    {
-                        field: 'TenderStartDate',
-                        title: '开标日期'
-                    },
-                    {
-                        field: 'TenderSuccessFileDate',
-                        title: '中标通知书发出时间'
-                    },
-                    {
-                        field: 'OtherExplain',
-                        valign: "middle",
-                        title: '其他需说明情况'
-                    },
-                    {
-                        field: 'Remark',
-                        valign: "middle",
-                        title: '备注'
-                    }
-                ]
-            ];
-            return tempArray;
-        };
-        function loadColumns3() {
-            var tempArray = [
-                {
-                    title: '序号',
-                    valign: "middle",
-                    formatter: function (value, row, index) {
-                        return index + 1;
-                    }
-                },
-                {
-                    field: 'ProgressInfoID',
-                    title: '数据ID',
-                    valign: "middle",
-                    visible: false
-                },
-                {
-                    field: 'ProgressTypeChild',
-                    title: '类型',
-                    valign: "middle",
-                    visible: true
-                },
-                {
-                    field: 'ProjectName',
-                    title: '拟招标项目名称或物资名称',
-                    valign: "middle",
-                    visible: true,
-                    formatter: function (value, row, index) {
-                        return '<a class="editProgress" href="javascript:void (0)" title="编辑">' + value + '</a>';
-                    },
-                    events: operateEvents
-                },
-                {
-                    field: 'IsOver',
-                    title: '是否已完成',
-                    valign: "middle",
-                    visible: false
-                },
-                {
-                    field: 'InvestPrice',
-                    valign: "middle",
-                    title: '投资金额（万元）'
-                },
-                {
-                    field: 'ProjectResponsiblePerson',
-                    valign: "middle",
-                    title: '招标项目负责人'
-                },
-                {
-                    field: 'ContractResponsiblePerson',
-                    valign: "middle",
-                    title: '合同签订部门项目责任人'
-                },
-                {
-                    field: 'MaterialCount',
-                    valign: "middle",
-                    title: '物资数量'
-                },
-                {
-                    field: 'TechnicalSpecificationAddDate',
-                    title: '技术规格书（技术文件、图纸等）提报时间'
-                },
-                {
-                    field: 'TechnicalSpecificationExplain',
-                    title: '技术规格书（技术文件、图纸等）对接需说明情况'
-                },
-                {
-                    field: 'TechnicalSpecificationApproveDate',
-                    title: '技术规格书（技术文件、图纸等）定稿时间'
-                },
-                {
-                    field: 'SynthesizeEvaluationRuleApproveDate',
-                    title: '综合法评标标准定稿时间'
-                },
-                {
-                    field: 'TenderProgramAuditDate',
-                    title: '招标方案联审时间'
-                },
-                {
-                    field: 'ProgramAcceptDate',
-                    title: '招标方案接收时间'
-                },
-                {
-                    field: 'TenderFileSaleStartDate',
-                    title: '发售招标文件开始日期'
-                },
-                {
-                    field: 'TenderFileSaleEndDate',
-                    title: '发售招标文件截止日期'
-                },
-                {
-                    field: 'TenderStartDate',
-                    title: '开标日期'
-                },
-                {
-                    field: 'TenderSuccessFileDate',
-                    title: '中标通知书发出时间'
-                },
-                {
-                    field: 'OtherExplain',
-                    valign: "middle",
-                    title: '其他需说明情况'
-                },
-                {
-                    field: 'Remark',
-                    valign: "middle",
-                    title: '备注'
-                }
-            ];
-            return tempArray;
-        };
 
         var columns = loadColumns();
 
@@ -556,8 +352,8 @@
             paginationNextText: "下一页",
             showExport: false,                     //是否显示导出
             columns: columns,
-            //fixedColumns: true,
-            //fixedNumber: 3
+            fixedColumns: true,
+            fixedNumber: 3
         })
             .on('all.bs.table', function (e, name, args) {
                 $('[data-toggle="tooltip"]').tooltip();
