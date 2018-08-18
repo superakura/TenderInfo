@@ -138,7 +138,7 @@
             top = -(parseInt(this.$el.css('margin-top'))),
             // the fixed height should reduce the scorll-x height
             height = this.$tableBody.height() - 18;
-        debugger;
+        //debugger;
         if (!this.$body.find('> tr[data-index]').length) {
             this.$fixedBody.hide();
             return;
@@ -158,7 +158,6 @@
         this.$body.find('> tr').each(function (i) {
             that.$fixedBody.find('tr:eq(' + i + ')').height($(this).height() - 0.5);
             var thattds = this;
-            debugger;
             that.$fixedBody.find('tr:eq(' + i + ')').find('td').each(function (j) {
                 $(this).width($($(thattds).find('td')[j]).width() + 1);
             });

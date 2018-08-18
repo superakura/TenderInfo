@@ -218,8 +218,9 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="ddlProjectResponsiblePersonEdit">招标项目负责人</label>
-                                <select id="ddlProjectResponsiblePersonEdit" name="ddlProjectResponsiblePersonEdit" class="form-control input-sm"></select>
+                                <label for="tbxProjectResponsiblePersonEdit">招标项目负责人</label>
+                                <input id="tbxProjectResponsiblePersonEdit" name="tbxProjectResponsiblePersonEdit" class="form-control input-sm" placeholder="项目文件编号" />
+                                @*<select id="ddlProjectResponsiblePersonEdit" name="ddlProjectResponsiblePersonEdit" class="form-control input-sm"></select>*@
                             </div>
                         </div>
                     </div>
@@ -427,8 +428,8 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tbxEvaluationTimeEdit">联审时间（小时）</label>
-                                        <input id="tbxEvaluationTimeEdit" name="tbxEvaluationTimeEdit" class="form-control input-sm" placeholder="联审时间（小时）" />
+                                        <label for="tbxTenderFileAuditTimeEdit">联审时间（小时）</label>
+                                        <input id="tbxTenderFileAuditTimeEdit" name="tbxTenderFileAuditTimeEdit" class="form-control input-sm" placeholder="联审时间（小时）" />
                                     </div>
                                 </div>
                             </div>
@@ -453,6 +454,15 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxTenderFailReasonEdit">招标失败原因</label>
+                                <textarea id="tbxTenderFailReasonEdit" name="tbxTenderFailReasonEdit" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="panel panel-info">
                         <div class="panel-heading">澄清（修改）</div>
                         <div class="panel-body">
@@ -473,7 +483,6 @@
                                         <input id="tbxClarifyLaunchDateEdit" name="tbxClarifyLaunchDateEdit" class="form-control input-sm" placeholder="提出时间" />
                                     </div>
                                 </div>
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tbxClarifyAcceptDateEdit">
@@ -647,6 +656,9 @@
                                 <textarea id="tbxTenderRemarkEdit" name="tbxTenderRemarkEdit" class="form-control" rows="3"></textarea>
                             </div>
                         </div>
+                        <button type="button" id="btnSubmit" class="btn btn-primary">
+                            <i class="glyphicon glyphicon-ok"></i> 提交
+                        </button>
                     </div>
                 </form>
             </div>
@@ -660,6 +672,8 @@
             $("#SecondModal input").val("");
             $("#ThirdModal input").val("");
         }
+
+        GetInfo();
 
         GetFirstTable();
         GetSecondTable();
@@ -986,6 +1000,92 @@
                 }
             });
         });
+
+        $("#btnSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $("#EditAccountMaterialForm").ajaxSubmit({
+                        url: "/Account/UpdateMaterial",
+                        type: "post",
+                        success: function (result) {
+                            if (result === "ok") {
+                                toastr.success("操作成功！", "提示");
+                                window.location.href = "/Account/Material";
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+        function GetInfo() {
+            var accountID = $("#tbxAccountMaterialIDEdit").val();
+            $.post("/Account/GetOneMaterial", { "accountID": accountID }, function (result) {
+                $("#tbxProjectNameEdit").val(result.ProjectName);
+                $("#tbxTenderFileNumEdit").val(result.TenderFileNum);
+                $("#ddlIsOnlineEdit").val(result.IsOnline);
+                $("#tbxProjectResponsiblePersonEdit").val(result.ProjectResponsiblePersonName);
+
+                $("#tbxUsingDeptEdit").val(result.UsingDept);
+                $("#tbxProjectResponsibleDeptEdit").val(result.ProjectResponsibleDept);
+                $("#tbxApplyPersonEdit").val(result.ApplyPerson);
+                $("#tbxInvestPlanApproveNumEdit").val(result.InvestPlanApproveNum);
+
+                $("#tbxTenderRangeEdit").val(result.TenderRange);
+                $("#tbxTenderModeEdit").val(result.TenderMode);
+                $("#tbxBidEvaluationEdit").val(result.BidEvaluation);
+                $("#tbxSupplyPeriodEdit").val(result.SupplyPeriod);
+
+                $("#tbxTenderSuccessPersonEdit").val(result.TenderSuccessPerson);
+                $("#tbxPlanInvestPriceEdit").val(result.PlanInvestPrice);
+                $("#tbxTenderRestrictUnitPriceEdit").val(result.TenderRestrictUnitPrice);
+
+                $("#tbxTenderSuccessUnitPriceEdit").val(result.TenderSuccessUnitPrice);
+                $("#tbxTenderSuccessSumPriceEdit").val(result.TenderSuccessSumPrice);
+                $("#tbxSaveCapitalEdit").val(result.SaveCapital);
+
+                $("#tbxEvaluationTimeEdit").val(result.EvaluationTime);
+                $("#tbxTenderFileAuditTimeEdit").val(result.TenderFileAuditTime);
+                $("#tbxTenderFailReasonEdit").val(result.TenderFailReason);
+
+                $("#tbxClarifyLaunchPersonEdit").val(result.ClarifyLaunchPerson);
+                $("#tbxClarifyLaunchDateEdit").val(getJsonDateShort(result.ClarifyLaunchDate));
+                $("#tbxClarifyAcceptDateEdit").val(getJsonDateShort(result.ClarifyAcceptDate));
+                $("#tbxClarifyDisposePersonEdit").val(result.ClarifyDisposePerson);
+
+                $("#tbxIsClarifyEdit").val(result.IsClarify);
+                $("#tbxClarifyReplyDateEdit").val(getJsonDateShort(result.ClarifyReplyDate));
+                $("#tbxClarifyReasonEdit").val(result.ClarifyReason);
+                $("#tbxClarifyDisposeInfoEdit").val(result.ClarifyDisposeInfo);
+
+                $("#tbxDissentLaunchPersonEdit").val(result.DissentLaunchPerson);
+                $("#tbxDissentLaunchPersonPhoneEdit").val(result.DissentLaunchPersonPhone);
+                $("#tbxDissentLaunchDateEdit").val(getJsonDateShort(result.DissentLaunchDate));
+
+                $("#tbxDissentAcceptDateEdit").val(getJsonDateShort(result.DissentAcceptDate));
+                $("#tbxDissentAcceptPersonEdit").val(result.DissentAcceptPerson);
+                $("#tbxDissentDisposePersonEdit").val(result.DissentDisposePerson);
+                $("#tbxDissentReplyDateEdit").val(getJsonDateShort(result.DissentReplyDate));
+
+                $("#tbxDissentReasonEdit").val(result.DissentReason);
+                $("#tbxDissentDisposeInfoEdit").val(result.DissentDisposeInfo);
+
+                $("#tbxContractNumEdit").val(result.ContractNum);
+                $("#tbxContractPriceEdit").val(result.ContractPrice);
+                $("#tbxRelativePersonEdit").val(result.RelativePerson);
+                $("#tbxTenderInfoEdit").val(result.TenderInfo);
+
+                $("#tbxTenderRemarkEdit").val(result.TenderRemark);
+            });
+        }
     });
 </script>
 

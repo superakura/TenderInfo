@@ -168,14 +168,6 @@
             }
         });
 
-        //对EditProgressForm表单进行前端验证
-        var validEditProgressForm = $("#EditProgressForm").validate({
-            rules: {
-                tbxContractResponsiblePersonEdit: { required: true, maxlength: 100 },
-                tbxProjectNameEdit: { required: true, maxlength: 100 }
-            }
-        });
-
         //新增台账提交
         $("#btnNewAccountSubmit").click(function () {
             if (validNewAccountForm.form()) {
@@ -190,35 +182,6 @@
                             success: function (result) {
                                 if (result === "ok") {
                                     $("#NewAccountModal").modal("hide");
-                                    toastr.success("操作成功！", "提示");
-                                    $("#bsTable").bootstrapTable('refresh');
-                                }
-                            },
-                            error: function (error) {
-                                console.log(error);
-                                toastr.error(error, "提示");
-                                return;
-                            }
-                        });
-                    }
-                });
-            };
-        });
-
-        //修改进度提交
-        $("#btnEditProgressSubmit").click(function () {
-            if (validEditProgressForm.form()) {
-                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                    if (!e) {
-                        return;
-                    }
-                    else {
-                        $("#EditProgressForm").ajaxSubmit({
-                            url: "/ProgressInfo/Update",
-                            type: "post",
-                            success: function (result) {
-                                if (result == "ok") {
-                                    $("#EditProgressModal").modal("hide");
                                     toastr.success("操作成功！", "提示");
                                     $("#bsTable").bootstrapTable('refresh');
                                 }
