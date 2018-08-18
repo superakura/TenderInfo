@@ -13,6 +13,11 @@ namespace TenderInfo.Models
         [Key]
         public int AccountMaterialChildID { get; set; }
 
+        public int AccountMaterialID { get; set; }
+
+        [StringLength(200)]
+        public string TableType { get; set; }//TableType
+
         [StringLength(200)]
         public string TenderFilePlanPayPerson { get; set; }//购买招标文件潜在投标人
 

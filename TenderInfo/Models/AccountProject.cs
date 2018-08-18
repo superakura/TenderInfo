@@ -17,6 +17,9 @@ namespace TenderInfo.Models
         [StringLength(200)]
         public string ProjectName { get; set; }//项目名称
 
+        [StringLength(50)]
+        public string ProjectType { get; set; }//项目类别：工程、服务
+
         [StringLength(200)]
         public string TenderFileNum { get; set; }//项目文件编号
 

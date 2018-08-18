@@ -6,43 +6,13 @@
     var editModel = function (id) {
         //根据当前行的id获取当前的行数据
         var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
-        $("#EditProgressModal").modal("show");
-
-        $("#tbxProgressIDEdit").val(row.ProgressInfoID);
-        $("#tbxProgressTypeEdit").val($("#typeSearch").text());
-
-        $("#tbxProjectNameEdit").val(row.ProjectName);
-        $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
-        $("#tbxInvestPriceEdit").val(row.InvestPrice);
-        $("#tbxMaterialCountEdit").val(row.MaterialCount);
-        $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
-        $("#tbxContractResponsiblePersonEdit").val(row.ContractResponsiblePerson);
-
-        $("#tbxTechnicalSpecificationAddDateEdit").val(row.TechnicalSpecificationAddDate);
-        $("#tbxTechnicalSpecificationExplainEdit").val(row.TechnicalSpecificationExplain);
-        $("#tbxTechnicalSpecificationApproveDateEdit").val(row.TechnicalSpecificationApproveDate == null ? "" : getJsonDateShort(row.TechnicalSpecificationApproveDate));
-        $("#tbxSynthesizeEvaluationRuleApproveDateEdit").val(row.SynthesizeEvaluationRuleApproveDate == null ? "" : getJsonDateShort(row.SynthesizeEvaluationRuleApproveDate));
-        $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate == null ? "" : getJsonDateShort(row.TenderProgramAuditDate));
-
-        $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
-        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
-        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
-        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
-        $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
-
-        $("#tbxOtherExplainEdit").val(row.OtherExplain);
-        $("#tbxRemarkEdit").val(row.Remark);
-
-        if ($("#userRole").text().trim() != "招标管理") {
-            $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
-        }
-    }
+    };
     var queryParams = function (params) {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
 
-            projectName: $("#tbxProjectNameSearch").text(),//项目名称
+            projectName: $("#tbxProjectNameSearch").text()//项目名称
         };
         return temp;
     };
@@ -65,7 +35,12 @@
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    visible: true
+                    visible: true,
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        var html = '<button type="button" onclick="editModel(' + row.AccountMaterialID + ')" class="btn btn-link">' + row.ProjectName + '</button >';
+                        var html2 = "<a href='/Account/EditAccountMaterial?id=" + row.AccountMaterialID + "'>" + row.ProjectName + '</a>';
+                        return html2;
+                    }
                 },
                 {
                     field: 'TenderFileNum',
@@ -83,7 +58,7 @@
                     valign: "middle"
                 },
                 {
-                    field: 'ProjectResponsiblePerson',
+                    field: 'ProjectResponsiblePersonName',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
@@ -478,7 +453,7 @@
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: false,                //是否启用点击选中行
-            height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
             uniqueId: "AccountMaterialID",          //每一行的唯一标识，一般为主键列
             showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图

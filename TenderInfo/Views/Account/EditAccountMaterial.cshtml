@@ -1,0 +1,991 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    td{
+        text-align:center;
+    }
+</style>
+<div class="modal fade" id="FirstModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">信息录入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="FirstForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountFirstID" name="tbxAccountFirstID" type="text" />
+                            <input id="tbxAccountChildFirstID" name="tbxAccountChildFirstID" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFilePlanPayPersonEdit">购买招标文件潜在投标人</label>
+                                        <input id="tbxTenderFilePlanPayPersonEdit" name="tbxTenderFilePlanPayPersonEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderPersonEdit">投标人</label>
+                                        <input id="tbxTenderPersonEdit" name="tbxTenderPersonEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxProductManufacturerEdit">产品制造商（代理、贸易商投标时填写）</label>
+                                        <input id="tbxProductManufacturerEdit" name="tbxProductManufacturerEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxQuotedPriceUnitEdit">报价（元）初步评审被否决时在此栏说明--单价</label>
+                                        <input id="tbxQuotedPriceUnitEdit" name="tbxQuotedPriceUnitEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxQuotedPriceSumEdit">报价（元）初步评审被否决时在此栏说明--总价</label>
+                                        <input id="tbxQuotedPriceSumEdit" name="tbxQuotedPriceSumEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnFirstSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SecondModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">评标委员会</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="SecondForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountSecondID" name="tbxAccountSecondID" type="text" />
+                            <input id="tbxAccountChildSecondID" name="tbxAccountChildSecondID" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationPersonNameEdit">姓名</label>
+                                        <input id="tbxEvaluationPersonNameEdit" name="tbxEvaluationPersonNameEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationPersonDeptEdit">单位</label>
+                                        <input id="tbxEvaluationPersonDeptEdit" name="tbxEvaluationPersonDeptEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxIsEvaluationDirectorEdit">是否评标委员会主任</label>
+                                        <input id="tbxIsEvaluationDirectorEdit" name="tbxIsEvaluationDirectorEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationCostEdit">评审费</label>
+                                        <input id="tbxEvaluationCostEdit" name="tbxEvaluationCostEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnSecondSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ThirdModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">招标文件联审</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="ThirdForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountThirdID" name="tbxAccountThirdID" type="text" />
+                            <input id="tbxAccountChildThirdID" name="tbxAccountChildThirdID" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFileAuditPersonNameEdit">姓名</label>
+                                        <input id="tbxTenderFileAuditPersonNameEdit" name="tbxTenderFileAuditPersonNameEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFileAuditPersonDeptEdit">单位</label>
+                                        <input id="tbxTenderFileAuditPersonDeptEdit" name="tbxTenderFileAuditPersonDeptEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFileAuditCostEdit">费用</label>
+                                        <input id="tbxTenderFileAuditCostEdit" name="tbxTenderFileAuditCostEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnThirdSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">招标管理台账--物资</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <form id="EditAccountMaterialForm" method="post" enctype="multipart/form-data">
+                    <input id="tbxAccountMaterialIDEdit" name="tbxAccountMaterialIDEdit" type="text" value="@ViewBag.id" />
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxProjectNameEdit">项目名称</label>
+                                <input id="tbxProjectNameEdit" name="tbxProjectNameEdit" class="form-control input-sm" placeholder="项目名称" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderFileNumEdit">项目文件编号</label>
+                                <input id="tbxTenderFileNumEdit" name="tbxTenderFileNumEdit" class="form-control input-sm" placeholder="项目文件编号" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="ddlIsOnlineEdit">线上/线下</label>
+                                <select id="ddlIsOnlineEdit" name="ddlIsOnlineEdit" class="form-control input-sm">
+                                    <option value="线上" selected>线上</option>
+                                    <option value="线下">线下</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="ddlProjectResponsiblePersonEdit">招标项目负责人</label>
+                                <select id="ddlProjectResponsiblePersonEdit" name="ddlProjectResponsiblePersonEdit" class="form-control input-sm"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxUsingDeptEdit">使用单位</label>
+                                <input id="tbxUsingDeptEdit" name="tbxUsingDeptEdit" class="form-control input-sm" placeholder="使用单位" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxProjectResponsibleDeptEdit">项目主责部门</label>
+                                <input id="tbxProjectResponsibleDeptEdit" name="tbxProjectResponsibleDeptEdit" class="form-control input-sm" placeholder="项目主责部门" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxApplyPersonEdit">申请人</label>
+                                <input id="tbxApplyPersonEdit" name="tbxApplyPersonEdit" class="form-control input-sm" placeholder="申请人" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxInvestPlanApproveNumEdit">投资计划批复文号</label>
+                                <input id="tbxInvestPlanApproveNumEdit" name="tbxInvestPlanApproveNumEdit" class="form-control input-sm" placeholder="投资计划批复文号" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderRangeEdit">招标范围</label>
+                                <input id="tbxTenderRangeEdit" name="tbxTenderRangeEdit" class="form-control input-sm" placeholder="招标范围" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderModeEdit">招标方式</label>
+                                <input id="tbxTenderModeEdit" name="tbxTenderModeEdit" class="form-control input-sm" placeholder="招标方式" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxBidEvaluationEdit">评标方法</label>
+                                <input id="tbxBidEvaluationEdit" name="tbxBidEvaluationEdit" class="form-control input-sm" placeholder="评标方法" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxSupplyPeriodEdit">供货期</label>
+                                <input id="tbxSupplyPeriodEdit" name="tbxSupplyPeriodEdit" class="form-control input-sm" placeholder="供货期" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderProgramAuditDateEdit">招标方案联审时间</label>
+                                <input id="tbxTenderProgramAuditDateEdit" name="tbxTenderProgramAuditDateEdit" class="form-control input-sm" placeholder="招标方案联审时间" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxProgramAcceptDateEdit">收到方案日期</label>
+                                <input id="tbxProgramAcceptDateEdit" name="tbxProgramAcceptDateEdit" class="form-control input-sm" placeholder="收到方案日期" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderFileSaleStartDateEdit">发售招标文件开始日期</label>
+                                <input id="tbxTenderFileSaleStartDateEdit" name="tbxTenderFileSaleStartDateEdit" class="form-control input-sm" placeholder="发售招标文件开始日期" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderFileSaleEndDateEdit">发售招标文件截止日期</label>
+                                <input id="tbxTenderFileSaleEndDateEdit" name="tbxTenderFileSaleEndDateEdit" class="form-control input-sm" placeholder="发售招标文件截止日期" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderStartDateEdit">开标日期</label>
+                                <input id="tbxTenderStartDateEdit" name="tbxTenderStartDateEdit" class="form-control input-sm" placeholder="开标日期" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderSuccessFileDateEdit">中标通知书发出时间</label>
+                                <input id="tbxTenderSuccessFileDateEdit" name="tbxTenderSuccessFileDateEdit" class="form-control input-sm" placeholder="中标通知书发出时间" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <button id="btnFirstAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">操作</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">购买招标文件潜在投标人</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">投标人</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">产品制造商（代理、贸易商投标时填写）</th>
+                                                <th colspan="2" rowspan="1" class="text-center">报价（元）初步评审被否决时在此栏说明</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">单价</th>
+                                                <th class="text-center">总价</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableFirst"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderSuccessPersonEdit">中标人名称</label>
+                                <input id="tbxTenderSuccessPersonEdit" name="tbxTenderSuccessPersonEdit" class="form-control input-sm" placeholder="中标人名称" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxPlanInvestPriceEdit">预计投资（招标控制总价）（元）</label>
+                                <input id="tbxPlanInvestPriceEdit" name="tbxPlanInvestPriceEdit" class="form-control input-sm" placeholder="预计投资（招标控制总价）（元）" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderRestrictUnitPriceEdit">招标控制单价</label>
+                                <input id="tbxTenderRestrictUnitPriceEdit" name="tbxTenderRestrictUnitPriceEdit" class="form-control input-sm" placeholder="招标控制单价" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderSuccessUnitPriceEdit">中标金额（元）单价</label>
+                                <input id="tbxTenderSuccessUnitPriceEdit" name="tbxTenderSuccessUnitPriceEdit" class="form-control input-sm" placeholder="中标金额（元）单价" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderSuccessSumPriceEdit">中标金额（元）总价</label>
+                                <input id="tbxTenderSuccessSumPriceEdit" name="tbxTenderSuccessSumPriceEdit" class="form-control input-sm" placeholder="中标金额（元）总价" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxSaveCapitalEdit">与控制价比节约资金（元）</label>
+                                <input id="tbxSaveCapitalEdit" name="tbxSaveCapitalEdit" class="form-control input-sm" placeholder="与控制价比节约资金（元）" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <button id="btnSecondAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationTimeEdit">评审时间（小时）</label>
+                                        <input id="tbxEvaluationTimeEdit" name="tbxEvaluationTimeEdit" class="form-control input-sm" placeholder="评审时间（小时）" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="5" class="text-center">评标委员会</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">操作</th>
+                                                <th class="text-center">姓名</th>
+                                                <th class="text-center">单位</th>
+                                                <th class="text-center">是否评标委员会主任</th>
+                                                <th class="text-center">评审费</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableSecond"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <button id="btnThirdAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationTimeEdit">联审时间（小时）</label>
+                                        <input id="tbxEvaluationTimeEdit" name="tbxEvaluationTimeEdit" class="form-control input-sm" placeholder="联审时间（小时）" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="4" class="text-center">招标文件联审</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">操作</th>
+                                                <th class="text-center">姓名</th>
+                                                <th class="text-center">单位</th>
+                                                <th class="text-center">费用</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableThird"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">澄清（修改）</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyLaunchPersonEdit">
+                                            提起人
+                                        </label>
+                                        <input id="tbxClarifyLaunchPersonEdit" name="tbxClarifyLaunchPersonEdit" class="form-control input-sm" placeholder="提起人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyLaunchDateEdit">
+                                            提出时间
+                                        </label>
+                                        <input id="tbxClarifyLaunchDateEdit" name="tbxClarifyLaunchDateEdit" class="form-control input-sm" placeholder="提出时间" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyAcceptDateEdit">
+                                            受理时间
+                                        </label>
+                                        <input id="tbxClarifyAcceptDateEdit" name="tbxClarifyAcceptDateEdit" class="form-control input-sm" placeholder="受理时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyDisposePersonEdit">
+                                            处理人
+                                        </label>
+                                        <input id="tbxClarifyDisposePersonEdit" name="tbxClarifyDisposePersonEdit" class="form-control input-sm" placeholder="处理人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxIsClarifyEdit">
+                                            澄清/修改
+                                        </label>
+                                        <input id="tbxIsClarifyEdit" name="tbxIsClarifyEdit" class="form-control input-sm" placeholder="澄清/修改" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyReplyDateEdit">
+                                            答复时间
+                                        </label>
+                                        <input id="tbxClarifyReplyDateEdit" name="tbxClarifyReplyDateEdit" class="form-control input-sm" placeholder="答复时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyReasonEdit">
+                                            事由
+                                        </label>
+                                        <textarea id="tbxClarifyReasonEdit" name="tbxClarifyReasonEdit" class="form-control input-sm" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyDisposeInfoEdit">
+                                            处理情况
+                                        </label>
+                                        <textarea id="tbxClarifyDisposeInfoEdit" name="tbxClarifyDisposeInfoEdit" class="form-control input-sm" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">异议处理</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentLaunchPersonEdit">
+                                            提起人
+                                        </label>
+                                        <input id="tbxDissentLaunchPersonEdit" name="tbxDissentLaunchPersonEdit" class="form-control input-sm" placeholder="提起人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentLaunchPersonPhoneEdit">
+                                            联系方式
+                                        </label>
+                                        <input id="tbxDissentLaunchPersonPhoneEdit" name="tbxDissentLaunchPersonPhoneEdit" class="form-control input-sm" placeholder="联系方式" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentLaunchDateEdit">
+                                            异议时间
+                                        </label>
+                                        <input id="tbxDissentLaunchDateEdit" name="tbxDissentLaunchDateEdit" class="form-control input-sm" placeholder="异议时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentAcceptDateEdit">
+                                            受理时间
+                                        </label>
+                                        <input id="tbxDissentAcceptDateEdit" name="tbxDissentAcceptDateEdit" class="form-control input-sm" placeholder="受理时间" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentAcceptPersonEdit">
+                                            受理人
+                                        </label>
+                                        <input id="tbxDissentAcceptPersonEdit" name="tbxDissentAcceptPersonEdit" class="form-control input-sm" placeholder="受理人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentDisposePersonEdit">
+                                            处理人
+                                        </label>
+                                        <input id="tbxDissentDisposePersonEdit" name="tbxDissentDisposePersonEdit" class="form-control input-sm" placeholder="处理人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentReplyDateEdit">
+                                            答复时间
+                                        </label>
+                                        <input id="tbxDissentReplyDateEdit" name="tbxDissentReplyDateEdit" class="form-control input-sm" placeholder="答复时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tbxDissentReasonEdit">
+                                            事由
+                                        </label>
+                                        <textarea id="tbxDissentReasonEdit" name="tbxDissentReasonEdit" class="form-control" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tbxDissentDisposeInfoEdit">
+                                            处理情况
+                                        </label>
+                                        <textarea id="tbxDissentDisposeInfoEdit" name="tbxDissentDisposeInfoEdit" class="form-control" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxContractNumEdit">合同编号</label>
+                                <input id="tbxContractNumEdit" name="tbxContractNumEdit" class="form-control input-sm" placeholder="合同编号" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxContractPriceEdit">合同金额</label>
+                                <input id="tbxContractPriceEdit" name="tbxContractPriceEdit" class="form-control input-sm" placeholder="合同金额" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxRelativePersonEdit">相对人名称</label>
+                                <input id="tbxRelativePersonEdit" name="tbxRelativePersonEdit" class="form-control input-sm" placeholder="相对人名称" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tbxTenderInfoEdit">招标情况</label>
+                                <input id="tbxTenderInfoEdit" name="tbxTenderInfoEdit" class="form-control input-sm" placeholder="招标情况" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxTenderRemarkEdit">备注</label>
+                                <textarea id="tbxTenderRemarkEdit" name="tbxTenderRemarkEdit" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        function ClearInfo() {
+            $("#FirstModal input").val("");
+            $("#SecondModal input").val("");
+            $("#ThirdModal input").val("");
+        }
+
+        GetFirstTable();
+        GetSecondTable();
+        GetThirdTable();
+
+        $("#btnFirstAdd").click(function () {
+            ClearInfo();
+            $("#tbxAccountFirstID").val($("#tbxAccountMaterialIDEdit").val());
+            $('#FirstModal').modal('show');
+        });
+        $("#btnSecondAdd").click(function () {
+            ClearInfo();
+            $("#tbxAccountSecondID").val($("#tbxAccountMaterialIDEdit").val());
+            $('#SecondModal').modal('show');
+        });
+        $("#btnThirdAdd").click(function () {
+            ClearInfo();
+            $("#tbxAccountThirdID").val($("#tbxAccountMaterialIDEdit").val());
+            $('#ThirdModal').modal('show');
+        });
+
+        //First提交
+        $("#btnFirstSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    if ($("#tbxAccountChildFirstID").val() !== "") {
+                        //update
+                        $("#FirstForm").ajaxSubmit({
+                            url: "/Account/UpdateMaterialFirst",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#FirstModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetFirstTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                    else {
+                        //insert
+                        $("#FirstForm").ajaxSubmit({
+                            url: "/Account/InsertMaterialFirst",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#FirstModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetFirstTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        //Second提交
+        $("#btnSecondSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    if ($("#tbxAccountChildSecondID").val() !== "") {
+                        //update
+                        $("#SecondForm").ajaxSubmit({
+                            url: "/Account/UpdateMaterialSecond",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#SecondModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetSecondTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                    else {
+                        //insert
+                        $("#SecondForm").ajaxSubmit({
+                            url: "/Account/InsertMaterialSecond",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#SecondModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetSecondTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        //Third提交
+        $("#btnThirdSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    if ($("#tbxAccountChildThirdID").val() !== "") {
+                        //update
+                        $("#ThirdForm").ajaxSubmit({
+                            url: "/Account/UpdateMaterialThird",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#ThirdModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetThirdTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                    else {
+                        //insert
+                        $("#ThirdForm").ajaxSubmit({
+                            url: "/Account/InsertMaterialThird",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#ThirdModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetThirdTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        function GetFirstTable() {
+            var accountID = $("#tbxAccountMaterialIDEdit").val();
+            $.post("/Account/GetListMaterialEdit", { "accountID": accountID,"type":"first"}, function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    list += "<td>" + valueOfElement["TenderFilePlanPayPerson"]+"</td>";
+                    list += "<td>" + valueOfElement["TenderPerson"]+"</td>";
+                    list += "<td>" + valueOfElement["ProductManufacturer"]+"</td>";
+                    list += "<td>" + valueOfElement["QuotedPriceUnit"]+"</td>";
+                    list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
+                    list += "</tr>";
+                });
+                $("#tableFirst").empty().append(list);
+            });
+        }
+
+        function GetSecondTable() {
+            var accountID = $("#tbxAccountMaterialIDEdit").val();
+            $.post("/Account/GetListMaterialEdit", { "accountID": accountID, "type": "second" }, function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    list += "<td>" + valueOfElement["EvaluationPersonName"] + "</td>";
+                    list += "<td>" + valueOfElement["EvaluationPersonDept"] + "</td>";
+                    list += "<td>" + valueOfElement["IsEvaluationDirector"] + "</td>";
+                    list += "<td>" + valueOfElement["EvaluationCost"] + "</td>";
+                    list += "</tr>";
+                });
+                $("#tableSecond").empty().append(list);
+            });
+        }
+
+        function GetThirdTable() {
+            var accountID = $("#tbxAccountMaterialIDEdit").val();
+            $.post("/Account/GetListMaterialEdit", { "accountID": accountID, "type": "Third" }, function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    list += "<td>" + valueOfElement["TenderFileAuditPersonName"] + "</td>";
+                    list += "<td>" + valueOfElement["TenderFileAuditPersonDept"] + "</td>";
+                    list += "<td>" + valueOfElement["TenderFileAuditCost"] + "</td>";
+                    list += "</tr>";
+                });
+                $("#tableThird").empty().append(list);
+            });
+        }
+
+        $(document).on("click", ".btnFirstEdit", function () {
+            ClearInfo();
+            var id = $(this).attr("data-uid");
+            $('#FirstModal').modal('show');
+            $("#tbxAccountChildFirstID").val(id);
+            var args = { "tbxAccountChildID": id };
+            $.post("/Account/GetOneMaterialEdit", args, function (result) {
+                $("#tbxTenderFilePlanPayPersonEdit").val(result.TenderFilePlanPayPerson);
+                $("#tbxTenderPersonEdit").val(result.TenderPerson);
+                $("#tbxProductManufacturerEdit").val(result.ProductManufacturer);
+                $("#tbxQuotedPriceUnitEdit").val(result.QuotedPriceUnit);
+                $("#tbxQuotedPriceSumEdit").val(result.QuotedPriceSum);
+            });
+        });
+        $(document).on("click", ".btnFirstDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "tbxAccountChildID": id };
+                    $.post("/Account/DelMaterialEdit", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetFirstTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".btnSecondEdit", function () {
+            ClearInfo();
+            var id = $(this).attr("data-uid");
+            $('#SecondModal').modal('show');
+            $("#tbxAccountChildSecondID").val(id);
+            var args = { "tbxAccountChildID": id };
+            $.post("/Account/GetOneMaterialEdit", args, function (result) {
+                $("#tbxEvaluationPersonNameEdit").val(result.EvaluationPersonName);
+                $("#tbxEvaluationPersonDeptEdit").val(result.EvaluationPersonDept);
+                $("#tbxIsEvaluationDirectorEdit").val(result.IsEvaluationDirector);
+                $("#tbxEvaluationCostEdit").val(result.EvaluationCost);
+            });
+        });
+        $(document).on("click", ".btnSecondDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "tbxAccountChildID": id };
+                    $.post("/Account/DelMaterialEdit", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetSecondTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".btnThirdEdit", function () {
+            ClearInfo();
+            var id = $(this).attr("data-uid");
+            $('#ThirdModal').modal('show');
+            $("#tbxAccountChildThirdID").val(id);
+            var args = { "tbxAccountChildID": id };
+            $.post("/Account/GetOneMaterialEdit", args, function (result) {
+                $("#tbxTenderFileAuditPersonNameEdit").val(result.TenderFileAuditPersonName);
+                $("#tbxTenderFileAuditPersonDeptEdit").val(result.TenderFileAuditPersonDept);
+                $("#tbxTenderFileAuditCostEdit").val(result.TenderFileAuditCost);
+            });
+        });
+        $(document).on("click", ".btnThirdDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "tbxAccountChildID": id };
+                    $.post("/Account/DelMaterialEdit", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetThirdTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+

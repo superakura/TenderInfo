@@ -273,7 +273,7 @@
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
                 });
-                if (type == "search") {
+                if (type === "search") {
                     $("#ddlProjectResponsiblePersonSearch").append(list);
                 }
                 else {

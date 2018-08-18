@@ -91,6 +91,7 @@ namespace TenderInfo.Models
         [StringLength(500)]
         public string TenderFailReason { get; set; }//招标失败原因
 
+        #region 澄清（修改）
         [StringLength(500)]
         public string ClarifyLaunchPerson { get; set; }//澄清（修改）--提起人
 
@@ -111,7 +112,9 @@ namespace TenderInfo.Models
         public string ClarifyDisposeInfo { get; set; }//澄清（修改）--处理情况
 
         public DateTime? ClarifyReplyDate { get; set; }//澄清（修改）--答复时间
+        #endregion
 
+        #region 异议处理
         [StringLength(100)]
         public string DissentLaunchPerson { get; set; }//异议处理--提起人
 
@@ -135,6 +138,7 @@ namespace TenderInfo.Models
         public string DissentDisposeInfo { get; set; }//异议处理--处理情况
 
         public DateTime? DissentReplyDate { get; set; }//异议处理--答复时间
+        #endregion
 
         [StringLength(100)]
         public string ContractNum { get; set; }//合同编号
