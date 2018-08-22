@@ -647,7 +647,13 @@
     <Compile Include="Migrations\201808170100495_edit14.Designer.cs">
       <DependentUpon>201808170100495_edit14.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808220310172_edit15.cs" />
+    <Compile Include="Migrations\201808220310172_edit15.Designer.cs">
+      <DependentUpon>201808220310172_edit15.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountChild.cs" />
     <Compile Include="Models\AccountProject.cs" />
     <Compile Include="Models\AccountProjectChild.cs" />
     <Compile Include="Models\AuthorityInfo.cs" />
@@ -704,6 +710,7 @@
     <Content Include="Views\Account\TableInfoProject.cshtml" />
     <Content Include="Views\Account\SearchInfoProject.cshtml" />
     <Content Include="Views\Account\EditAccountMaterial.cshtml" />
+    <Content Include="Views\Account\NewAccountModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -764,6 +771,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808170100495_edit14.resx">
       <DependentUpon>201808170100495_edit14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808220310172_edit15.resx">
+      <DependentUpon>201808220310172_edit15.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

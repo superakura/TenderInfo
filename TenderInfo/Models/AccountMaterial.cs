@@ -29,10 +29,14 @@ namespace TenderInfo.Models
         public int ProjectResponsiblePersonID { get; set; }//招标项目负责人ID
 
         [StringLength(200)]
-        public string UsingDept { get; set; }//使用单位
+        public string UsingDeptName { get; set; }//使用单位名称
+
+        public int UsingDeptID { get; set; }//使用单位ID
 
         [StringLength(200)]
-        public string ProjectResponsibleDept { get; set; }//项目主责部门
+        public string ProjectResponsibleDeptName { get; set; }//项目主责部门名称
+
+        public int ProjectResponsibleDeptID { get; set; }//项目主责部门ID
 
         [StringLength(200)]
         public string ApplyPerson { get; set; }//申请人
@@ -83,7 +87,7 @@ namespace TenderInfo.Models
         public string SaveCapital { get; set; }//与控制价比节约资金（元）
 
         [StringLength(200)]
-        public string EvaluationTime { get; set; }//评标委员会--评审时间（小时）
+        public string EvaluationTime { get; set; }//评标委员会--评审时间（小时）--废止不用，暂时保留
 
         [StringLength(200)]
         public string TenderFileAuditTime { get; set; }//招标文件联审--联审时间（小时）
@@ -162,5 +166,10 @@ namespace TenderInfo.Models
         public DateTime? InsertDate { get; set; }//建立台账信息日期时间
 
         public int InsertPersonID { get; set; }//建立台账信息人员
+
+        public int ProgressID { get; set; }//招标进度ID
+
+        [StringLength(50)]
+        public string IsSynchro { get; set; }//是否与招标进度数据完成同步
     }        
 }

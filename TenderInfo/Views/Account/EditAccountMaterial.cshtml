@@ -46,7 +46,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="tbxQuotedPriceUnitEdit">报价（元）初步评审被否决时在此栏说明--单价</label>
+                                        <label for="tbxQuotedPriceUnitEdit">报价（元）--单价</label>
                                         <input id="tbxQuotedPriceUnitEdit" name="tbxQuotedPriceUnitEdit" type="text" class="form-control" />
                                     </div>
                                 </div>
@@ -54,8 +54,16 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="tbxQuotedPriceSumEdit">报价（元）初步评审被否决时在此栏说明--总价</label>
+                                        <label for="tbxQuotedPriceSumEdit">报价（元）--总价</label>
                                         <input id="tbxQuotedPriceSumEdit" name="tbxQuotedPriceSumEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxNegationExplain">初步评审被否决时在此栏说明</label>
+                                        <textarea id="tbxNegationExplain" name="tbxNegationExplain" class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -96,8 +104,8 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="tbxEvaluationPersonDeptEdit">单位</label>
-                                        <input id="tbxEvaluationPersonDeptEdit" name="tbxEvaluationPersonDeptEdit" type="text" class="form-control" />
+                                        <label for="ddlEvaluationPersonDeptEdit">单位</label>
+                                        <select id="ddlEvaluationPersonDeptEdit" name="ddlEvaluationPersonDeptEdit" class="form-control input-sm DeptSelect"></select>
                                     </div>
                                 </div>
                             </div>
@@ -106,6 +114,14 @@
                                     <div class="form-group">
                                         <label for="tbxIsEvaluationDirectorEdit">是否评标委员会主任</label>
                                         <input id="tbxIsEvaluationDirectorEdit" name="tbxIsEvaluationDirectorEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationTimeEdit">评审时间（小时）</label>
+                                        <input id="tbxEvaluationTimeEdit" name="tbxEvaluationTimeEdit" type="text" class="form-control" />
                                     </div>
                                 </div>
                             </div>
@@ -154,8 +170,8 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="tbxTenderFileAuditPersonDeptEdit">单位</label>
-                                        <input id="tbxTenderFileAuditPersonDeptEdit" name="tbxTenderFileAuditPersonDeptEdit" type="text" class="form-control" />
+                                        <label for="ddlTenderFileAuditPersonDeptEdit">单位</label>
+                                        <select id="ddlTenderFileAuditPersonDeptEdit" name="ddlTenderFileAuditPersonDeptEdit" class="form-control input-sm DeptSelect"></select>
                                     </div>
                                 </div>
                             </div>
@@ -227,14 +243,14 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxUsingDeptEdit">使用单位</label>
-                                <input id="tbxUsingDeptEdit" name="tbxUsingDeptEdit" class="form-control input-sm" placeholder="使用单位" />
+                                <label for="ddlUsingDeptEdit">使用单位</label>
+                                <select id="ddlUsingDeptEdit" name="ddlUsingDeptEdit" class="form-control input-sm DeptSelect"></select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxProjectResponsibleDeptEdit">项目主责部门</label>
-                                <input id="tbxProjectResponsibleDeptEdit" name="tbxProjectResponsibleDeptEdit" class="form-control input-sm" placeholder="项目主责部门" />
+                                <label for="ddlProjectResponsibleDeptEdit">项目主责部门</label>
+                                <select id="ddlProjectResponsibleDeptEdit" name="ddlProjectResponsibleDeptEdit" class="form-control input-sm DeptSelect"></select>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -280,25 +296,25 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tbxTenderProgramAuditDateEdit">招标方案联审时间</label>
-                                <input id="tbxTenderProgramAuditDateEdit" name="tbxTenderProgramAuditDateEdit" class="form-control input-sm" placeholder="招标方案联审时间" />
+                                <input id="tbxTenderProgramAuditDateEdit" name="tbxTenderProgramAuditDateEdit" class="form-control input-sm accountDate" placeholder="招标方案联审时间" />
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tbxProgramAcceptDateEdit">收到方案日期</label>
-                                <input id="tbxProgramAcceptDateEdit" name="tbxProgramAcceptDateEdit" class="form-control input-sm" placeholder="收到方案日期" />
+                                <input id="tbxProgramAcceptDateEdit" name="tbxProgramAcceptDateEdit" class="form-control input-sm accountDate" placeholder="收到方案日期" />
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tbxTenderFileSaleStartDateEdit">发售招标文件开始日期</label>
-                                <input id="tbxTenderFileSaleStartDateEdit" name="tbxTenderFileSaleStartDateEdit" class="form-control input-sm" placeholder="发售招标文件开始日期" />
+                                <input id="tbxTenderFileSaleStartDateEdit" name="tbxTenderFileSaleStartDateEdit" class="form-control input-sm accountDateTime" placeholder="发售招标文件开始日期" />
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tbxTenderFileSaleEndDateEdit">发售招标文件截止日期</label>
-                                <input id="tbxTenderFileSaleEndDateEdit" name="tbxTenderFileSaleEndDateEdit" class="form-control input-sm" placeholder="发售招标文件截止日期" />
+                                <input id="tbxTenderFileSaleEndDateEdit" name="tbxTenderFileSaleEndDateEdit" class="form-control input-sm accountDateTime" placeholder="发售招标文件截止日期" />
                             </div>
                         </div>
                     </div>
@@ -306,13 +322,26 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tbxTenderStartDateEdit">开标日期</label>
-                                <input id="tbxTenderStartDateEdit" name="tbxTenderStartDateEdit" class="form-control input-sm" placeholder="开标日期" />
+                                <input id="tbxTenderStartDateEdit" name="tbxTenderStartDateEdit" class="form-control input-sm accountDateTime" placeholder="开标日期" />
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tbxTenderSuccessFileDateEdit">中标通知书发出时间</label>
-                                <input id="tbxTenderSuccessFileDateEdit" name="tbxTenderSuccessFileDateEdit" class="form-control input-sm" placeholder="中标通知书发出时间" />
+                                <input id="tbxTenderSuccessFileDateEdit" name="tbxTenderSuccessFileDateEdit" class="form-control input-sm accountDate" placeholder="中标通知书发出时间" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="ddlTenderInfoEdit">招标情况</label>
+                                <select id="ddlTenderInfoEdit" name="ddlTenderInfoEdit" class="form-control input-sm">
+                                    <option value="一次成功">一次成功</option>
+                                    <option value="一次失败">一次失败</option>
+                                    <option value="二次成功">二次成功</option>
+                                    <option value="二次失败">二次失败</option>
+                                    <option value="三次成功">三次成功</option>
+                                    <option value="三次失败">三次失败</option>
+</select>
                             </div>
                         </div>
                     </div>
@@ -331,7 +360,8 @@
                                                 <th rowspan="2" class="text-center" style="vertical-align:middle">购买招标文件潜在投标人</th>
                                                 <th rowspan="2" class="text-center" style="vertical-align:middle">投标人</th>
                                                 <th rowspan="2" class="text-center" style="vertical-align:middle">产品制造商（代理、贸易商投标时填写）</th>
-                                                <th colspan="2" rowspan="1" class="text-center">报价（元）初步评审被否决时在此栏说明</th>
+                                                <th colspan="2" rowspan="1" class="text-center">报价（元）</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">初步评审被否决时在此栏说明</th>
                                             </tr>
                                             <tr>
                                                 <th class="text-center">单价</th>
@@ -391,26 +421,27 @@
                             <button id="btnSecondAdd" type="button" class="btn btn-success btn-sm">新增</button>
                         </div>
                         <div class="panel-body">
-                            <div class="row">
+                            @*<div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tbxEvaluationTimeEdit">评审时间（小时）</label>
                                         <input id="tbxEvaluationTimeEdit" name="tbxEvaluationTimeEdit" class="form-control input-sm" placeholder="评审时间（小时）" />
                                     </div>
                                 </div>
-                            </div>
+                            </div>*@
                             <div class="row">
                                 <div class="col-md-12">
                                     <table class="table table-bordered table-condensed table-hover">
                                         <thead>
                                             <tr>
-                                                <th colspan="5" class="text-center">评标委员会</th>
+                                                <th colspan="6" class="text-center">评标委员会</th>
                                             </tr>
                                             <tr>
                                                 <th class="text-center">操作</th>
                                                 <th class="text-center">姓名</th>
                                                 <th class="text-center">单位</th>
                                                 <th class="text-center">是否评标委员会主任</th>
+                                                <th class="text-center">评审时间（小时）</th>
                                                 <th class="text-center">评审费</th>
                                             </tr>
                                         </thead>
@@ -480,7 +511,7 @@
                                         <label for="tbxClarifyLaunchDateEdit">
                                             提出时间
                                         </label>
-                                        <input id="tbxClarifyLaunchDateEdit" name="tbxClarifyLaunchDateEdit" class="form-control input-sm" placeholder="提出时间" />
+                                        <input id="tbxClarifyLaunchDateEdit" name="tbxClarifyLaunchDateEdit" class="form-control input-sm accountDate" placeholder="提出时间" />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -488,7 +519,7 @@
                                         <label for="tbxClarifyAcceptDateEdit">
                                             受理时间
                                         </label>
-                                        <input id="tbxClarifyAcceptDateEdit" name="tbxClarifyAcceptDateEdit" class="form-control input-sm" placeholder="受理时间" />
+                                        <input id="tbxClarifyAcceptDateEdit" name="tbxClarifyAcceptDateEdit" class="form-control input-sm accountDate" placeholder="受理时间" />
                                     </div>
                                 </div>
                             </div>
@@ -515,7 +546,7 @@
                                         <label for="tbxClarifyReplyDateEdit">
                                             答复时间
                                         </label>
-                                        <input id="tbxClarifyReplyDateEdit" name="tbxClarifyReplyDateEdit" class="form-control input-sm" placeholder="答复时间" />
+                                        <input id="tbxClarifyReplyDateEdit" name="tbxClarifyReplyDateEdit" class="form-control input-sm accountDate" placeholder="答复时间" />
                                     </div>
                                 </div>
                             </div>
@@ -564,7 +595,7 @@
                                         <label for="tbxDissentLaunchDateEdit">
                                             异议时间
                                         </label>
-                                        <input id="tbxDissentLaunchDateEdit" name="tbxDissentLaunchDateEdit" class="form-control input-sm" placeholder="异议时间" />
+                                        <input id="tbxDissentLaunchDateEdit" name="tbxDissentLaunchDateEdit" class="form-control input-sm accountDate" placeholder="异议时间" />
                                     </div>
                                 </div>
                             </div>
@@ -574,7 +605,7 @@
                                         <label for="tbxDissentAcceptDateEdit">
                                             受理时间
                                         </label>
-                                        <input id="tbxDissentAcceptDateEdit" name="tbxDissentAcceptDateEdit" class="form-control input-sm" placeholder="受理时间" />
+                                        <input id="tbxDissentAcceptDateEdit" name="tbxDissentAcceptDateEdit" class="form-control input-sm accountDate" placeholder="受理时间" />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -598,7 +629,7 @@
                                         <label for="tbxDissentReplyDateEdit">
                                             答复时间
                                         </label>
-                                        <input id="tbxDissentReplyDateEdit" name="tbxDissentReplyDateEdit" class="form-control input-sm" placeholder="答复时间" />
+                                        <input id="tbxDissentReplyDateEdit" name="tbxDissentReplyDateEdit" class="form-control input-sm accountDate" placeholder="答复时间" />
                                     </div>
                                 </div>
                             </div>
@@ -642,12 +673,7 @@
                                 <input id="tbxRelativePersonEdit" name="tbxRelativePersonEdit" class="form-control input-sm" placeholder="相对人名称" />
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="tbxTenderInfoEdit">招标情况</label>
-                                <input id="tbxTenderInfoEdit" name="tbxTenderInfoEdit" class="form-control input-sm" placeholder="招标情况" />
-                            </div>
-                        </div>
+                        
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -667,8 +693,42 @@
 </div>
 <script>
     $(function () {
+        $(".accountDate").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0,
+            format: 'yyyy-mm-dd'
+        });
+        $(".accountDateTime").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true,
+            minView: 0,
+            forceParse: 0,
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        GetDeptForSelect();
+        function GetDeptForSelect() {
+            var list = "";
+            $.post("/Account/GetDeptForSelect", "", function (result) {
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<option value='" + valueOfElement.DeptID + "'>" + valueOfElement.DeptName + "</option>";
+                });
+                $(".DeptSelect").empty().append(list);
+            });
+        }
+
         function ClearInfo() {
             $("#FirstModal input").val("");
+            $("#FirstModal textarea").val("");
             $("#SecondModal input").val("");
             $("#ThirdModal input").val("");
         }
@@ -705,7 +765,7 @@
                     if ($("#tbxAccountChildFirstID").val() !== "") {
                         //update
                         $("#FirstForm").ajaxSubmit({
-                            url: "/Account/UpdateMaterialFirst",
+                            url: "/Account/UpdateFirst",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
@@ -724,7 +784,7 @@
                     else {
                         //insert
                         $("#FirstForm").ajaxSubmit({
-                            url: "/Account/InsertMaterialFirst",
+                            url: "/Account/InsertFirst",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
@@ -754,7 +814,7 @@
                     if ($("#tbxAccountChildSecondID").val() !== "") {
                         //update
                         $("#SecondForm").ajaxSubmit({
-                            url: "/Account/UpdateMaterialSecond",
+                            url: "/Account/UpdateSecond",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
@@ -773,7 +833,7 @@
                     else {
                         //insert
                         $("#SecondForm").ajaxSubmit({
-                            url: "/Account/InsertMaterialSecond",
+                            url: "/Account/InsertSecond",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
@@ -803,7 +863,7 @@
                     if ($("#tbxAccountChildThirdID").val() !== "") {
                         //update
                         $("#ThirdForm").ajaxSubmit({
-                            url: "/Account/UpdateMaterialThird",
+                            url: "/Account/UpdateThird",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
@@ -822,7 +882,7 @@
                     else {
                         //insert
                         $("#ThirdForm").ajaxSubmit({
-                            url: "/Account/InsertMaterialThird",
+                            url: "/Account/InsertThird",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
@@ -844,17 +904,18 @@
 
         function GetFirstTable() {
             var accountID = $("#tbxAccountMaterialIDEdit").val();
-            $.post("/Account/GetListMaterialEdit", { "accountID": accountID,"type":"first"}, function (result) {
+            $.post("/Account/GetListEdit", { "accountID": accountID,"type":"first"}, function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
                     list += "<td>" + valueOfElement["TenderFilePlanPayPerson"]+"</td>";
                     list += "<td>" + valueOfElement["TenderPerson"]+"</td>";
                     list += "<td>" + valueOfElement["ProductManufacturer"]+"</td>";
                     list += "<td>" + valueOfElement["QuotedPriceUnit"]+"</td>";
                     list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
+                    list += "<td>" + valueOfElement["NegationExplain"] + "</td>";
                     list += "</tr>";
                 });
                 $("#tableFirst").empty().append(list);
@@ -863,15 +924,16 @@
 
         function GetSecondTable() {
             var accountID = $("#tbxAccountMaterialIDEdit").val();
-            $.post("/Account/GetListMaterialEdit", { "accountID": accountID, "type": "second" }, function (result) {
+            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "second" }, function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
                     list += "<td>" + valueOfElement["EvaluationPersonName"] + "</td>";
-                    list += "<td>" + valueOfElement["EvaluationPersonDept"] + "</td>";
+                    list += "<td>" + valueOfElement["EvaluationPersonDeptName"] + "</td>";
                     list += "<td>" + valueOfElement["IsEvaluationDirector"] + "</td>";
+                    list += "<td>" + valueOfElement["EvaluationTime"] + "</td>";
                     list += "<td>" + valueOfElement["EvaluationCost"] + "</td>";
                     list += "</tr>";
                 });
@@ -881,14 +943,14 @@
 
         function GetThirdTable() {
             var accountID = $("#tbxAccountMaterialIDEdit").val();
-            $.post("/Account/GetListMaterialEdit", { "accountID": accountID, "type": "Third" }, function (result) {
+            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "Third" }, function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountMaterialChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
                     list += "<td>" + valueOfElement["TenderFileAuditPersonName"] + "</td>";
-                    list += "<td>" + valueOfElement["TenderFileAuditPersonDept"] + "</td>";
+                    list += "<td>" + valueOfElement["TenderFileAuditPersonDeptName"] + "</td>";
                     list += "<td>" + valueOfElement["TenderFileAuditCost"] + "</td>";
                     list += "</tr>";
                 });
@@ -902,12 +964,13 @@
             $('#FirstModal').modal('show');
             $("#tbxAccountChildFirstID").val(id);
             var args = { "tbxAccountChildID": id };
-            $.post("/Account/GetOneMaterialEdit", args, function (result) {
+            $.post("/Account/GetOneEdit", args, function (result) {
                 $("#tbxTenderFilePlanPayPersonEdit").val(result.TenderFilePlanPayPerson);
                 $("#tbxTenderPersonEdit").val(result.TenderPerson);
                 $("#tbxProductManufacturerEdit").val(result.ProductManufacturer);
                 $("#tbxQuotedPriceUnitEdit").val(result.QuotedPriceUnit);
                 $("#tbxQuotedPriceSumEdit").val(result.QuotedPriceSum);
+                $("#tbxNegationExplain").val(result.NegationExplain);
             });
         });
         $(document).on("click", ".btnFirstDel", function () {
@@ -918,7 +981,7 @@
                 }
                 else {
                     var args = { "tbxAccountChildID": id };
-                    $.post("/Account/DelMaterialEdit", args, function (result) {
+                    $.post("/Account/DelEdit", args, function (result) {
                         if (result === "ok") {
                             toastr.success("操作成功！", "提示");
                             GetFirstTable();
@@ -938,11 +1001,12 @@
             $('#SecondModal').modal('show');
             $("#tbxAccountChildSecondID").val(id);
             var args = { "tbxAccountChildID": id };
-            $.post("/Account/GetOneMaterialEdit", args, function (result) {
+            $.post("/Account/GetOneEdit", args, function (result) {
                 $("#tbxEvaluationPersonNameEdit").val(result.EvaluationPersonName);
-                $("#tbxEvaluationPersonDeptEdit").val(result.EvaluationPersonDept);
+                $("#ddlEvaluationPersonDeptEdit").val(result.EvaluationPersonDeptID);
                 $("#tbxIsEvaluationDirectorEdit").val(result.IsEvaluationDirector);
                 $("#tbxEvaluationCostEdit").val(result.EvaluationCost);
+                $("#tbxEvaluationTimeEdit").val(result.EvaluationTime);
             });
         });
         $(document).on("click", ".btnSecondDel", function () {
@@ -953,7 +1017,7 @@
                 }
                 else {
                     var args = { "tbxAccountChildID": id };
-                    $.post("/Account/DelMaterialEdit", args, function (result) {
+                    $.post("/Account/DelEdit", args, function (result) {
                         if (result === "ok") {
                             toastr.success("操作成功！", "提示");
                             GetSecondTable();
@@ -973,9 +1037,9 @@
             $('#ThirdModal').modal('show');
             $("#tbxAccountChildThirdID").val(id);
             var args = { "tbxAccountChildID": id };
-            $.post("/Account/GetOneMaterialEdit", args, function (result) {
+            $.post("/Account/GetOneEdit", args, function (result) {
                 $("#tbxTenderFileAuditPersonNameEdit").val(result.TenderFileAuditPersonName);
-                $("#tbxTenderFileAuditPersonDeptEdit").val(result.TenderFileAuditPersonDept);
+                $("#ddlTenderFileAuditPersonDeptEdit").val(result.TenderFileAuditPersonDeptID);
                 $("#tbxTenderFileAuditCostEdit").val(result.TenderFileAuditCost);
             });
         });
@@ -987,7 +1051,7 @@
                 }
                 else {
                     var args = { "tbxAccountChildID": id };
-                    $.post("/Account/DelMaterialEdit", args, function (result) {
+                    $.post("/Account/DelEdit", args, function (result) {
                         if (result === "ok") {
                             toastr.success("操作成功！", "提示");
                             GetThirdTable();
@@ -1028,14 +1092,15 @@
 
         function GetInfo() {
             var accountID = $("#tbxAccountMaterialIDEdit").val();
-            $.post("/Account/GetOneMaterial", { "accountID": accountID }, function (result) {
+            $.post("/Account/GetOne", { "accountID": accountID }, function (result) {
+                console.log(result.TenderInfo);
                 $("#tbxProjectNameEdit").val(result.ProjectName);
                 $("#tbxTenderFileNumEdit").val(result.TenderFileNum);
                 $("#ddlIsOnlineEdit").val(result.IsOnline);
                 $("#tbxProjectResponsiblePersonEdit").val(result.ProjectResponsiblePersonName);
 
-                $("#tbxUsingDeptEdit").val(result.UsingDept);
-                $("#tbxProjectResponsibleDeptEdit").val(result.ProjectResponsibleDept);
+                $("#ddlUsingDeptEdit").val(result.UsingDeptID);
+                $("#ddlProjectResponsibleDeptEdit").val(result.ProjectResponsibleDeptID);
                 $("#tbxApplyPersonEdit").val(result.ApplyPerson);
                 $("#tbxInvestPlanApproveNumEdit").val(result.InvestPlanApproveNum);
 
@@ -1043,6 +1108,14 @@
                 $("#tbxTenderModeEdit").val(result.TenderMode);
                 $("#tbxBidEvaluationEdit").val(result.BidEvaluation);
                 $("#tbxSupplyPeriodEdit").val(result.SupplyPeriod);
+
+                $("#tbxTenderProgramAuditDateEdit").val(getJsonDateShort(result.TenderProgramAuditDate));
+                $("#tbxProgramAcceptDateEdit").val(getJsonDateShort(result.ProgramAcceptDate));
+                $("#tbxTenderFileSaleStartDateEdit").val(getJsonDateTimeMinute(result.TenderFileSaleStartDate));
+                $("#tbxTenderFileSaleEndDateEdit").val(getJsonDateTimeMinute(result.TenderFileSaleEndDate));
+                $("#tbxTenderStartDateEdit").val(getJsonDateTimeMinute(result.TenderStartDate));
+                $("#tbxTenderSuccessFileDateEdit").val(getJsonDateShort(result.TenderSuccessFileDate));
+
 
                 $("#tbxTenderSuccessPersonEdit").val(result.TenderSuccessPerson);
                 $("#tbxPlanInvestPriceEdit").val(result.PlanInvestPrice);
@@ -1052,7 +1125,7 @@
                 $("#tbxTenderSuccessSumPriceEdit").val(result.TenderSuccessSumPrice);
                 $("#tbxSaveCapitalEdit").val(result.SaveCapital);
 
-                $("#tbxEvaluationTimeEdit").val(result.EvaluationTime);
+                //$("#tbxEvaluationTimeEdit").val(result.EvaluationTime);//停用评审时间
                 $("#tbxTenderFileAuditTimeEdit").val(result.TenderFileAuditTime);
                 $("#tbxTenderFailReasonEdit").val(result.TenderFailReason);
 
@@ -1081,7 +1154,7 @@
                 $("#tbxContractNumEdit").val(result.ContractNum);
                 $("#tbxContractPriceEdit").val(result.ContractPrice);
                 $("#tbxRelativePersonEdit").val(result.RelativePerson);
-                $("#tbxTenderInfoEdit").val(result.TenderInfo);
+                $("#ddlTenderInfoEdit").val(result.TenderInfo);
 
                 $("#tbxTenderRemarkEdit").val(result.TenderRemark);
             });

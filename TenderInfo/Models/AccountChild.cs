@@ -7,13 +7,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TenderInfo.Models
 {
-    [Table("AccountMaterialChild")]
-    public class AccountMaterialChild
+    [Table("AccountChild")]
+    public class AccountChild
     {
         [Key]
-        public int AccountMaterialChildID { get; set; }
+        public int AccountChildID { get; set; }
 
-        public int AccountMaterialID { get; set; }
+        public int AccountID { get; set; }
 
         [StringLength(200)]
         public string TableType { get; set; }//TableType,【first】【second】【third】
@@ -30,8 +30,13 @@ namespace TenderInfo.Models
         [StringLength(200)]
         public string QuotedPriceUnit { get; set; }//报价（元）--单价
 
+        //报价（万元）--工程、服务
+        //报价（万元）--总价--物资、框架
         [StringLength(200)]
-        public string QuotedPriceSum { get; set; }//报价（元）--总价
+        public string QuotedPriceSum { get; set; }
+
+        [StringLength(500)]
+        public string NegationExplain { get; set; }//初步评审被否决时在此栏说明
 
         [StringLength(100)]
         public string EvaluationPersonName { get; set; }//评标委员会--姓名
@@ -50,8 +55,6 @@ namespace TenderInfo.Models
         [StringLength(200)]
         public string EvaluationCost { get; set; }//评标委员会--评审费
 
-        [StringLength(500)]
-        public string NegationExplain { get; set; }//评标委员会--初步评审被否决时在此栏说明
 
         [StringLength(200)]
         public string TenderFileAuditPersonName { get; set; }//招标文件联审--姓名

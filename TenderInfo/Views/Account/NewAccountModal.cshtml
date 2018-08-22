@@ -1,0 +1,129 @@
+﻿
+<div class="modal fade" id="NewAccountModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">新建招标台账</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="NewAccountForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxProjectType" name="tbxProjectType" type="text" class="form-control" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxProjectName">项目名称<span class="text-danger">(必填)</span></label>
+                                        <input id="tbxProjectName" name="tbxProjectName" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFileNum">招标文件编号<span class="text-danger">(必填)</span></label>
+                                        <input id="tbxTenderFileNum" name="tbxTenderFileNum" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlIsOnline">线上/线下<span class="text-danger">(必填)</span></label>
+                                        <select id="ddlIsOnline" name="ddlIsOnline" class="form-control">
+                                            <option value="线上" selected>线上</option>
+                                            <option value="线下">线下</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlProjectResponsiblePerson">招标项目负责人<span class="text-danger">(必填)</span></label>
+                                        <select id="ddlProjectResponsiblePerson" name="ddlProjectResponsiblePerson" class="form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnNewAccountSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        //加载项目负责人列表函数
+        function GetProjectResponsiblePersonList(type) {
+            $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
+                });
+                if (type === "search") {
+                    $("#ddlProjectResponsiblePersonSearch").append(list);
+                }
+                else {
+                    $("#ddlProjectResponsiblePerson").empty().append(list);
+                }
+            });
+        }
+
+        function ClearInfo() {
+            $("#tbxTenderFileNum,#tbxProjectName").val("");
+        }
+
+        //新增按钮
+        $("#btnAdd").click(function () {
+            ClearInfo();
+            GetProjectResponsiblePersonList();
+            $("#tbxProjectType").val($("#accountType").text());
+            $('#NewAccountModal').modal('show');
+        });
+
+        //对NewAccountForm表单进行前端验证
+        var validNewAccountForm = $("#NewAccountForm").validate({
+            rules: {
+                tbxTenderFileNum: { required: true, maxlength: 100 },
+                tbxProjectName: { required: true, maxlength: 100 }
+            }
+        });
+
+        //新增台账提交
+        $("#btnNewAccountSubmit").click(function () {
+            if (validNewAccountForm.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#NewAccountForm").ajaxSubmit({
+                            url: "/Account/Insert",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#NewAccountModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            };
+        });
+    });
+</script>

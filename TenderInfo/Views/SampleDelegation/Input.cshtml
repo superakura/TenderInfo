@@ -345,7 +345,7 @@
         });
 
         //对EditTenderDate表单进行前端验证
-        var validCheckReport = $("#EditTenderDateForm").validate({
+        var validEditTenderDate = $("#EditTenderDateForm").validate({
             rules: {
                 tbxEditTenderDate: { required: true },
                 tbxEditTenderDateReason: { required: true },
@@ -393,7 +393,7 @@
                             url: "/SampleDelegation/UploadSecondCodingFile",
                             type: "post",
                             success: function (result) {
-                                if (result.state == "ok") {
+                                if (result.state === "ok") {
                                     $("#SecondCodeModal").modal("hide");
                                     toastr.success("操作成功！", "提示");
                                     $("#bsTable").bootstrapTable('refresh');
@@ -439,7 +439,7 @@
 
         //修改招标开始时间提交按钮
         $("#btnEditTenderDateSubmit").click(function () {
-            if (validCheckReport.form()) {
+            if (validEditTenderDate.form()) {
                 Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
                     if (!e) {
                         return;

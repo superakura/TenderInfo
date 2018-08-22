@@ -7,18 +7,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TenderInfo.Models
 {
-    [Table("AccountProject")]
-    public class AccountProject
+    [Table("Account")]
+    public class Account
     {
         [Key]
-        public int AccountProjectID { get; set; }//招标（工程、服务）台账信息ID
+        public int AccountID { get; set; }//招标台账信息ID
+
+        [StringLength(50)]
+        public string ProjectType { get; set; }//项目类型，物资、框架、工程、服务
 
         [Required]
         [StringLength(200)]
         public string ProjectName { get; set; }//项目名称
-
-        [StringLength(50)]
-        public string ProjectType { get; set; }//项目类别：工程、服务
 
         [StringLength(200)]
         public string TenderFileNum { get; set; }//项目文件编号
@@ -42,6 +42,9 @@ namespace TenderInfo.Models
         public int ProjectResponsibleDeptID { get; set; }//项目主责部门ID
 
         [StringLength(200)]
+        public string ApplyPerson { get; set; }//申请人
+
+        [StringLength(200)]
         public string InvestPlanApproveNum { get; set; }//投资计划批复文号
 
         [StringLength(200)]
@@ -53,9 +56,20 @@ namespace TenderInfo.Models
         [StringLength(200)]
         public string ProjectTimeLimit { get; set; }//工期
 
-        public DateTime? ProgramAcceptDate { get; set; }//收到申请日期（线上项目填方案分派日期）--可空
+        [StringLength(200)]
+        public string TenderMode { get; set; }//招标方式
 
-        public DateTime? TenderProgramAuditDate { get; set; }//联审日期--可空
+        [StringLength(200)]
+        public string BidEvaluation { get; set; }//评标方法
+
+        [StringLength(200)]
+        public string SupplyPeriod { get; set; }//供货期
+
+        public DateTime? TenderProgramAuditDate { get; set; }//招标方案联审时间--可空
+
+        //收到方案日期--【物资、框架】
+        //收到申请日期（线上项目填方案分派日期）--【工程、服务】
+        public DateTime? ProgramAcceptDate { get; set; }
 
         public DateTime? TenderFileSaleStartDate { get; set; }//发售招标文件开始日期--可空
 
@@ -63,23 +77,30 @@ namespace TenderInfo.Models
 
         public DateTime? TenderStartDate { get; set; }//开标日期--可空
 
+        public DateTime? TenderSuccessFileDate { get; set; }//中标通知书发出时间--可空
+
         [StringLength(200)]
         public string TenderSuccessPerson { get; set; }//中标人名称
 
         [StringLength(200)]
-        public string PlanInvestPrice { get; set; }//预计投资（万元）
+        public string PlanInvestPrice { get; set; }//预计投资（招标控制总价）（万元）
 
         [StringLength(200)]
-        public string TenderRestrictUnitPrice { get; set; }//招标控制价（万元）
+        public string TenderRestrictUnitPrice { get; set; }//招标控制单价
 
         [StringLength(200)]
-        public string TenderSuccessPrice { get; set; }//中标金额（元）
+        public string TenderSuccessUnitPrice { get; set; }//中标金额（万元）--单价
+
+        //中标金额（万元）--总价--【物资、框架】
+        //中标金额（万元）--【工程、服务】
+        [StringLength(200)]
+        public string TenderSuccessSumPrice { get; set; }
 
         [StringLength(200)]
-        public string SaveCapital { get; set; }//节约资金（元）
+        public string SaveCapital { get; set; }//与控制价比节约资金（万元）
 
         [StringLength(200)]
-        public string EvaluationTime { get; set; }//评标委员会--评审时间（小时）
+        public string EvaluationTime { get; set; }//评标委员会--评审时间（小时）--废止不用，暂时保留
 
         [StringLength(200)]
         public string TenderFileAuditTime { get; set; }//招标文件联审--联审时间（小时）
@@ -87,6 +108,7 @@ namespace TenderInfo.Models
         [StringLength(500)]
         public string TenderFailReason { get; set; }//招标失败原因
 
+        #region 澄清（修改）
         [StringLength(500)]
         public string ClarifyLaunchPerson { get; set; }//澄清（修改）--提起人
 
@@ -107,7 +129,9 @@ namespace TenderInfo.Models
         public string ClarifyDisposeInfo { get; set; }//澄清（修改）--处理情况
 
         public DateTime? ClarifyReplyDate { get; set; }//澄清（修改）--答复时间
+        #endregion
 
+        #region 异议处理
         [StringLength(100)]
         public string DissentLaunchPerson { get; set; }//异议处理--提起人
 
@@ -131,6 +155,7 @@ namespace TenderInfo.Models
         public string DissentDisposeInfo { get; set; }//异议处理--处理情况
 
         public DateTime? DissentReplyDate { get; set; }//异议处理--答复时间
+        #endregion
 
         [StringLength(100)]
         public string ContractNum { get; set; }//合同编号
