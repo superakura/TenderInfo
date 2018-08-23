@@ -676,6 +676,7 @@
     <Compile Include="Models\UserDept.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\UserRole.cs" />
+    <Compile Include="Models\ViewAccout.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ueditor\net\App_Code\Config.cs" />
     <Compile Include="ueditor\net\App_Code\ConfigHandler.cs" />
@@ -711,6 +712,7 @@
     <Content Include="Views\Account\SearchInfoProject.cshtml" />
     <Content Include="Views\Account\EditAccountMaterial.cshtml" />
     <Content Include="Views\Account\NewAccountModal.cshtml" />
+    <Content Include="Views\Account\tsconfig.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

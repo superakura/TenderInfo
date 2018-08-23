@@ -184,5 +184,7 @@ namespace TenderInfo.Models
 
         [StringLength(50)]
         public string IsSynchro { get; set; }//是否与招标进度数据完成同步
+
+        //public List<AccountChild> accountChild { get; set; }
     }
 }

@@ -59,7 +59,7 @@ namespace TenderInfo.Controllers
                 int.TryParse(Request.Form["limit"], out limit);
                 var offset = 0;
                 int.TryParse(Request.Form["offset"], out offset);
-                var accountType = Request.Form["projectType"];
+                var accountType = Request.Form["projectType"];//台账类别
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var result = from a in db.Account
@@ -70,7 +70,24 @@ namespace TenderInfo.Controllers
                 {
                     result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
                 }
-                return Json(new { total = result.Count(), rows = result.OrderBy(o => o.AccountID).Skip(offset).Take(limit).ToList() });
+
+                var accountList = result.OrderBy(o => o.AccountID).Skip(offset).Take(limit).ToList();
+
+                List<Models.ViewAccout> list = new List<Models.ViewAccout>();
+                foreach (var item in accountList)
+                {
+                    var viewList = new Models.ViewAccout();
+                    var accountChildFirst = db.AccountChild.Where(w=>w.AccountID==item.AccountID&&w.TableType=="first").ToList();
+                    var accountChildSecond = db.AccountChild.Where(w=>w.AccountID==item.AccountID&&w.TableType=="second").ToList();
+                    var accountChildThird = db.AccountChild.Where(w=>w.AccountID==item.AccountID&&w.TableType=="third").ToList();
+                    viewList.account = item;
+                    viewList.accountChildFirst = accountChildFirst;
+                    viewList.accountChildSecond = accountChildSecond;
+                    viewList.accountChildThird = accountChildThird;
+                    list.Add(viewList);
+                }
+
+                return Json(new { total = result.Count(), rows = list});
             }
             catch (Exception ex)
             {

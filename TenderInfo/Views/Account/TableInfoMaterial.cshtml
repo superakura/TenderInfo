@@ -1,7 +1,9 @@
 ﻿
 <link href="~/Content/bootstrap-table-fixed-columns2.css" rel="stylesheet" />
 <script src="~/Scripts/bootstrap-table-fixed-columns2.js"></script>
-<table id="bsTable"></table>
+<div class="table-responsive">
+    <table id="bsTable"></table>
+</div>
 <script>
     var editModel = function (id) {
         //根据当前行的id获取当前的行数据
@@ -32,20 +34,20 @@
                     }
                 },
                 {
-                    field: 'ProjectName',
                     title: '项目名称',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     visible: true,
-                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        var html = '<button type="button" onclick="editModel(' + row.AccountMaterialID + ')" class="btn btn-link">' + row.ProjectName + '</button >';
-                        var html2 = "<a href='/Account/EditAccountMaterial?id=" + row.AccountID + "'>" + row.ProjectName + '</a>';
+                    formatter: function (value, row, index) {
+                        //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        //var html = '<button type="button" onclick="editModel(' + row.account.AccountID + ')" class="btn btn-link">' + row.ProjectName + '</button >';
+                        var html2 = "<a href='/Account/EditAccountMaterial?id=" + row.account.AccountID + "'>" + row.account.ProjectName + '</a>';
                         return html2;
                     }
                 },
                 {
-                    field: 'TenderFileNum',
+                    field: 'account.TenderFileNum',
                     title: '项目文件编号',
                     rowspan: 2,
                     colspan: 1,
@@ -53,174 +55,269 @@
                     visible: true
                 },
                 {
-                    field: 'IsOnline',
+                    field: 'account.IsOnline',
                     title: '线上/线下',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle"
                 },
                 {
-                    field: 'ProjectResponsiblePersonName',
+                    field: 'account.ProjectResponsiblePersonName',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '招标项目负责人'
                 },
                 {
-                    field: 'UsingDeptName',
+                    field: 'account.UsingDeptName',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '使用单位'
                 },
                 {
-                    field: 'ProjectResponsibleDeptName',
+                    field: 'account.ProjectResponsibleDeptName',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '项目主责部门'
                 },
                 {
-                    field: 'ApplyPerson',
+                    field: 'account.ApplyPerson',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '申请人'
                 },
                 {
-                    field: 'InvestPlanApproveNum',
+                    field: 'account.InvestPlanApproveNum',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '投资计划批复文号'
                 },
                 {
-                    field: 'TenderRange',
+                    field: 'account.TenderRange',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '招标范围'
                 },
                 {
-                    field: 'TenderMode',
+                    field: 'account.TenderMode',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '招标方式'
                 },
                 {
-                    field: 'BidEvaluation',
+                    field: 'account.BidEvaluation',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '评标方法'
                 },
                 {
-                    field: 'SupplyPeriod',
+                    field: 'account.SupplyPeriod',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '供货期'
                 },
                 {
-                    field: 'TenderProgramAuditDate',
+                    field: 'account.TenderProgramAuditDate',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '招标方案联审时间'
+                    title: '招标方案联审时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.TenderProgramAuditDate);
+                    }
                 },
                 {
-                    field: 'ProgramAcceptDate',
+                    field: 'account.ProgramAcceptDate',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '收到方案日期'
+                    title: '收到方案日期',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.ProgramAcceptDate);
+                    }
                 },
                 {
-                    field: 'TenderFileSaleStartDate',
+                    field: 'account.TenderFileSaleStartDate',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '发售招标文件开始日期'
+                    title: '发售招标文件开始日期',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderFileSaleStartDate);
+                    }
                 },
                 {
-                    field: 'TenderFileSaleEndDate',
+                    field: 'account.TenderFileSaleEndDate',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '发售招标文件截止日期'
+                    title: '发售招标文件截止日期',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderFileSaleEndDate);
+                    }
                 },
                 {
-                    field: 'TenderStartDate',
+                    field: 'account.TenderStartDate',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '开标日期'
+                    title: '开标日期',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderStartDate);
+                    }
                 },
                 {
-                    field: 'TenderSuccessFileDate',
+                    field: 'account.TenderSuccessFileDate',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '中标通知书发出时间'
+                    title: '中标通知书发出时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.TenderSuccessFileDate);
+                    }
                 },
                 {
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '购买招标文件潜在投标人'
+                    title: '购买招标文件潜在投标人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFilePlanPayPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '投标人'
+                    title: '投标人',
+                    switchable: false,
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '产品制造商（代理、贸易商投标时填写）'
+                    title: '产品制造商（代理、贸易商投标时填写）',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ProductManufacturer + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    title: '报价（元）初步评审被否决时在此栏说明',
+                    title: '报价（万元）',
                     colspan: 2,
                     rowspan: 1,
                     align: "center"
                 },
                 {
-                    field: 'TenderSuccessPerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '初步评审被否决时在此栏说明',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.NegationExplain + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    field: 'account.TenderSuccessPerson',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '中标人名称'
                 },
                 {
-                    field: 'PlanInvestPrice',
+                    field: 'account.PlanInvestPrice',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '预计投资（招标控制总价）（元）'
+                    title: '预计投资（招标控制总价）（万元）'
                 },
                 {
-                    field: 'TenderRestrictUnitPrice',
+                    field: 'account.TenderRestrictUnitPrice',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '招标控制单价'
                 },
                 {
-                    title: '中标金额（元）',
+                    title: '中标金额（万元）',
                     colspan: 2,
                     rowspan: 1,
                     align: "center"
                 },
                 {
-                    field: 'SaveCapital',
+                    field: 'account.SaveCapital',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '与控制价比节约资金（元）'
+                    title: '与控制价比节约资金（万元）'
                 },
                 {
                     title: '评标委员会',
@@ -235,7 +332,7 @@
                     align: "center"
                 },
                 {
-                    field: 'TenderFailReason',
+                    field: 'account.TenderFailReason',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
@@ -254,35 +351,35 @@
                     align: "center"
                 },
                 {
-                    field: 'ContractNum',
+                    field: 'account.ContractNum',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '合同编号'
                 },
                 {
-                    field: 'ContractPrice',
+                    field: 'account.ContractPrice',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '合同金额'
                 },
                 {
-                    field: 'RelativePerson',
+                    field: 'account.RelativePerson',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '相对人名称'
                 },
                 {
-                    field: 'TenderInfo',
+                    field: 'account.TenderInfo',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
                     title: '招标情况'
                 },
                 {
-                    field: 'TenderRemark',
+                    field: 'account.TenderRemark',
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
@@ -291,147 +388,343 @@
             ],
             [
                 {
+                    valign: "top",
+                    title: '单价',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.QuotedPriceUnit + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '总价',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.QuotedPriceSum + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    field: 'account.TenderSuccessUnitPrice',
                     valign: "middle",
                     title: '单价'
                 },
                 {
+                    field: 'account.TenderSuccessSumPrice',
                     valign: "middle",
                     title: '总价'
                 },
                 {
-                    field: 'TenderSuccessUnitPrice',
-                    valign: "middle",
-                    title: '单价',
-                },
-                {
-                    field: 'TenderSuccessSumPrice',
-                    valign: "middle",
-                    title: '总价',
-                },
-                {
-                    valign: "middle",
+                    valign: "top",
                     title: '姓名',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationPersonName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    valign: "middle",
+                    valign: "top",
                     title: '单位',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationPersonDeptName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    valign: "middle",
+                    valign: "top",
                     title: '是否评标委员会主任',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.IsEvaluationDirector + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'EvaluationTime',
-                    valign: "middle",
+                    valign: "top",
                     title: '评审时间（小时）',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationTime + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    valign: "middle",
-                    title: '评审费'
+                    valign: "top",
+                    title: '评审费',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationCost + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    valign: "middle",
-                    title: '姓名'
+                    valign: "top",
+                    title: '姓名',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildThird, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFileAuditPersonName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    valign: "middle",
-                    title: '单位'
-                },
-                { 
-                    field: 'TenderFileAuditTime',
-                    valign: "middle",
-                    title: '联审时间（小时）',
+                    valign: "top",
+                    title: '单位',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildThird, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFileAuditPersonDeptName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
+                    field: 'account.TenderFileAuditTime',
                     valign: "middle",
-                    title: '费用'
+                    title: '联审时间（小时）'
                 },
                 {
-                    field: 'ClarifyLaunchPerson',
+                    valign: "top",
+                    title: '费用',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildThird, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFileAuditCost + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    field: 'account.ClarifyLaunchPerson',
                     valign: "middle",
                     title: '提起人'
                 },
                 {
-                    field: 'ClarifyLaunchDate',
+                    field: 'account.ClarifyLaunchDate',
                     valign: "middle",
                     title: '提出时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.ClarifyLaunchDate);
+                    }
                 },
                 {
-                    field: 'ClarifyReason',
+                    field: 'account.ClarifyReason',
                     valign: "middle",
                     title: '事由'
                 },
                 {
-                    field: 'ClarifyAcceptDate',
+                    field: 'account.ClarifyAcceptDate',
                     valign: "middle",
                     title: '受理时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.ClarifyAcceptDate);
+                    }
                 },
                 {
-                    field: 'ClarifyDisposePerson',
+                    field: 'account.ClarifyDisposePerson',
                     valign: "middle",
                     title: '处理人'
                 },
                 {
-                    field: 'IsClarify',
+                    field: 'account.IsClarify',
                     valign: "middle",
                     title: '澄清/修改'
                 },
                 {
-                    field: 'ClarifyDisposeInfo',
+                    field: 'account.ClarifyDisposeInfo',
                     valign: "middle",
                     title: '处理情况'
                 },
                 {
-                    field: 'ClarifyReplyDate',
+                    field: 'account.ClarifyReplyDate',
                     valign: "middle",
-                    title: '答复时间'
+                    title: '答复时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.ClarifyReplyDate);
+                    }
                 },
                 {
-                    field: 'DissentLaunchPerson',
+                    field: 'account.DissentLaunchPerson',
                     valign: "middle",
                     title: '提起人'
                 },
                 {
-                    field: 'DissentLaunchPersonPhone',
+                    field: 'account.DissentLaunchPersonPhone',
                     valign: "middle",
                     title: '提起人联系方式'
                 },
                 {
-                    field: 'DissentLaunchDate',
+                    field: 'account.DissentLaunchDate',
                     valign: "middle",
-                    title: '异议时间'
+                    title: '异议时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.DissentLaunchDate);
+                    }
                 },
                 {
-                    field: 'DissentReason',
+                    field: 'account.DissentReason',
                     valign: "middle",
                     title: '事由'
                 },
                 {
-                    field: 'DissentAcceptDate',
+                    field: 'account.DissentAcceptDate',
                     valign: "middle",
-                    title: '受理时间'
+                    title: '受理时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.DissentAcceptDate);
+                    }
                 },
                 {
-                    field: 'DissentAcceptPerson',
+                    field: 'account.DissentAcceptPerson',
                     valign: "middle",
                     title: '受理人'
                 },
                 {
-                    field: 'DissentDisposePerson',
+                    field: 'account.DissentDisposePerson',
                     valign: "middle",
                     title: '处理人'
                 },
                 {
-                    field: 'DissentDisposeInfo',
+                    field: 'account.DissentDisposeInfo',
                     valign: "middle",
                     title: '处理情况'
                 },
                 {
-                    field: 'DissentReplyDate',
+                    field: 'account.DissentReplyDate',
                     valign: "middle",
-                    title: '答复时间'
+                    title: '答复时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.DissentReplyDate);
+                    }
                 }
             ]
+        ];
+        var columns2 = [
+            {
+                title: '项目名称',
+                valign: "middle",
+                visible: true,
+                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                    return row.account.ProjectName;
+                }
+            },
+            {
+                title: '项目文件编号',
+                valign: "middle",
+                visible: true,
+                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                    return row.account.TenderFileNum;
+                }
+            },
+            {
+                title: '购买招标文件潜在投标人',
+                valign: "middle",
+                visible: true,
+                formatter: function (value, row, index) {
+                    var list = "<table class='table'>";
+                    $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                        list += "<tr>";
+                        list += "<td>" + valueOfElement.TenderFilePlanPayPerson + "</td>";
+                        list += "<td>" + valueOfElement.NegationExplain + "</td>";
+                        list += "</tr>";
+                    });
+                    list += "</table>";
+                    $('#bsTable').bootstrapTable('mergeCells', { index: 1, field: 'name', colspan: 2, rowspan: 3 });
+                    return list;
+
+                }
+            },
+            {
+                title: '初步评审被否决时在此栏说明',
+                valign: "middle",
+                visible: true
+            }
         ];
         //初始化BS-Table
         $('#bsTable').bootstrapTable({
@@ -439,7 +732,7 @@
             contentType: 'application/x-www-form-urlencoded',
             method: 'post',                     //请求方式（*）
             toolbar: '#toolbar',                //工具按钮用哪个容器
-            striped: true,                      //是否显示行间隔色
+            striped: false,                      //是否显示行间隔色
             cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
             pagination: true,                   //是否显示分页（*）
             sortable: false,                     //是否启用排序
@@ -456,16 +749,16 @@
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: false,                //是否启用点击选中行
             //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-            uniqueId: "AccountMaterialID",          //每一行的唯一标识，一般为主键列
+            uniqueId: "account.AccountMaterialID",          //每一行的唯一标识，一般为主键列
             showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图
             detailView: false,                   //是否显示父子表
             paginationPreText: "上一页",
             paginationNextText: "下一页",
             showExport: false,                     //是否显示导出
-            columns: columns,
             fixedColumns: true,
-            fixedNumber: 3
+            fixedNumber: 3,
+            columns: columns
         })
             .on('all.bs.table', function (e, name, args) {
                 $('[data-toggle="tooltip"]').tooltip();
