@@ -1,6 +1,11 @@
 ﻿
 <link href="~/Content/bootstrap-table-fixed-columns2.css" rel="stylesheet" />
 <script src="~/Scripts/bootstrap-table-fixed-columns2.js"></script>
+<style>
+    #bsTable th {
+        vertical-align: middle;
+    }
+</style>
 <div class="table-responsive">
     <table id="bsTable"></table>
 </div>
@@ -190,23 +195,13 @@
                     }
                 },
                 {
-                    field: 'account.TenderSuccessFileDate',
                     rowspan: 2,
                     colspan: 1,
-                    valign: "middle",
-                    title: '中标通知书发出时间',
-                    formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.TenderSuccessFileDate);
-                    }
-                },
-                {
-                    rowspan: 2,
-                    colspan: 1,
-                    valign: "middle",
                     title: '购买招标文件潜在投标人',
                     cellStyle: function (value, row, index) {
                         return {
-                            css: { "padding": "0px" }
+                            css: { "padding": "0px", "vertical-align": "top" },
+                            classes: "text-nowrap"
                         };
                     },
                     formatter: function (value, row, index) {
@@ -221,13 +216,12 @@
                 {
                     rowspan: 2,
                     colspan: 1,
-                    valign: "middle",
                     title: '投标人',
                     switchable: false,
                     cellStyle: function (value, row, index) {
                         return {
                             classes: "text-nowrap",
-                            css: { "padding": "0px" }
+                            css: { "padding": "0px", "vertical-align": "top" }
                         };
                     },
                     formatter: function (value, row, index) {
@@ -242,12 +236,11 @@
                 {
                     rowspan: 2,
                     colspan: 1,
-                    valign: "middle",
                     title: '产品制造商（代理、贸易商投标时填写）',
                     cellStyle: function (value, row, index) {
                         return {
                             classes: "text-nowrap",
-                            css: { "padding": "0px" }
+                            css: { "padding": "0px", "vertical-align": "top" }
                         };
                     },
                     formatter: function (value, row, index) {
@@ -260,7 +253,7 @@
                     }
                 },
                 {
-                    title: '报价（万元）',
+                    title: '报价',
                     colspan: 2,
                     rowspan: 1,
                     align: "center"
@@ -268,12 +261,11 @@
                 {
                     rowspan: 2,
                     colspan: 1,
-                    valign: "middle",
-                    title: '初步评审被否决时在此栏说明',
+                    title: '初步评审是否被否决',
                     cellStyle: function (value, row, index) {
                         return {
                             classes: "text-nowrap",
-                            css: { "padding": "0px" }
+                            css: { "padding": "0px", "vertical-align": "top" }
                         };
                     },
                     formatter: function (value, row, index) {
@@ -297,14 +289,13 @@
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '预计投资（招标控制总价）（万元）'
+                    title: '预计投资（万元）'
                 },
                 {
-                    field: 'account.TenderRestrictUnitPrice',
-                    rowspan: 2,
-                    colspan: 1,
-                    valign: "middle",
-                    title: '招标控制单价'
+                    title: '招标控制价',
+                    colspan: 2,
+                    rowspan: 1,
+                    align: "center"
                 },
                 {
                     title: '中标金额（万元）',
@@ -406,7 +397,7 @@
                 },
                 {
                     valign: "top",
-                    title: '总价',
+                    title: '总价（万元）',
                     cellStyle: function (value, row, index) {
                         return {
                             css: { "padding": "0px" }
@@ -422,6 +413,16 @@
                     }
                 },
                 {
+                    field: 'account.TenderRestrictUnitPrice',
+                    valign: "middle",
+                    title: '单价'
+                },
+                {
+                    field: 'account.TenderRestrictSumPrice',
+                    valign: "middle",
+                    title: '总价（万元）'
+                },
+                {
                     field: 'account.TenderSuccessUnitPrice',
                     valign: "middle",
                     title: '单价'
@@ -429,7 +430,7 @@
                 {
                     field: 'account.TenderSuccessSumPrice',
                     valign: "middle",
-                    title: '总价'
+                    title: '总价（万元）'
                 },
                 {
                     valign: "top",
@@ -581,150 +582,312 @@
                     }
                 },
                 {
-                    field: 'account.ClarifyLaunchPerson',
-                    valign: "middle",
-                    title: '提起人'
+                    valign: "top",
+                    title: '提起人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ClarifyLaunchPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.ClarifyLaunchDate',
-                    valign: "middle",
+                    valign: "top",
                     title: '提出时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.ClarifyLaunchDate);
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + getJsonDateShort(valueOfElement.ClarifyLaunchDate) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
                     }
                 },
                 {
-                    field: 'account.ClarifyReason',
-                    valign: "middle",
-                    title: '事由'
+                    valign: "top",
+                    title: '事由',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ClarifyReason + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.ClarifyAcceptDate',
-                    valign: "middle",
+                    valign: "top",
                     title: '受理时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.ClarifyAcceptDate);
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + getJsonDateShort(valueOfElement.ClarifyAcceptDate) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
                     }
                 },
                 {
-                    field: 'account.ClarifyDisposePerson',
-                    valign: "middle",
-                    title: '处理人'
+                    valign: "top",
+                    title: '处理人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ClarifyDisposePerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.IsClarify',
-                    valign: "middle",
-                    title: '澄清/修改'
+                    valign: "top",
+                    title: '澄清/修改',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.IsClarify + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.ClarifyDisposeInfo',
-                    valign: "middle",
-                    title: '处理情况'
+                    valign: "top",
+                    title: '处理情况',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ClarifyDisposeInfo + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.ClarifyReplyDate',
-                    valign: "middle",
+                    valign: "top",
                     title: '答复时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.ClarifyReplyDate);
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + getJsonDateShort(valueOfElement.ClarifyReplyDate) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
                     }
                 },
                 {
-                    field: 'account.DissentLaunchPerson',
-                    valign: "middle",
-                    title: '提起人'
+                    valign: "top",
+                    title: '提起人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentLaunchPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.DissentLaunchPersonPhone',
-                    valign: "middle",
-                    title: '提起人联系方式'
+                    valign: "top",
+                    title: '提起人联系方式',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentLaunchPersonPhone + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.DissentLaunchDate',
-                    valign: "middle",
+                    valign: "top",
                     title: '异议时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.DissentLaunchDate);
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + getJsonDateShort(valueOfElement.DissentLaunchDate) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
                     }
                 },
                 {
-                    field: 'account.DissentReason',
-                    valign: "middle",
-                    title: '事由'
+                    valign: "top",
+                    title: '事由',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentReason + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
                 },
                 {
-                    field: 'account.DissentAcceptDate',
-                    valign: "middle",
+                    valign: "top",
                     title: '受理时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.DissentAcceptDate);
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + getJsonDateShort(valueOfElement.DissentAcceptDate) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
                     }
                 },
                 {
-                    field: 'account.DissentAcceptPerson',
-                    valign: "middle",
-                    title: '受理人'
-                },
-                {
-                    field: 'account.DissentDisposePerson',
-                    valign: "middle",
-                    title: '处理人'
-                },
-                {
-                    field: 'account.DissentDisposeInfo',
-                    valign: "middle",
-                    title: '处理情况'
-                },
-                {
-                    field: 'account.DissentReplyDate',
-                    valign: "middle",
-                    title: '答复时间',
+                    valign: "top",
+                    title: '受理人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        return getJsonDateShort(row.account.DissentReplyDate);
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentAcceptPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '处理人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentDisposePerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '处理情况',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentDisposeInfo + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '答复时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + getJsonDateShort(valueOfElement.DissentReplyDate) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
                     }
                 }
             ]
-        ];
-        var columns2 = [
-            {
-                title: '项目名称',
-                valign: "middle",
-                visible: true,
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    return row.account.ProjectName;
-                }
-            },
-            {
-                title: '项目文件编号',
-                valign: "middle",
-                visible: true,
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    return row.account.TenderFileNum;
-                }
-            },
-            {
-                title: '购买招标文件潜在投标人',
-                valign: "middle",
-                visible: true,
-                formatter: function (value, row, index) {
-                    var list = "<table class='table'>";
-                    $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
-                        list += "<tr>";
-                        list += "<td>" + valueOfElement.TenderFilePlanPayPerson + "</td>";
-                        list += "<td>" + valueOfElement.NegationExplain + "</td>";
-                        list += "</tr>";
-                    });
-                    list += "</table>";
-                    $('#bsTable').bootstrapTable('mergeCells', { index: 1, field: 'name', colspan: 2, rowspan: 3 });
-                    return list;
-
-                }
-            },
-            {
-                title: '初步评审被否决时在此栏说明',
-                valign: "middle",
-                visible: true
-            }
         ];
         //初始化BS-Table
         $('#bsTable').bootstrapTable({

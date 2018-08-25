@@ -32,62 +32,23 @@ namespace TenderInfo.Controllers
             ViewBag.id = id;
             return View();
         }
+
+        public ViewResult EditAccountProject(string id)
+        {
+            ViewBag.id = id;
+            return View();
+        }
         #endregion
 
+        #region 获取二级单位、与招标进度数据同步
         //获取二级单位，为使用单位、项目主责部门、评标委员会单位提供数据
         [HttpPost]
         public JsonResult GetDeptForSelect()
         {
             try
             {
-                var info = db.DeptInfo.Where(w => w.DeptFatherID == 1).OrderBy(o=>o.DeptOrder).ToList();
+                var info = db.DeptInfo.Where(w => w.DeptFatherID == 1).OrderBy(o => o.DeptOrder).ToList();
                 return Json(info);
-            }
-            catch (Exception ex)
-            {
-                return Json(ex.Message);
-            }
-        }
-
-        //获取台账列表
-        [HttpPost]
-        public JsonResult GetList()
-        {
-            try
-            {
-                var limit = 0;
-                int.TryParse(Request.Form["limit"], out limit);
-                var offset = 0;
-                int.TryParse(Request.Form["offset"], out offset);
-                var accountType = Request.Form["projectType"];//台账类别
-
-                var userInfo = App_Code.Commen.GetUserFromSession();
-                var result = from a in db.Account
-                             where a.ProjectType==accountType
-                             select a;
-
-                if (User.IsInRole("招标管理"))
-                {
-                    result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
-                }
-
-                var accountList = result.OrderBy(o => o.AccountID).Skip(offset).Take(limit).ToList();
-
-                List<Models.ViewAccout> list = new List<Models.ViewAccout>();
-                foreach (var item in accountList)
-                {
-                    var viewList = new Models.ViewAccout();
-                    var accountChildFirst = db.AccountChild.Where(w=>w.AccountID==item.AccountID&&w.TableType=="first").ToList();
-                    var accountChildSecond = db.AccountChild.Where(w=>w.AccountID==item.AccountID&&w.TableType=="second").ToList();
-                    var accountChildThird = db.AccountChild.Where(w=>w.AccountID==item.AccountID&&w.TableType=="third").ToList();
-                    viewList.account = item;
-                    viewList.accountChildFirst = accountChildFirst;
-                    viewList.accountChildSecond = accountChildSecond;
-                    viewList.accountChildThird = accountChildThird;
-                    list.Add(viewList);
-                }
-
-                return Json(new { total = result.Count(), rows = list});
             }
             catch (Exception ex)
             {
@@ -154,6 +115,57 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+        #endregion
+
+        //获取招标台账列表
+        [HttpPost]
+        public JsonResult GetList()
+        {
+            try
+            {
+                var limit = 0;
+                int.TryParse(Request.Form["limit"], out limit);
+                var offset = 0;
+                int.TryParse(Request.Form["offset"], out offset);
+                var accountType = Request.Form["projectType"];//台账类别
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var result = from a in db.Account
+                             where a.ProjectType == accountType
+                             select a;
+
+                if (User.IsInRole("招标管理"))
+                {
+                    result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                }
+
+                var accountList = result.OrderBy(o => o.AccountID).Skip(offset).Take(limit).ToList();
+
+                List<Models.ViewAccout> list = new List<Models.ViewAccout>();
+                foreach (var item in accountList)
+                {
+                    var viewList = new Models.ViewAccout();
+                    var accountChildFirst = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "first").ToList();
+                    var accountChildSecond = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "second").ToList();
+                    var accountChildThird = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "third").ToList();
+                    var accountChildFour = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "four").ToList();
+                    var accountChildFive = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "five").ToList();
+                    viewList.account = item;
+                    viewList.accountChildFirst = accountChildFirst;
+                    viewList.accountChildSecond = accountChildSecond;
+                    viewList.accountChildThird = accountChildThird;
+                    viewList.accountChildFour = accountChildFour;
+                    viewList.accountChildFive = accountChildFive;
+                    list.Add(viewList);
+                }
+
+                return Json(new { total = result.Count(), rows = list });
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
 
         //新建招标台账
         [HttpPost]
@@ -191,38 +203,48 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //更新物资招标台账内容
+        //更新招标台账内容
         [HttpPost]
-        public string UpdateMaterial()
+        public string Update()
         {
             try
             {
                 var accountID = 0;
-                int.TryParse(Request.Form["tbxAccountMaterialIDEdit"], out accountID);
+                int.TryParse(Request.Form["tbxAccountIDEdit"], out accountID);
                 var info = db.Account.Find(accountID);
                 var userInfo = App_Code.Commen.GetUserFromSession();
 
                 #region 使用单位~供货期
-                var usingDeptID = 0;
-                int.TryParse(Request.Form["ddlUsingDeptEdit"],out usingDeptID);
-                info.UsingDeptID = usingDeptID;
-                info.UsingDeptName = db.DeptInfo.Find(usingDeptID).DeptName;
+                //使用单位--物资、框架
+                if (Request.Form["ddlUsingDeptEdit"] != null)
+                {
+                    var usingDeptID = 0;
+                    int.TryParse(Request.Form["ddlUsingDeptEdit"], out usingDeptID);
+                    info.UsingDeptID = usingDeptID;
+                    info.UsingDeptName = db.DeptInfo.Find(usingDeptID).DeptName;//
+                }
 
+                //项目主责单位
                 var projectResponsibleDeptID = 0;
-                int.TryParse(Request.Form["ddlProjectResponsibleDeptEdit"],out projectResponsibleDeptID);
+                int.TryParse(Request.Form["ddlProjectResponsibleDeptEdit"], out projectResponsibleDeptID);
                 info.ProjectResponsibleDeptID = projectResponsibleDeptID;
                 info.ProjectResponsibleDeptName = db.DeptInfo.Find(projectResponsibleDeptID).DeptName;
 
                 info.ApplyPerson = Request.Form["tbxApplyPersonEdit"];
                 info.InvestPlanApproveNum = Request.Form["tbxInvestPlanApproveNumEdit"];
-
                 info.TenderRange = Request.Form["tbxTenderRangeEdit"];
-                info.TenderMode = Request.Form["tbxTenderModeEdit"];
-                info.BidEvaluation = Request.Form["tbxBidEvaluationEdit"];
-                info.SupplyPeriod = Request.Form["tbxSupplyPeriodEdit"];
+
+                //物资、框架
+                info.TenderMode = Request.Form["tbxTenderModeEdit"]??null;
+                info.BidEvaluation = Request.Form["tbxBidEvaluationEdit"]??null;
+                info.SupplyPeriod = Request.Form["tbxSupplyPeriodEdit"]??null;
+
+                //工程、服务
+                info.InvestSource = Request.Form["tbxInvestSourceEdit"]??null;
+                info.ProjectTimeLimit = Request.Form["tbxProjectTimeLimitEdit"]??null;
                 #endregion
 
-                #region 招标方案联审时间~中标通知书发出时间
+                #region 招标方案联审时间~开标日期
                 if (Request.Form["tbxTenderProgramAuditDateEdit"] != string.Empty)
                 {
                     info.TenderProgramAuditDate = Convert.ToDateTime(Request.Form["tbxTenderProgramAuditDateEdit"]);
@@ -263,95 +285,22 @@ namespace TenderInfo.Controllers
                 {
                     info.TenderStartDate = null;
                 }
-                if (Request.Form["tbxTenderSuccessFileDateEdit"] != string.Empty)
-                {
-                    info.TenderSuccessFileDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessFileDateEdit"]);
-                }
-                else
-                {
-                    info.TenderSuccessFileDate = null;
-                }
                 #endregion
 
                 #region 中标人名称~与控制价比节约资金（元）
                 info.TenderSuccessPerson = Request.Form["tbxTenderSuccessPersonEdit"];
                 info.PlanInvestPrice = Request.Form["tbxPlanInvestPriceEdit"];
                 info.TenderRestrictUnitPrice = Request.Form["tbxTenderRestrictUnitPriceEdit"];
+                info.TenderRestrictSumPrice = Request.Form["tbxTenderRestrictSumPriceEdit"];
 
                 info.TenderSuccessUnitPrice = Request.Form["tbxTenderSuccessUnitPriceEdit"];
                 info.TenderSuccessSumPrice = Request.Form["tbxTenderSuccessSumPriceEdit"];
                 info.SaveCapital = Request.Form["tbxSaveCapitalEdit"];
                 #endregion
 
-                //info.EvaluationTime = Request.Form["tbxEvaluationTimeEdit"];//评标委员会--评审时间（小时）
                 info.TenderFileAuditTime = Request.Form["tbxTenderFileAuditTimeEdit"];//招标文件联审--联审时间（小时）
                 info.TenderFailReason = Request.Form["tbxTenderFailReasonEdit"];//招标失败原因
 
-                #region 澄清（修改）
-                info.ClarifyLaunchPerson = Request.Form["tbxClarifyLaunchPersonEdit"];
-                if (Request.Form["tbxClarifyLaunchDateEdit"] != string.Empty)
-                {
-                    info.ClarifyLaunchDate = Convert.ToDateTime(Request.Form["tbxClarifyLaunchDateEdit"]);
-                }
-                else
-                {
-                    info.ClarifyLaunchDate = null;
-                }
-                if (Request.Form["tbxClarifyAcceptDateEdit"] != string.Empty)
-                {
-                    info.ClarifyAcceptDate = Convert.ToDateTime(Request.Form["tbxClarifyAcceptDateEdit"]);
-                }
-                else
-                {
-                    info.ClarifyAcceptDate = null;
-                }
-
-                info.ClarifyDisposePerson = Request.Form["tbxClarifyDisposePersonEdit"];
-                info.IsClarify = Request.Form["tbxIsClarifyEdit"];
-                if (Request.Form["tbxClarifyReplyDateEdit"] != string.Empty)
-                {
-                    info.ClarifyReplyDate = Convert.ToDateTime(Request.Form["tbxClarifyReplyDateEdit"]);
-                }
-                else
-                {
-                    info.ClarifyReplyDate = null;
-                }
-
-                info.ClarifyReason = Request.Form["tbxClarifyReasonEdit"];
-                info.ClarifyDisposeInfo = Request.Form["tbxClarifyDisposeInfoEdit"];
-                #endregion
-                #region 异议处理
-                info.DissentLaunchPerson = Request.Form["tbxDissentLaunchPersonEdit"];
-                info.DissentLaunchPersonPhone = Request.Form["tbxDissentLaunchPersonPhoneEdit"];
-                if (Request.Form["tbxDissentLaunchDateEdit"] != string.Empty)
-                {
-                    info.DissentLaunchDate = Convert.ToDateTime(Request.Form["tbxDissentLaunchDateEdit"]);
-                }
-                else
-                {
-                    info.DissentLaunchDate = null;
-                }
-                if (Request.Form["tbxDissentAcceptDateEdit"] != string.Empty)
-                {
-                    info.DissentAcceptDate = Convert.ToDateTime(Request.Form["tbxDissentAcceptDateEdit"]);
-                }
-                else
-                {
-                    info.DissentAcceptDate = null;
-                }
-                info.DissentAcceptPerson = Request.Form["tbxDissentAcceptPersonEdit"];
-                info.DissentDisposePerson = Request.Form["tbxDissentDisposePersonEdit"];
-                if (Request.Form["tbxDissentReplyDateEdit"] != string.Empty)
-                {
-                    info.DissentReplyDate = Convert.ToDateTime(Request.Form["tbxDissentReplyDateEdit"]);
-                }
-                else
-                {
-                    info.DissentReplyDate = null;
-                }
-                info.DissentReason = Request.Form["tbxDissentReasonEdit"];
-                info.DissentDisposeInfo = Request.Form["tbxDissentDisposeInfoEdit"];
-                #endregion
                 #region 合同信息&备注
                 info.ContractNum = Request.Form["tbxContractNumEdit"];
                 info.ContractPrice = Request.Form["tbxContractPriceEdit"];
@@ -373,7 +322,7 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //获取一条招标信息
+        //获取一项招标台账信息
         [HttpPost]
         public JsonResult GetOne()
         {
@@ -399,24 +348,26 @@ namespace TenderInfo.Controllers
             {
                 var accountID = 0;
                 int.TryParse(Request.Form["tbxAccountFirstID"], out accountID);
-                var tenderFilePlanPayPersonEdit = Request.Form["tbxTenderFilePlanPayPersonEdit"];
-                var tenderPersonEdit = Request.Form["tbxTenderPersonEdit"];
-                var productManufacturerEdit = Request.Form["tbxProductManufacturerEdit"];
-                var quotedPriceUnitEdit = Request.Form["tbxQuotedPriceUnitEdit"];
-                var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"];
-                var negationExplain = Request.Form["tbxNegationExplain"];
+
+                var tenderFilePlanPayPersonEdit = Request.Form["tbxTenderFilePlanPayPersonEdit"] ?? "-";
+                var tenderPersonEdit = Request.Form["tbxTenderPersonEdit"] ?? "-";
+                var productManufacturerEdit = Request.Form["tbxProductManufacturerEdit"] ?? "-";
+                var quotedPriceUnitEdit = Request.Form["tbxQuotedPriceUnitEdit"] ?? "-";
+                var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"] ?? "-";
+                var negationExplain = Request.Form["ddlNegationExplain"] ?? "-";
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var info = new Models.AccountChild();
 
                 info.TableType = "first";
                 info.AccountID = accountID;
-                info.TenderFilePlanPayPerson = tenderFilePlanPayPersonEdit;
-                info.TenderPerson = tenderPersonEdit;
-                info.ProductManufacturer = productManufacturerEdit;
-                info.QuotedPriceUnit = quotedPriceUnitEdit;
-                info.QuotedPriceSum = quotedPriceSumEdit;
-                info.NegationExplain = negationExplain;
+
+                info.TenderFilePlanPayPerson = tenderFilePlanPayPersonEdit==string.Empty?"-": tenderFilePlanPayPersonEdit;
+                info.TenderPerson = tenderPersonEdit == string.Empty ? "-" : tenderPersonEdit;
+                info.ProductManufacturer = productManufacturerEdit == string.Empty ? "-" : productManufacturerEdit;
+                info.QuotedPriceUnit = quotedPriceUnitEdit == string.Empty ? "-" : quotedPriceUnitEdit;
+                info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
+                info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
@@ -437,22 +388,23 @@ namespace TenderInfo.Controllers
             {
                 var accountChildID = 0;
                 int.TryParse(Request.Form["tbxAccountChildFirstID"], out accountChildID);
-                var tenderFilePlanPayPersonEdit = Request.Form["tbxTenderFilePlanPayPersonEdit"];
-                var tenderPersonEdit = Request.Form["tbxTenderPersonEdit"];
-                var productManufacturerEdit = Request.Form["tbxProductManufacturerEdit"];
-                var quotedPriceUnitEdit = Request.Form["tbxQuotedPriceUnitEdit"];
-                var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"];
-                var negationExplain = Request.Form["tbxNegationExplain"];
+
+                var tenderFilePlanPayPersonEdit = Request.Form["tbxTenderFilePlanPayPersonEdit"] ?? "-";
+                var tenderPersonEdit = Request.Form["tbxTenderPersonEdit"] ?? "-";
+                var productManufacturerEdit = Request.Form["tbxProductManufacturerEdit"] ?? "-";
+                var quotedPriceUnitEdit = Request.Form["tbxQuotedPriceUnitEdit"] ?? "-";
+                var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"] ?? "-";
+                var negationExplain = Request.Form["ddlNegationExplain"] ?? "-";
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var info = db.AccountChild.Find(accountChildID);
 
-                info.TenderFilePlanPayPerson = tenderFilePlanPayPersonEdit;
-                info.TenderPerson = tenderPersonEdit;
-                info.ProductManufacturer = productManufacturerEdit;
-                info.QuotedPriceUnit = quotedPriceUnitEdit;
-                info.QuotedPriceSum = quotedPriceSumEdit;
-                info.NegationExplain = negationExplain;
+                info.TenderFilePlanPayPerson = tenderFilePlanPayPersonEdit == string.Empty ? "-" : tenderFilePlanPayPersonEdit;
+                info.TenderPerson = tenderPersonEdit == string.Empty ? "-" : tenderPersonEdit;
+                info.ProductManufacturer = productManufacturerEdit == string.Empty ? "-" : productManufacturerEdit;
+                info.QuotedPriceUnit = quotedPriceUnitEdit == string.Empty ? "-" : quotedPriceUnitEdit;
+                info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
+                info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
@@ -475,10 +427,10 @@ namespace TenderInfo.Controllers
                 var evaluationPersonNameEdit = Request.Form["tbxEvaluationPersonNameEdit"];
 
                 var evaluationPersonDeptIDEdit = 0;
-                int.TryParse(Request.Form["ddlEvaluationPersonDeptEdit"],out evaluationPersonDeptIDEdit);
+                int.TryParse(Request.Form["ddlEvaluationPersonDeptEdit"], out evaluationPersonDeptIDEdit);
                 var evaluationPersonDeptNameEdit = db.DeptInfo.Find(evaluationPersonDeptIDEdit).DeptName;
 
-                var isEvaluationDirectorEdit = Request.Form["tbxIsEvaluationDirectorEdit"];
+                var isEvaluationDirectorEdit = Request.Form["ddlIsEvaluationDirectorEdit"];
                 var evaluationCostEdit = Request.Form["tbxEvaluationCostEdit"];
                 var evaluationTime = Request.Form["tbxEvaluationTimeEdit"];
 
@@ -519,7 +471,7 @@ namespace TenderInfo.Controllers
                 int.TryParse(Request.Form["ddlEvaluationPersonDeptEdit"], out evaluationPersonDeptIDEdit);
                 var evaluationPersonDeptNameEdit = db.DeptInfo.Find(evaluationPersonDeptIDEdit).DeptName;
 
-                var isEvaluationDirectorEdit = Request.Form["tbxIsEvaluationDirectorEdit"];
+                var isEvaluationDirectorEdit = Request.Form["ddlIsEvaluationDirectorEdit"];
                 var evaluationCostEdit = Request.Form["tbxEvaluationCostEdit"];
                 var evaluationTime = Request.Form["tbxEvaluationTimeEdit"];
 
@@ -553,7 +505,7 @@ namespace TenderInfo.Controllers
                 int.TryParse(Request.Form["tbxAccountThirdID"], out accountID);
                 var tenderFileAuditPersonNameEdit = Request.Form["tbxTenderFileAuditPersonNameEdit"];
                 var tenderFileAuditPersonDeptIDEdit = 0;
-                int.TryParse(Request.Form["ddlTenderFileAuditPersonDeptEdit"],out tenderFileAuditPersonDeptIDEdit);
+                int.TryParse(Request.Form["ddlTenderFileAuditPersonDeptEdit"], out tenderFileAuditPersonDeptIDEdit);
                 var tenderFileAuditPersonDeptNameEdit = db.DeptInfo.Find(tenderFileAuditPersonDeptIDEdit).DeptName;
                 var tenderFileAuditCostEdit = Request.Form["tbxTenderFileAuditCostEdit"];
 
@@ -598,6 +550,228 @@ namespace TenderInfo.Controllers
                 info.TenderFileAuditPersonDeptID = tenderFileAuditPersonDeptIDEdit;
                 info.TenderFileAuditPersonDeptName = tenderFileAuditPersonDeptNameEdit;
                 info.TenderFileAuditCost = tenderFileAuditCostEdit;
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string InsertFour()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxAccountFourID"], out accountID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = new Models.AccountChild();
+
+                info.TableType = "Four";
+                info.AccountID = accountID;
+
+                info.ClarifyLaunchPerson = Request.Form["tbxClarifyLaunchPersonEdit"];
+                if (Request.Form["tbxClarifyLaunchDateEdit"] != string.Empty)
+                {
+                    info.ClarifyLaunchDate = Convert.ToDateTime(Request.Form["tbxClarifyLaunchDateEdit"]);
+                }
+                else
+                {
+                    info.ClarifyLaunchDate = null;
+                }
+                if (Request.Form["tbxClarifyAcceptDateEdit"] != string.Empty)
+                {
+                    info.ClarifyAcceptDate = Convert.ToDateTime(Request.Form["tbxClarifyAcceptDateEdit"]);
+                }
+                else
+                {
+                    info.ClarifyAcceptDate = null;
+                }
+
+                info.ClarifyDisposePerson = Request.Form["tbxClarifyDisposePersonEdit"];
+                info.IsClarify = Request.Form["ddlIsClarifyEdit"];
+                if (Request.Form["tbxClarifyReplyDateEdit"] != string.Empty)
+                {
+                    info.ClarifyReplyDate = Convert.ToDateTime(Request.Form["tbxClarifyReplyDateEdit"]);
+                }
+                else
+                {
+                    info.ClarifyReplyDate = null;
+                }
+
+                info.ClarifyReason = Request.Form["tbxClarifyReasonEdit"];
+                info.ClarifyDisposeInfo = Request.Form["tbxClarifyDisposeInfoEdit"];
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.AccountChild.Add(info);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string UpdateFour()
+        {
+            try
+            {
+                var accountChildID = 0;
+                int.TryParse(Request.Form["tbxAccountChildFourID"], out accountChildID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = db.AccountChild.Find(accountChildID);
+
+                info.ClarifyLaunchPerson = Request.Form["tbxClarifyLaunchPersonEdit"];
+                if (Request.Form["tbxClarifyLaunchDateEdit"] != string.Empty)
+                {
+                    info.ClarifyLaunchDate = Convert.ToDateTime(Request.Form["tbxClarifyLaunchDateEdit"]);
+                }
+                else
+                {
+                    info.ClarifyLaunchDate = null;
+                }
+                if (Request.Form["tbxClarifyAcceptDateEdit"] != string.Empty)
+                {
+                    info.ClarifyAcceptDate = Convert.ToDateTime(Request.Form["tbxClarifyAcceptDateEdit"]);
+                }
+                else
+                {
+                    info.ClarifyAcceptDate = null;
+                }
+
+                info.ClarifyDisposePerson = Request.Form["tbxClarifyDisposePersonEdit"];
+                info.IsClarify = Request.Form["ddlIsClarifyEdit"];
+                if (Request.Form["tbxClarifyReplyDateEdit"] != string.Empty)
+                {
+                    info.ClarifyReplyDate = Convert.ToDateTime(Request.Form["tbxClarifyReplyDateEdit"]);
+                }
+                else
+                {
+                    info.ClarifyReplyDate = null;
+                }
+
+                info.ClarifyReason = Request.Form["tbxClarifyReasonEdit"];
+                info.ClarifyDisposeInfo = Request.Form["tbxClarifyDisposeInfoEdit"];
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string InsertFive()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxAccountFiveID"], out accountID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = new Models.AccountChild();
+
+                info.TableType = "Five";
+                info.AccountID = accountID;
+
+                info.DissentLaunchPerson = Request.Form["tbxDissentLaunchPersonEdit"];
+                info.DissentLaunchPersonPhone = Request.Form["tbxDissentLaunchPersonPhoneEdit"];
+                if (Request.Form["tbxDissentLaunchDateEdit"] != string.Empty)
+                {
+                    info.DissentLaunchDate = Convert.ToDateTime(Request.Form["tbxDissentLaunchDateEdit"]);
+                }
+                else
+                {
+                    info.DissentLaunchDate = null;
+                }
+                if (Request.Form["tbxDissentAcceptDateEdit"] != string.Empty)
+                {
+                    info.DissentAcceptDate = Convert.ToDateTime(Request.Form["tbxDissentAcceptDateEdit"]);
+                }
+                else
+                {
+                    info.DissentAcceptDate = null;
+                }
+                info.DissentAcceptPerson = Request.Form["tbxDissentAcceptPersonEdit"];
+                info.DissentDisposePerson = Request.Form["tbxDissentDisposePersonEdit"];
+                if (Request.Form["tbxDissentReplyDateEdit"] != string.Empty)
+                {
+                    info.DissentReplyDate = Convert.ToDateTime(Request.Form["tbxDissentReplyDateEdit"]);
+                }
+                else
+                {
+                    info.DissentReplyDate = null;
+                }
+                info.DissentReason = Request.Form["tbxDissentReasonEdit"];
+                info.DissentDisposeInfo = Request.Form["tbxDissentDisposeInfoEdit"];
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.AccountChild.Add(info);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string UpdateFive()
+        {
+            try
+            {
+                var accountChildID = 0;
+                int.TryParse(Request.Form["tbxAccountChildFiveID"], out accountChildID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = db.AccountChild.Find(accountChildID);
+
+                info.DissentLaunchPerson = Request.Form["tbxDissentLaunchPersonEdit"];
+                info.DissentLaunchPersonPhone = Request.Form["tbxDissentLaunchPersonPhoneEdit"];
+                if (Request.Form["tbxDissentLaunchDateEdit"] != string.Empty)
+                {
+                    info.DissentLaunchDate = Convert.ToDateTime(Request.Form["tbxDissentLaunchDateEdit"]);
+                }
+                else
+                {
+                    info.DissentLaunchDate = null;
+                }
+                if (Request.Form["tbxDissentAcceptDateEdit"] != string.Empty)
+                {
+                    info.DissentAcceptDate = Convert.ToDateTime(Request.Form["tbxDissentAcceptDateEdit"]);
+                }
+                else
+                {
+                    info.DissentAcceptDate = null;
+                }
+                info.DissentAcceptPerson = Request.Form["tbxDissentAcceptPersonEdit"];
+                info.DissentDisposePerson = Request.Form["tbxDissentDisposePersonEdit"];
+                if (Request.Form["tbxDissentReplyDateEdit"] != string.Empty)
+                {
+                    info.DissentReplyDate = Convert.ToDateTime(Request.Form["tbxDissentReplyDateEdit"]);
+                }
+                else
+                {
+                    info.DissentReplyDate = null;
+                }
+                info.DissentReason = Request.Form["tbxDissentReasonEdit"];
+                info.DissentDisposeInfo = Request.Form["tbxDissentDisposeInfoEdit"];
+
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
                 db.SaveChanges();

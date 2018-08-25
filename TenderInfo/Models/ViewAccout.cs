@@ -11,5 +11,7 @@ namespace TenderInfo.Models
         public List<AccountChild> accountChildFirst { get; set; }
         public List<AccountChild> accountChildSecond { get; set; }
         public List<AccountChild> accountChildThird { get; set; }
+        public List<AccountChild> accountChildFour { get; set; }
+        public List<AccountChild> accountChildFive { get; set; }
     }
 }

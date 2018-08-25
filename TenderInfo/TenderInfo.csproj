@@ -651,6 +651,10 @@
     <Compile Include="Migrations\201808220310172_edit15.Designer.cs">
       <DependentUpon>201808220310172_edit15.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808250152158_edit16.cs" />
+    <Compile Include="Migrations\201808250152158_edit16.Designer.cs">
+      <DependentUpon>201808250152158_edit16.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -712,7 +716,7 @@
     <Content Include="Views\Account\SearchInfoProject.cshtml" />
     <Content Include="Views\Account\EditAccountMaterial.cshtml" />
     <Content Include="Views\Account\NewAccountModal.cshtml" />
-    <Content Include="Views\Account\tsconfig.json" />
+    <Content Include="Views\Account\EditAccountProject.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -776,6 +780,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808220310172_edit15.resx">
       <DependentUpon>201808220310172_edit15.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808250152158_edit16.resx">
+      <DependentUpon>201808250152158_edit16.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

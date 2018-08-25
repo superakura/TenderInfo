@@ -13,178 +13,256 @@ namespace TenderInfo.Models
         [Key]
         public int AccountID { get; set; }//招标台账信息ID
 
+        /// <summary>
+        /// 项目类型，物资、框架、工程、服务
+        /// </summary>
         [StringLength(50)]
-        public string ProjectType { get; set; }//项目类型，物资、框架、工程、服务
+        public string ProjectType { get; set; }
 
+        /// <summary>
+        /// 项目名称
+        /// </summary>
         [Required]
         [StringLength(200)]
-        public string ProjectName { get; set; }//项目名称
+        public string ProjectName { get; set; }
 
+        /// <summary>
+        /// 项目文件编号
+        /// </summary>
         [StringLength(200)]
-        public string TenderFileNum { get; set; }//项目文件编号
+        public string TenderFileNum { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>线上/线下
         [StringLength(200)]
-        public string IsOnline { get; set; }//线上/线下
+        public string IsOnline { get; set; }
 
+        /// <summary>
+        /// 招标项目负责人姓名
+        /// </summary>
         [StringLength(200)]
-        public string ProjectResponsiblePersonName { get; set; }//招标项目负责人姓名
+        public string ProjectResponsiblePersonName { get; set; }
 
-        public int ProjectResponsiblePersonID { get; set; }//招标项目负责人ID
+        /// <summary>
+        /// 招标项目负责人ID
+        /// </summary>
+        public int ProjectResponsiblePersonID { get; set; }
 
+        /// <summary>
+        /// 使用单位名称--物资、框架
+        /// </summary>
         [StringLength(200)]
-        public string UsingDeptName { get; set; }//使用单位名称
+        public string UsingDeptName { get; set; }
 
-        public int UsingDeptID { get; set; }//使用单位ID
+        /// <summary>
+        /// 使用单位ID--物资、框架
+        /// </summary>
+        public int UsingDeptID { get; set; }
 
+        /// <summary>
+        /// 项目主责部门名称
+        /// </summary>
         [StringLength(200)]
-        public string ProjectResponsibleDeptName { get; set; }//项目主责部门名称
+        public string ProjectResponsibleDeptName { get; set; }
 
-        public int ProjectResponsibleDeptID { get; set; }//项目主责部门ID
+        /// <summary>
+        /// 项目主责部门ID
+        /// </summary>
+        public int ProjectResponsibleDeptID { get; set; }
 
+        /// <summary>
+        /// 申请人
+        /// </summary>
         [StringLength(200)]
-        public string ApplyPerson { get; set; }//申请人
+        public string ApplyPerson { get; set; }
 
+        /// <summary>
+        /// 投资计划批复文号
+        /// </summary>
         [StringLength(200)]
-        public string InvestPlanApproveNum { get; set; }//投资计划批复文号
+        public string InvestPlanApproveNum { get; set; }
 
+        /// <summary>
+        /// 资金来源--工程、服务
+        /// </summary>
         [StringLength(200)]
-        public string InvestSource { get; set; }//资金来源
+        public string InvestSource { get; set; }
 
+        /// <summary>
+        /// 招标范围
+        /// </summary>
         [StringLength(200)]
-        public string TenderRange { get; set; }//招标范围
+        public string TenderRange { get; set; }
 
+        /// <summary>
+        /// 是否带量--框架
+        /// </summary>
         [StringLength(200)]
-        public string ProjectTimeLimit { get; set; }//工期
+        public string IsHaveCount { get; set; }
 
+        /// <summary>
+        /// 工期--工程、服务
+        /// </summary>
         [StringLength(200)]
-        public string TenderMode { get; set; }//招标方式
+        public string ProjectTimeLimit { get; set; }
 
+        /// <summary>
+        /// 招标方式
+        /// </summary>
         [StringLength(200)]
-        public string BidEvaluation { get; set; }//评标方法
+        public string TenderMode { get; set; }
 
+        /// <summary>
+        /// 评标方法
+        /// </summary>
         [StringLength(200)]
-        public string SupplyPeriod { get; set; }//供货期
+        public string BidEvaluation { get; set; }
 
-        public DateTime? TenderProgramAuditDate { get; set; }//招标方案联审时间--可空
+        /// <summary>
+        /// 供货期
+        /// </summary>
+        [StringLength(200)]
+        public string SupplyPeriod { get; set; }
 
-        //收到方案日期--【物资、框架】
-        //收到申请日期（线上项目填方案分派日期）--【工程、服务】
+        /// <summary>
+        /// 招标方案联审时间--可空
+        /// </summary>
+        public DateTime? TenderProgramAuditDate { get; set; }
+
+        /// <summary>
+        /// 收到方案日期--【物资、框架】 收到申请日期（线上项目填方案分派日期）--【工程、服务】
+        /// </summary>
         public DateTime? ProgramAcceptDate { get; set; }
 
-        public DateTime? TenderFileSaleStartDate { get; set; }//发售招标文件开始日期--可空
+        /// <summary>
+        /// 发售招标文件开始日期--可空
+        /// </summary>
+        public DateTime? TenderFileSaleStartDate { get; set; }
 
-        public DateTime? TenderFileSaleEndDate { get; set; }//发售招标文件截止日期--可空
+        /// <summary>
+        /// 发售招标文件截止日期--可空
+        /// </summary>
+        public DateTime? TenderFileSaleEndDate { get; set; }
 
-        public DateTime? TenderStartDate { get; set; }//开标日期--可空
+        /// <summary>
+        /// 开标日期--可空
+        /// </summary>
+        public DateTime? TenderStartDate { get; set; }
 
-        public DateTime? TenderSuccessFileDate { get; set; }//中标通知书发出时间--可空
-
+        /// <summary>
+        /// 中标人名称
+        /// </summary>
         [StringLength(200)]
-        public string TenderSuccessPerson { get; set; }//中标人名称
+        public string TenderSuccessPerson { get; set; }
 
+        /// <summary>
+        /// 预计投资（万元）
+        /// </summary>
         [StringLength(200)]
-        public string PlanInvestPrice { get; set; }//预计投资（招标控制总价）（万元）
+        public string PlanInvestPrice { get; set; }
 
+        /// <summary>
+        /// 招标控制价--单价
+        /// </summary>
         [StringLength(200)]
-        public string TenderRestrictUnitPrice { get; set; }//招标控制单价
+        public string TenderRestrictUnitPrice { get; set; }
 
+        /// <summary>
+        /// 招标控制价--总价（万元）【物资、框架】招标控制价（万元）【工程、服务】
+        /// </summary>
         [StringLength(200)]
-        public string TenderSuccessUnitPrice { get; set; }//中标金额（万元）--单价
+        public string TenderRestrictSumPrice { get; set; }
 
-        //中标金额（万元）--总价--【物资、框架】
-        //中标金额（万元）--【工程、服务】
+        /// <summary>
+        /// 中标金额--单价
+        /// </summary>
+        [StringLength(200)]
+        public string TenderSuccessUnitPrice { get; set; }
+
+        /// <summary>
+        /// 【物资、框架】中标金额（万元）--总价【工程、服务】中标金额（万元）
+        /// </summary>
         [StringLength(200)]
         public string TenderSuccessSumPrice { get; set; }
 
+        /// <summary>
+        /// 【物资、框架】与控制价比节约资金（万元）【工程、服务】节约资金
+        /// </summary>
         [StringLength(200)]
-        public string SaveCapital { get; set; }//与控制价比节约资金（万元）
+        public string SaveCapital { get; set; }
 
+        /// <summary>
+        /// 招标文件联审--联审时间（小时）
+        /// </summary>
         [StringLength(200)]
-        public string EvaluationTime { get; set; }//评标委员会--评审时间（小时）--废止不用，暂时保留
+        public string TenderFileAuditTime { get; set; }
 
-        [StringLength(200)]
-        public string TenderFileAuditTime { get; set; }//招标文件联审--联审时间（小时）
-
+        /// <summary>
+        /// 招标失败原因
+        /// </summary>
         [StringLength(500)]
-        public string TenderFailReason { get; set; }//招标失败原因
+        public string TenderFailReason { get; set; }
 
-        #region 澄清（修改）
+        /// <summary>
+        /// 合同编号
+        /// </summary>
+        [StringLength(100)]
+        public string ContractNum { get; set; }
+
+        /// <summary>
+        /// 合同金额
+        /// </summary>
+        [StringLength(100)]
+        public string ContractPrice { get; set; }
+
+        /// <summary>
+        /// 相对人名称
+        /// </summary>
+        [StringLength(100)]
+        public string RelativePerson { get; set; }
+
+        /// <summary>
+        /// 招标情况
+        /// </summary>
         [StringLength(500)]
-        public string ClarifyLaunchPerson { get; set; }//澄清（修改）--提起人
+        public string TenderInfo { get; set; }
 
-        public DateTime? ClarifyLaunchDate { get; set; }//澄清（修改）--提出时间
-
+        /// <summary>
+        /// 备注
+        /// </summary>
         [StringLength(500)]
-        public string ClarifyReason { get; set; }//澄清（修改）--事由
+        public string TenderRemark { get; set; }
 
-        public DateTime? ClarifyAcceptDate { get; set; }//澄清（修改）--受理时间
+        /// <summary>
+        /// 台账信息变更日期时间
+        /// </summary>
+        public DateTime? InputDate { get; set; }
 
-        [StringLength(100)]
-        public string ClarifyDisposePerson { get; set; }//澄清（修改）--处理人
+        /// <summary>
+        /// 台账信息变更人员ID
+        /// </summary>
+        public int InputPersonID { get; set; }
 
-        [StringLength(100)]
-        public string IsClarify { get; set; }//澄清（修改）--澄清/修改
+        /// <summary>
+        /// 建立台账信息日期时间
+        /// </summary>
+        public DateTime? InsertDate { get; set; }
 
-        [StringLength(500)]
-        public string ClarifyDisposeInfo { get; set; }//澄清（修改）--处理情况
+        /// <summary>
+        /// 建立台账信息人员
+        /// </summary>
+        public int InsertPersonID { get; set; }
 
-        public DateTime? ClarifyReplyDate { get; set; }//澄清（修改）--答复时间
-        #endregion
+        /// <summary>
+        /// 招标进度ID
+        /// </summary>
+        public int ProgressID { get; set; }
 
-        #region 异议处理
-        [StringLength(100)]
-        public string DissentLaunchPerson { get; set; }//异议处理--提起人
-
-        [StringLength(100)]
-        public string DissentLaunchPersonPhone { get; set; }//异议处理--提起人联系方式
-
-        public DateTime? DissentLaunchDate { get; set; }//异议处理--异议时间
-
-        [StringLength(500)]
-        public string DissentReason { get; set; }//异议处理--事由
-
-        public DateTime? DissentAcceptDate { get; set; }//异议处理--受理时间
-
-        [StringLength(100)]
-        public string DissentAcceptPerson { get; set; }//异议处理--受理人
-
-        [StringLength(100)]
-        public string DissentDisposePerson { get; set; }//异议处理--处理人
-
-        [StringLength(500)]
-        public string DissentDisposeInfo { get; set; }//异议处理--处理情况
-
-        public DateTime? DissentReplyDate { get; set; }//异议处理--答复时间
-        #endregion
-
-        [StringLength(100)]
-        public string ContractNum { get; set; }//合同编号
-
-        [StringLength(100)]
-        public string ContractPrice { get; set; }//合同金额
-
-        [StringLength(100)]
-        public string RelativePerson { get; set; }//相对人名称
-
-        [StringLength(500)]
-        public string TenderInfo { get; set; }//招标情况
-
-        [StringLength(500)]
-        public string TenderRemark { get; set; }//备注
-
-        public DateTime? InputDate { get; set; }//台账信息变更日期时间
-
-        public int InputPersonID { get; set; }//台账信息变更人员ID
-
-        public DateTime? InsertDate { get; set; }//建立台账信息日期时间
-
-        public int InsertPersonID { get; set; }//建立台账信息人员
-
-        public int ProgressID { get; set; }//招标进度ID
-
+        /// <summary>
+        /// 是否与招标进度数据完成同步
+        /// </summary>
         [StringLength(50)]
-        public string IsSynchro { get; set; }//是否与招标进度数据完成同步
-
-        //public List<AccountChild> accountChild { get; set; }
+        public string IsSynchro { get; set; }
     }
 }

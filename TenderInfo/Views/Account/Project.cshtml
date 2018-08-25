@@ -1,8 +1,17 @@
 ﻿
 @{
-    ViewBag.Title = "Project";
+    ViewBag.Title = "招标管理台账--工程";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<span id="userRole" class="hidden">
+    @if (User.IsInRole("招标管理"))
+    {
+        @:招标管理
+    }
+</span>
+<span id="accountType" class="hidden">工程</span>
+
+@Html.Partial("NewAccountModal")
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">招标管理台账--工程</h3>
