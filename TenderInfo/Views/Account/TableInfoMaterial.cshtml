@@ -10,21 +10,6 @@
     <table id="bsTable"></table>
 </div>
 <script>
-    var editModel = function (id) {
-        //根据当前行的id获取当前的行数据
-        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
-    };
-    var queryParams = function (params) {
-        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-            limit: params.limit,   //页面大小
-            offset: params.offset,  //页码
-
-            projectName: $("#tbxProjectNameSearch").text(),//项目名称
-            projectType: $("#accountType").text()
-        };
-        return temp;
-    };
-
     $(function () {
         var columns = [
             [
@@ -611,7 +596,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + getJsonDateShort(valueOfElement.ClarifyLaunchDate) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyLaunchDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyLaunchDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -647,7 +632,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + getJsonDateShort(valueOfElement.ClarifyAcceptDate) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyAcceptDate))+ "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -719,7 +704,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + getJsonDateShort(valueOfElement.ClarifyReplyDate) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyReplyDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyReplyDate))  + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -773,7 +758,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + getJsonDateShort(valueOfElement.DissentLaunchDate) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.DissentLaunchDate === null ? "-" : getJsonDateShort(valueOfElement.DissentLaunchDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -809,7 +794,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + getJsonDateShort(valueOfElement.DissentAcceptDate) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.DissentAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.DissentAcceptDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -881,7 +866,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + getJsonDateShort(valueOfElement.DissentReplyDate) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.DissentReplyDate === null ? "-" : getJsonDateShort(valueOfElement.DissentReplyDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;

@@ -655,6 +655,18 @@
     <Compile Include="Migrations\201808250152158_edit16.Designer.cs">
       <DependentUpon>201808250152158_edit16.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808290529052_edit17.cs" />
+    <Compile Include="Migrations\201808290529052_edit17.Designer.cs">
+      <DependentUpon>201808290529052_edit17.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808290535592_edit18.cs" />
+    <Compile Include="Migrations\201808290535592_edit18.Designer.cs">
+      <DependentUpon>201808290535592_edit18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808290753035_edit19.cs" />
+    <Compile Include="Migrations\201808290753035_edit19.Designer.cs">
+      <DependentUpon>201808290753035_edit19.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -713,10 +725,13 @@
     <Content Include="Views\Account\Project.cshtml" />
     <Content Include="Views\Account\Service.cshtml" />
     <Content Include="Views\Account\TableInfoProject.cshtml" />
-    <Content Include="Views\Account\SearchInfoProject.cshtml" />
+    <Content Include="Views\Account\SearchInfo.cshtml" />
     <Content Include="Views\Account\EditAccountMaterial.cshtml" />
     <Content Include="Views\Account\NewAccountModal.cshtml" />
     <Content Include="Views\Account\EditAccountProject.cshtml" />
+    <Content Include="Views\Account\Frame.cshtml" />
+    <Content Include="Views\Account\EditAccountFrame.cshtml" />
+    <Content Include="Views\Account\TableInfoFrame.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -783,6 +798,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808250152158_edit16.resx">
       <DependentUpon>201808250152158_edit16.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808290529052_edit17.resx">
+      <DependentUpon>201808290529052_edit17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808290535592_edit18.resx">
+      <DependentUpon>201808290535592_edit18.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808290753035_edit19.resx">
+      <DependentUpon>201808290753035_edit19.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

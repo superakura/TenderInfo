@@ -1,0 +1,129 @@
+﻿
+<div class="row searchInfo">
+    <div class="col-md-12">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="tbxProjectNameSearch">项目名称：</label>
+                <input type="text" id="tbxProjectNameSearch" class="form-control" placeholder="项目名称">
+            </div>
+            <div class="form-group">
+                <label for="tbxTenderFileNumSearch">项目文件编号：</label>
+                <input type="text" id="tbxTenderFileNumSearch" class="form-control" placeholder="项目文件编号">
+            </div>
+            <div class="form-group">
+                <label for="ddlProjectResponsiblePersonSearch">招标项目负责人：</label>
+                <select id="ddlProjectResponsiblePersonSearch" class="form-control">
+                    <option value="" selected>全部</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ddlTenderInfoSearch">招标情况</label>
+                <select id="ddlTenderInfoSearch" name="ddlTenderInfoSearch" class="form-control input-sm">
+                    <option value="">全部</option>
+                    <option value="一次成功">一次成功</option>
+                    <option value="一次失败">一次失败</option>
+                    <option value="一次失败转谈判">一次失败转谈判</option>
+                    <option value="二次成功">二次成功</option>
+                    <option value="二次失败">二次失败</option>
+                    <option value="二次失败转谈判">二次失败转谈判</option>
+                    <option value="三次成功">三次成功</option>
+                    <option value="三次失败">三次失败</option>
+                    <option value="三次失败转谈判">三次失败转谈判</option>
+                    <option value="四次成功">四次成功</option>
+                    <option value="四次失败">四次失败</option>
+                    <option value="四次失败">四次失败</option>
+                    <option value="终止">终止</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tbxApplyPersonSearch">申请人：</label>
+                <input type="text" id="tbxApplyPersonSearch" class="form-control" placeholder="申请人">
+            </div>
+            <div class="form-group">
+                <label for="tbxPlanInvestPriceStartSearch">预计投资(万元)范围：</label>
+                <input type="text" id="tbxPlanInvestPriceStartSearch" class="form-control" placeholder="预计投资范围开始">--
+                <input type="text" id="tbxPlanInvestPriceEndSearch" class="form-control" placeholder="预计投资范围结束">
+            </div>
+            <div class="form-group">
+                <label for="tbxTenderStartDateStartSearch">开标日期范围：</label>
+                <input type="text" id="tbxTenderStartDateStartSearch" class="form-control searchDateTime" placeholder="开标日期范围开始">--
+                <input type="text" id="tbxTenderStartDateEndSearch" class="form-control searchDateTime" placeholder="开标日期范围结束">
+            </div>
+            <div class="form-group">
+                <label for="tbxTenderSuccessPersonSearch">中标人名称：</label>
+                <input type="text" id="tbxTenderSuccessPersonSearch" class="form-control" placeholder="中标人名称">
+            </div>
+            <button type="button" id="btnSearch" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+            <button type="button" id="btnReset" class="btn bg-navy">
+                <span class="glyphicon glyphicon-repeat"></span> 重置
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    var queryParams = function (params) {
+        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            limit: params.limit,   //页面大小
+            offset: params.offset,  //页码
+
+            projectName: $("#tbxProjectNameSearch").val(),//项目名称
+            tenderFileNum: $("#tbxTenderFileNumSearch").val(),//项目文件编号
+            projectResponsiblePersonID: $("#ddlProjectResponsiblePersonSearch").val(),//招标项目负责人ID
+            tenderInfo: $("#ddlTenderInfoSearch").val(),//招标情况
+            applyPerson: $("#tbxApplyPersonSearch").val(),//申请人
+            tenderSuccessPerson: $("#tbxTenderSuccessPersonSearch").val(),//中标人名称
+            tenderStartDateStart: $("#tbxTenderStartDateStartSearch").val(),//开标日期范围开始
+            tenderStartDateEnd: $("#tbxTenderStartDateEndSearch").val(),//开标日期范围结束
+            planInvestPriceStart: $("#tbxPlanInvestPriceStartSearch").val(),//预计投资范围开始
+            planInvestPriceEnd: $("#tbxPlanInvestPriceEndSearch").val(),//预计投资范围结束
+            projectType: $("#accountType").text()//项目类型
+        };
+        return temp;
+    };
+    $(document).ready(function () {
+        $(".searchDateTime").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true,
+            minView: 0,
+            forceParse: 0,
+            format: 'yyyy-mm-dd hh:ii'
+        });
+
+        GetProjectResponsiblePersonList("search");
+
+        //日期比较，返回true、false
+        function CompareDate(d1, d2) {
+            return ((new Date(d1.replace(/-/g, "\/"))) <= (new Date(d2.replace(/-/g, "\/"))));
+        }
+
+        //搜索按钮
+        $("#btnSearch").click(function () {
+            var inputTimeStart = $("#tbxTenderStartDateStartSearch").val();
+            var inputTimeEnd = $("#tbxTenderStartDateEndSearch").val();
+            if (inputTimeStart !== "" || inputTimeEnd !== "") {
+                if (CompareDate(inputTimeStart, inputTimeEnd)) {
+                    $("#bsTable").bootstrapTable('refresh');
+                }
+                else {
+                    toastr.error("日期范围必须填写完整，结束日期必须大于开始日期！", "提示");
+                    $(".searchDateTime").val("");
+                }
+            }
+            else {
+                $("#bsTable").bootstrapTable('refresh');
+            }
+        });
+
+        //重置按钮
+        $("#btnReset").click(function () {
+            $(".searchInfo input").val("");
+            $(".searchInfo select").val("");
+            $("#bsTable").bootstrapTable('refresh');
+        });
+    });
+</script>

@@ -60,22 +60,22 @@
     </div>
 </div>
 <script>
-    $(function () {
-        //加载项目负责人列表函数
-        function GetProjectResponsiblePersonList(type) {
-            $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
-                var list = "";
-                $.each(result, function (indexInArray, valueOfElement) {
-                    list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
-                });
-                if (type === "search") {
-                    $("#ddlProjectResponsiblePersonSearch").append(list);
-                }
-                else {
-                    $("#ddlProjectResponsiblePerson").empty().append(list);
-                }
+    //加载项目负责人列表函数
+    function GetProjectResponsiblePersonList(type) {
+        $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
+            var list = "";
+            $.each(result, function (indexInArray, valueOfElement) {
+                list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
             });
-        }
+            if (type === "search") {
+                $("#ddlProjectResponsiblePersonSearch").append(list);
+            }
+            else {
+                $("#ddlProjectResponsiblePerson").empty().append(list);
+            }
+        });
+    }
+    $(function () {
 
         function ClearInfo() {
             $("#tbxTenderFileNum,#tbxProjectName").val("");

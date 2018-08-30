@@ -159,44 +159,37 @@ namespace TenderInfo.Models
         /// <summary>
         /// 预计投资（万元）
         /// </summary>
-        [StringLength(200)]
-        public string PlanInvestPrice { get; set; }
+        public decimal? PlanInvestPrice { get; set; }
 
         /// <summary>
         /// 招标控制价--单价
         /// </summary>
-        [StringLength(200)]
-        public string TenderRestrictUnitPrice { get; set; }
+        public decimal? TenderRestrictUnitPrice { get; set; }
 
         /// <summary>
         /// 招标控制价--总价（万元）【物资、框架】招标控制价（万元）【工程、服务】
         /// </summary>
-        [StringLength(200)]
-        public string TenderRestrictSumPrice { get; set; }
+        public decimal? TenderRestrictSumPrice { get; set; }
 
         /// <summary>
         /// 中标金额--单价
         /// </summary>
-        [StringLength(200)]
-        public string TenderSuccessUnitPrice { get; set; }
+        public decimal? TenderSuccessUnitPrice { get; set; }
 
         /// <summary>
         /// 【物资、框架】中标金额（万元）--总价【工程、服务】中标金额（万元）
         /// </summary>
-        [StringLength(200)]
-        public string TenderSuccessSumPrice { get; set; }
+        public decimal? TenderSuccessSumPrice { get; set; }
 
         /// <summary>
         /// 【物资、框架】与控制价比节约资金（万元）【工程、服务】节约资金
         /// </summary>
-        [StringLength(200)]
-        public string SaveCapital { get; set; }
+        public decimal? SaveCapital { get; set; }
 
         /// <summary>
         /// 招标文件联审--联审时间（小时）
         /// </summary>
-        [StringLength(200)]
-        public string TenderFileAuditTime { get; set; }
+        public decimal? TenderFileAuditTime { get; set; }
 
         /// <summary>
         /// 招标失败原因
@@ -213,8 +206,7 @@ namespace TenderInfo.Models
         /// <summary>
         /// 合同金额
         /// </summary>
-        [StringLength(100)]
-        public string ContractPrice { get; set; }
+        public decimal? ContractPrice { get; set; }
 
         /// <summary>
         /// 相对人名称

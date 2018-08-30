@@ -43,14 +43,12 @@ namespace TenderInfo.Models
         /// <summary>
         /// 单价
         /// </summary>
-        [StringLength(200)]
-        public string QuotedPriceUnit { get; set; }//
+        public decimal? QuotedPriceUnit { get; set; }
 
         /// <summary>
         /// 【报价（万元）--工程、服务、框架】【总价（万元）--物资】
         /// </summary>
-        [StringLength(200)]
-        public string QuotedPriceSum { get; set; }
+        public decimal? QuotedPriceSum { get; set; }
 
         /// <summary>
         /// 初步评审是否被否决--是/否
@@ -86,14 +84,12 @@ namespace TenderInfo.Models
         /// <summary>
         /// 评标委员会--评审时间（小时）
         /// </summary>
-        [StringLength(200)]
-        public string EvaluationTime { get; set; }
+        public decimal? EvaluationTime { get; set; }
 
         /// <summary>
         /// 评标委员会--评审费
         /// </summary>
-        [StringLength(200)]
-        public string EvaluationCost { get; set; }
+        public decimal? EvaluationCost { get; set; }
         #endregion
 
         #region 招标文件联审信息
@@ -117,8 +113,7 @@ namespace TenderInfo.Models
         /// <summary>
         /// 招标文件联审--费用
         /// </summary>
-        [StringLength(200)]
-        public string TenderFileAuditCost { get; set; }
+        public decimal? TenderFileAuditCost { get; set; }
         #endregion
 
         #region 澄清（修改）
@@ -219,7 +214,7 @@ namespace TenderInfo.Models
         /// 异议处理--答复时间
         /// </summary>
         public DateTime? DissentReplyDate { get; set; }
-        #endregion
+        #endregion 
 
         /// <summary>
         ///框架附属文件
