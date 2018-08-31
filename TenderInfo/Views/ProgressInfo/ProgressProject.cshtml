@@ -108,6 +108,11 @@
                                             招标项目负责人
                                         </label>
                                         <span id="tbxProjectResponsiblePersonEdit" class="label label-success"></span>
+                                        <label for="ddlProgressStateEdit">进度：</label>
+                                        <select id="ddlProgressStateEdit" name="ddlProgressStateEdit" class="form-control">
+                                            <option value="对接">对接</option>
+                                            <option value="实施">实施</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -152,7 +157,7 @@
                                                 <label for="tbxProgramAcceptDateEdit">
                                                     招标方案接收时间
                                                 </label>
-                                                <input id="tbxProgramAcceptDateEdit" name="tbxProgramAcceptDateEdit" class="form-control input-sm" placeholder="招标方案接收时间" />
+                                                <input id="tbxProgramAcceptDateEdit" name="tbxProgramAcceptDateEdit" class="form-control input-sm progressDate" placeholder="招标方案接收时间" />
                                             </div>
                                         </div>
                                     </div>
@@ -162,7 +167,7 @@
                                                 <label for="tbxTenderFileSaleStartDateEdit">
                                                     发售招标文件开始日期
                                                 </label>
-                                                <input id="tbxTenderFileSaleStartDateEdit" name="tbxTenderFileSaleStartDateEdit" class="form-control input-sm" placeholder="发售招标文件开始日期" />
+                                                <input id="tbxTenderFileSaleStartDateEdit" name="tbxTenderFileSaleStartDateEdit" class="form-control input-sm progressDateTime" placeholder="发售招标文件开始日期" />
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -170,7 +175,7 @@
                                                 <label for="tbxTenderFileSaleEndDateEdit">
                                                     发售招标文件截止日期
                                                 </label>
-                                                <input id="tbxTenderFileSaleEndDateEdit" name="tbxTenderFileSaleEndDateEdit" class="form-control input-sm" placeholder="发售招标文件截止日期" />
+                                                <input id="tbxTenderFileSaleEndDateEdit" name="tbxTenderFileSaleEndDateEdit" class="form-control input-sm progressDateTime" placeholder="发售招标文件截止日期" />
                                             </div>
                                         </div>
                                     </div>
@@ -180,7 +185,7 @@
                                                 <label for="tbxTenderStartDateEdit">
                                                     开标日期
                                                 </label>
-                                                <input id="tbxTenderStartDateEdit" name="tbxTenderStartDateEdit" class="form-control input-sm" placeholder="开标日期" />
+                                                <input id="tbxTenderStartDateEdit" name="tbxTenderStartDateEdit" class="form-control input-sm progressDateTime" placeholder="开标日期" />
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -188,7 +193,7 @@
                                                 <label for="tbxTenderSuccessFileDateEdit">
                                                     中标通知书发出时间
                                                 </label>
-                                                <input id="tbxTenderSuccessFileDateEdit" name="tbxTenderSuccessFileDateEdit" class="form-control input-sm" placeholder="中标通知书发出时间" />
+                                                <input id="tbxTenderSuccessFileDateEdit" name="tbxTenderSuccessFileDateEdit" class="form-control input-sm progressDate" placeholder="中标通知书发出时间" />
                                             </div>
                                         </div>
                                     </div>
@@ -260,9 +265,9 @@
     $(function () {
         function ClearInfo() {
             $("#tbxContractResponsiblePerson,#tbxProjectName").val("");
-        };
+        }
 
-        $("#tbxProgramAcceptDateEdit,#tbxTenderFileSaleStartDateEdit,#tbxTenderFileSaleEndDateEdit,#tbxTenderStartDateEdit,#tbxTenderSuccessFileDateEdit").datetimepicker({
+        $(".progressDate").datetimepicker({
             language: 'zh-CN',
             weekStart: 1,
             todayBtn: 1,
@@ -272,6 +277,16 @@
             minView: 2,
             forceParse: 0,
             format: 'yyyy-mm-dd'
+        });
+        $(".progressDateTime").datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true,
+            minView: 0,
+            forceParse: 0,
+            format: 'yyyy-mm-dd hh:ii'
         });
 
         //新增按钮

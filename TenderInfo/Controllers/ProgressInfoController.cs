@@ -34,9 +34,10 @@ namespace TenderInfo.Controllers
             var offset = 0;
             int.TryParse(Request.Form["offset"], out offset);
 
-            var progressType = Request.Form["progressType"];//子类
+            var progressType = Request.Form["progressType"];//类别
             var progressTypeChild = Request.Form["progressTypeChild"];//子类
             var isOver = Request.Form["isOver"];//是否完成
+            var progressState = Request.Form["progressState"];//进度
             var projectName = Request.Form["projectName"];//项目名称
             var projectResponsiblePerson = 0;//项目负责人
             int.TryParse(Request.Form["projectResponsiblePerson"], out projectResponsiblePerson);
@@ -58,6 +59,10 @@ namespace TenderInfo.Controllers
             if (isOver != string.Empty)
             {
                 result = result.Where(w => w.IsOver == isOver);
+            }
+            if (progressState != string.Empty)
+            {
+                result = result.Where(w => w.ProgressState == progressState);
             }
             if (progressTypeChild != string.Empty)
             {
@@ -146,7 +151,10 @@ namespace TenderInfo.Controllers
                 info.ProgressType = Request.Form["tbxProgressTypeEdit"];
                 info.ProgressTypeChild = Request.Form["ddlProgressTypeChildEdit"];
                 info.ProjectName = Request.Form["tbxProjectNameEdit"];
-                info.InvestPrice = Request.Form["tbxInvestPriceEdit"];
+                info.ProgressState = Request.Form["ddlProgressStateEdit"];
+                decimal investPrice = 0;
+                decimal.TryParse( Request.Form["tbxInvestPriceEdit"],out investPrice);
+                info.InvestPrice = investPrice;
                 info.ContractResponsiblePerson = Request.Form["tbxContractResponsiblePersonEdit"];
 
                 #region 项目前期对接进度

@@ -15,8 +15,17 @@
             <div class="form-group">
                 <label for="ddlIsOverSearch">是否完成：</label>
                 <select id="ddlIsOverSearch" class="form-control">
-                    <option value="未完成" selected>未完成</option>
+                    <option value="" selected>全部</option>
+                    <option value="未完成">未完成</option>
                     <option value="已完成">已完成</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ddlProgressStateSearch">进度：</label>
+                <select id="ddlProgressStateSearch" class="form-control">
+                    <option value="" selected>全部</option>
+                    <option value="对接">对接</option>
+                    <option value="实施">实施</option>
                 </select>
             </div>
             <div class="form-group">
@@ -57,6 +66,7 @@
             progressType: $("#typeSearch").text(),//类型
             progressTypeChild: $("#ddlProgressTypeChildSearch").val(),//子类型
             isOver: $("#ddlIsOverSearch").val(),//是否完成
+            progressState: $("#ddlProgressStateSearch").val(),//进度
             projectName: $("#tbxProjectNameSearch").val(),//物资名称或项目名称
             projectResponsiblePerson: $("#ddlProjectResponsiblePersonSearch").val(),//招标项目负责人
             contractResponsiblePerson: $("#tbxContractResponsiblePersonSearch").val(),//合同签订部门项目责任人

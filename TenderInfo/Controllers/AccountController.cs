@@ -72,17 +72,19 @@ namespace TenderInfo.Controllers
 
         //获取台账信息，供进度同步信息时，选择要同步到哪个台账
         [HttpPost]
-        public JsonResult GetMaterialListForSelect()
+        public JsonResult GetAccountListForSelect()
         {
             try
             {
+                var accountType = Request.Form["accountType"];
                 var userInfo = App_Code.Commen.GetUserFromSession();
-                var result = from m in db.AccountMaterial
-                             where m.ProjectResponsiblePersonID == userInfo.UserID
-                             orderby m.AccountMaterialID
+                var result = from m in db.Account
+                             where m.ProjectResponsiblePersonID == userInfo.UserID&&m.IsSynchro!="是"
+                             orderby m.AccountID
                              select new
                              {
-                                 m.AccountMaterialID,
+                                 m.AccountID,
+                                 m.ProjectType,
                                  m.ProjectName,
                                  m.TenderFileNum,
                                  m.IsOnline,
@@ -91,6 +93,18 @@ namespace TenderInfo.Controllers
                                  m.ProjectResponsibleDeptName,
                                  m.ApplyPerson
                              };
+                switch (accountType)
+                {
+                    case "工程":
+                        result = result.Where(w => w.ProjectType == "工程" || w.ProjectType == "服务");
+                        break;
+                    case "物资":
+                        result = result.Where(w => w.ProjectType == "物资");
+                        break;
+                    case "框架":
+                        result = result.Where(w => w.ProjectType == "框架");
+                        break;
+                }
                 return Json(result);
             }
             catch (Exception ex)
@@ -101,25 +115,30 @@ namespace TenderInfo.Controllers
 
         //招标进度模块，同步数据到招标台账
         [HttpPost]
-        public string UpdateProgressMaterial()
+        public string UpdateProgress()
         {
             try
             {
-                var accountMaterialID = 0;
-                int.TryParse(Request.Form["accountMaterialID"], out accountMaterialID);
+                var accountID = 0;
+                int.TryParse(Request.Form["accountID"], out accountID);
 
-                var progressMaterialID = 0;
-                int.TryParse(Request.Form["progressMaterialID"], out progressMaterialID);
+                var progressID = 0;
+                int.TryParse(Request.Form["progressID"], out progressID);
 
-                var infoAccount = db.AccountMaterial.Find(accountMaterialID);
-                var infoProgress = db.ProgressInfo.Find(progressMaterialID);
+                var infoAccount = db.Account.Find(accountID);
+                var infoProgress = db.ProgressInfo.Find(progressID);
 
                 infoAccount.TenderProgramAuditDate = infoProgress.TenderProgramAuditDate;
                 infoAccount.ProgramAcceptDate = infoProgress.ProgramAcceptDate;
                 infoAccount.TenderFileSaleStartDate = infoProgress.TenderFileSaleStartDate;
                 infoAccount.TenderFileSaleEndDate = infoProgress.TenderFileSaleEndDate;
                 infoAccount.TenderStartDate = infoProgress.TenderStartDate;
-                infoAccount.TenderSuccessFileDate = infoProgress.TenderSuccessFileDate;
+                infoAccount.IsSynchro = "是";
+                infoAccount.ProgressID = progressID;
+
+                infoProgress.IsSynchro = "是";
+                infoProgress.AccountID = accountID;
+                
                 db.SaveChanges();
 
                 return "ok";
@@ -129,7 +148,35 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        //根据招标进度ID,删除招标进度、招标台账同步关系
+        [HttpPost]
+        public string DelSynchroByProgressID()
+        {
+            try
+            {
+                var progressID = 0;
+                int.TryParse(Request.Form["progressID"], out progressID);
+
+                var infoAccount = db.Account.Where(w=>w.ProgressID==progressID).FirstOrDefault();
+                var infoProgress = db.ProgressInfo.Find(progressID);
+
+                infoAccount.IsSynchro = null;
+                infoAccount.ProgressID = null;
+
+                infoProgress.AccountID = null;
+                infoProgress.IsSynchro = null;
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         #endregion
+
+        #region Crud
 
         //获取招标台账列表
         [HttpPost]
@@ -441,8 +488,9 @@ namespace TenderInfo.Controllers
                 throw;
             }
         }
+        #endregion
 
-        #region CrudMaterialEdit
+        #region CrudChild
         [HttpPost]
         public string InsertFirst()
         {

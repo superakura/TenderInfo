@@ -601,16 +601,12 @@
                                     <table class="table table-bordered table-condensed table-hover">
                                         <thead>
                                             <tr>
-                                                <th rowspan="2" class="text-center" style="vertical-align:middle">操作</th>
-                                                <th rowspan="2" class="text-center" style="vertical-align:middle">购买招标文件潜在投标人</th>
-                                                <th rowspan="2" class="text-center" style="vertical-align:middle">投标人</th>
-                                                <th rowspan="2" class="text-center" style="vertical-align:middle">产品制造商（代理、贸易商投标时填写）</th>
-                                                <th colspan="2" rowspan="1" class="text-center">报价（元）</th>
-                                                <th rowspan="2" class="text-center" style="vertical-align:middle">初步评审被否决时在此栏说明</th>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-center">单价</th>
-                                                <th class="text-center">总价</th>
+                                                <th class="text-center" style="vertical-align:middle">操作</th>
+                                                <th class="text-center" style="vertical-align:middle">购买招标文件潜在投标人</th>
+                                                <th class="text-center" style="vertical-align:middle">投标人</th>
+                                                <th class="text-center" style="vertical-align:middle">产品制造商（代理、贸易商投标时填写）</th>
+                                                <th class="text-center">投标总价（万元）</th>
+                                                <th class="text-center" style="vertical-align:middle">初步评审是否被否决</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tableFirst"></tbody>
@@ -781,7 +777,7 @@
                                     <table class="table table-bordered table-condensed table-hover">
                                         <thead>
                                             <tr>
-                                                <th colspan="9" class="text-center">异议处理</th>
+                                                <th colspan="10" class="text-center">异议处理</th>
                                             </tr>
                                             <tr>
                                                 <th class="text-center">操作</th>
@@ -1232,7 +1228,6 @@
                     list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
                     list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
                     list += "<td>" + valueOfElement["ProductManufacturer"] + "</td>";
-                    list += "<td>" + valueOfElement["QuotedPriceUnit"] + "</td>";
                     list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
                     list += "<td>" + valueOfElement["NegationExplain"] + "</td>";
                     list += "</tr>";
@@ -1558,7 +1553,7 @@
                         success: function (result) {
                             if (result === "ok") {
                                 toastr.success("操作成功！", "提示");
-                                window.location.href = "/Account/Material";
+                                window.location.href = "/Account/Frame";
                             }
                         },
                         error: function (error) {

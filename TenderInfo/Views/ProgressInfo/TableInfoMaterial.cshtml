@@ -12,6 +12,7 @@
 
         $("#tbxProjectNameEdit").val(row.ProjectName);
         $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
+        $("#ddlProgressStateEdit").val(row.ProgressState);
         $("#tbxInvestPriceEdit").val(row.InvestPrice);
         $("#tbxMaterialCountEdit").val(row.MaterialCount);
         $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
@@ -24,9 +25,9 @@
         $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate == null ? "" : getJsonDateShort(row.TenderProgramAuditDate));
 
         $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
-        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
-        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
-        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
+        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateTimeMinute(row.TenderFileSaleStartDate));
+        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateTimeMinute(row.TenderFileSaleEndDate));
+        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateTimeMinute(row.TenderStartDate));
         $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
 
         $("#tbxOtherExplainEdit").val(row.OtherExplain);
@@ -65,8 +66,14 @@
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: false,                //是否启用点击选中行
+            queryParams: function (params) {
+                var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                    accountType: row.ProgressType    //进度类型
+                };
+                return temp;
+            },
             //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-            uniqueId: "AccountMaterialID",          //每一行的唯一标识，一般为主键列
+            uniqueId: "AccountID",          //每一行的唯一标识，一般为主键列
             showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图
             detailView: false,                   //是否显示父子表
@@ -81,7 +88,7 @@
                 {
                     title: '序号',
                     valign: "middle",
-                    align:"center",
+                    align: "center",
                     width: 45,
                     formatter: function (value, row, index) {
                         return index + 1;
@@ -162,14 +169,18 @@
                         }
                     },
                     {
-                        title: '台账选择',
+                        title: '台账同步',
                         rowspan: 2,
                         colspan: 1,
                         valign: "middle",
                         visible: true,
                         formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                            var html = '<button type="button" onclick="selectModel(' + row.ProgressInfoID + ')" class="btn btn-link">选择</button >';
-                            return html;
+                            if (row.IsSynchro === "是") {
+                                return '<button type="button" onclick="DelSynchro(' + row.ProgressInfoID + ')" class="btn btn-link">删除</button >';
+                            }
+                            else {
+                                return '<button type="button" onclick="selectModel(' + row.ProgressInfoID + ')" class="btn btn-link">选择</button >';
+                            }
                         }
                     },
                     {
@@ -204,6 +215,13 @@
                         colspan: 1,
                         valign: "middle",
                         visible: false
+                    },
+                    {
+                        field: 'ProgressState',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '进度'
                     },
                     {
                         field: 'InvestPrice',
@@ -278,15 +296,7 @@
                         valign: "middle",
                         title: '技术规格书（技术文件、图纸等）定稿时间',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateShort(row.TechnicalSpecificationApproveDate);
                         }
                     },
                     {
@@ -294,15 +304,7 @@
                         valign: "middle",
                         title: '综合法评标标准定稿时间',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateShort(row.SynthesizeEvaluationRuleApproveDate);
                         }
                     },
                     {
@@ -310,15 +312,7 @@
                         valign: "middle",
                         title: '招标方案联审时间',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateShort(row.TenderProgramAuditDate);
                         }
                     },
                     {
@@ -326,15 +320,7 @@
                         valign: "middle",
                         title: '招标方案接收时间',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateShort(row.ProgramAcceptDate);
                         }
                     },
                     {
@@ -342,15 +328,7 @@
                         valign: "middle",
                         title: '发售招标文件开始日期',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateTimeMinute(row.TenderFileSaleStartDate);
                         }
                     },
                     {
@@ -358,31 +336,20 @@
                         valign: "middle",
                         title: '发售招标文件截止日期',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateTimeMinute(row.TenderFileSaleEndDate);
                         }
                     },
                     {
                         field: 'TenderStartDate',
                         valign: "middle",
                         title: '开标日期',
+                        cellStyle: function (value, row, index) {
+                            return {
+                                classes: "text-nowrap"
+                            };
+                        },
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateTimeMinute(row.TenderStartDate);
                         }
                     },
                     {
@@ -438,6 +405,14 @@
             paginationPreText: "上一页",
             paginationNextText: "下一页",
             showExport: false,                     //是否显示导出
+            rowStyle: function (row, index) {
+                if (row.ProgressState === "对接") {
+                    return { classes: "success" };
+                }
+                else {
+                    return { classes: "active" };
+                }
+            },
             columns: columns,
             fixedColumns: true,
             fixedNumber: 4

@@ -249,7 +249,7 @@ namespace TenderInfo.Models
         /// <summary>
         /// 招标进度ID
         /// </summary>
-        public int ProgressID { get; set; }
+        public int? ProgressID { get; set; }
 
         /// <summary>
         /// 是否与招标进度数据完成同步

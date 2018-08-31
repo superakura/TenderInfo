@@ -12,6 +12,7 @@
 
         $("#tbxProjectNameEdit").val(row.ProjectName);
         $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
+        $("#ddlProgressStateEdit").val(row.ProgressState);
         $("#tbxInvestPriceEdit").val(row.InvestPrice);
         $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
         $("#tbxContractResponsiblePersonEdit").val(row.ContractResponsiblePerson);
@@ -109,6 +110,13 @@
                         colspan: 1,
                         valign: "middle",
                         visible: false
+                    },
+                    {
+                        field: 'ProgressState',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '进度'
                     },
                     {
                         field: 'InvestPrice',

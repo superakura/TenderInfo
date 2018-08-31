@@ -667,6 +667,18 @@
     <Compile Include="Migrations\201808290753035_edit19.Designer.cs">
       <DependentUpon>201808290753035_edit19.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808300529582_edit20.cs" />
+    <Compile Include="Migrations\201808300529582_edit20.Designer.cs">
+      <DependentUpon>201808300529582_edit20.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808300546093_edit21.cs" />
+    <Compile Include="Migrations\201808300546093_edit21.Designer.cs">
+      <DependentUpon>201808300546093_edit21.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808310226470_edit22.cs" />
+    <Compile Include="Migrations\201808310226470_edit22.Designer.cs">
+      <DependentUpon>201808310226470_edit22.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -807,6 +819,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808290753035_edit19.resx">
       <DependentUpon>201808290753035_edit19.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808300529582_edit20.resx">
+      <DependentUpon>201808300529582_edit20.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808300546093_edit21.resx">
+      <DependentUpon>201808300546093_edit21.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808310226470_edit22.resx">
+      <DependentUpon>201808310226470_edit22.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
