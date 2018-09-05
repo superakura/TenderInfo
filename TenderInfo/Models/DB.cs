@@ -43,5 +43,6 @@ namespace TenderInfo.Models
 
         //public virtual DbSet<TechnicSpecificationApprove> TechnicSpecificationApprove { get; set; }//技术规格书审批表
         public virtual DbSet<SampleDelegation> SampleDelegation { get; set; }//送样委托表
+        public virtual DbSet<CheckReportFile> CheckReportFile { get; set; }//送样委托检验报告文件表
     }
 }

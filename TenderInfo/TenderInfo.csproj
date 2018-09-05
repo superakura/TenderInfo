@@ -679,12 +679,25 @@
     <Compile Include="Migrations\201808310226470_edit22.Designer.cs">
       <DependentUpon>201808310226470_edit22.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809030650010_edit23.cs" />
+    <Compile Include="Migrations\201809030650010_edit23.Designer.cs">
+      <DependentUpon>201809030650010_edit23.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809040041408_edit24.cs" />
+    <Compile Include="Migrations\201809040041408_edit24.Designer.cs">
+      <DependentUpon>201809040041408_edit24.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809050556553_edit25.cs" />
+    <Compile Include="Migrations\201809050556553_edit25.Designer.cs">
+      <DependentUpon>201809050556553_edit25.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
     <Compile Include="Models\AccountProject.cs" />
     <Compile Include="Models\AccountProjectChild.cs" />
     <Compile Include="Models\AuthorityInfo.cs" />
+    <Compile Include="Models\CheckReportFile.cs" />
     <Compile Include="Models\DB.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -828,6 +841,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808310226470_edit22.resx">
       <DependentUpon>201808310226470_edit22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809030650010_edit23.resx">
+      <DependentUpon>201809030650010_edit23.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809040041408_edit24.resx">
+      <DependentUpon>201809040041408_edit24.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809050556553_edit25.resx">
+      <DependentUpon>201809050556553_edit25.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

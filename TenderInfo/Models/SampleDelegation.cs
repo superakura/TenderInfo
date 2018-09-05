@@ -10,72 +10,113 @@ namespace TenderInfo.Models
     [Table("SampleDelegation")]
     public class SampleDelegation
     {
+        /// <summary>
+        /// 送样委托表主键ID
+        /// </summary>
         [Key]
         public int SampleDelegationID { get; set; }
 
+        /// <summary>
+        /// 样品名称
+        /// </summary>
         [StringLength(200)]
-        public string ProjectName { get; set; }//项目名称
+        public string SampleName { get; set; }
 
+        /// <summary>
+        /// 样品数量
+        /// </summary>
+        public int? SampleNum { get; set; }
+
+        /// <summary>
+        /// 送样委托状态
+        /// 技术要求录入、质检接收审核、质检接收回退、质检领导确认、检验报告上传、全否
+        /// </summary>
         [StringLength(200)]
-        public string SampleName { get; set; }//样品名称
+        public string SampleDelegationState { get; set; }
 
-        public DateTime? StartTenderDate { get; set; }//开标时间
+        /// <summary>
+        /// 送样检验技术要求--技术人员填写
+        /// </summary>
+        [StringLength(2000)]
+        public string SampleTechnicalRequirement { get; set; }
 
-        public int SampleDelegationAcceptPerson { get; set; }//技术处送样委托单接收人
+        /// <summary>
+        /// 开标时间
+        /// </summary>
+        public DateTime? StartTenderDate { get; set; }
 
-        public int ProjectResponsiblePerson { get; set; }//招标项目负责人
+        /// <summary>
+        /// 技术接收人ID
+        /// </summary>
+        public int SampleDelegationAcceptPerson { get; set; }
 
+        /// <summary>
+        /// 招标项目负责人ID
+        /// </summary>
+        public int ProjectResponsiblePerson { get; set; }
+
+        #region 一次编码表
+        /// <summary>
+        /// 一次编码表文件名
+        /// </summary>
         [StringLength(500)]
-        public string FirstCodingFileName { get; set; }//一次编码表文件名
+        public string FirstCodingFileName { get; set; }
 
-        public int FirstCodingInputPerson { get; set; }//一次编码表上传人员
+        /// <summary>
+        /// 一次编码表上传人员ID
+        /// </summary>
+        public int FirstCodingInputPerson { get; set; }
 
+        /// <summary>
+        /// 一次编码表上传人员姓名
+        /// </summary>
         [StringLength(100)]
-        public string FirstCodingInputPersonName { get; set; }//一次编码表上传人员姓名
+        public string FirstCodingInputPersonName { get; set; }
 
-        public DateTime? FirstCodingInputDate { get; set; }//一次编码表上传时间
+        /// <summary>
+        /// 一次编码表上传时间
+        /// </summary>
+        public DateTime? FirstCodingInputDate { get; set; }
+        #endregion
 
+        #region 二次编码表
+        /// <summary>
+        /// 二次编码表文件名
+        /// </summary>
         [StringLength(500)]
-        public string SecondCodingFileName { get; set; }//二次编码表文件名
+        public string SecondCodingFileName { get; set; }
 
-        public int SecondCodingInputPerson { get; set; }//二次编码表上传人员
+        /// <summary>
+        /// 二次编码表上传人员ID
+        /// </summary>
+        public int SecondCodingInputPerson { get; set; }
 
+        /// <summary>
+        /// 二次编码表上传人员姓名
+        /// </summary>
         [StringLength(100)]
-        public string SecondCodingInputPersonName { get; set; }//二次编码表上传人员姓名
+        public string SecondCodingInputPersonName { get; set; }
 
-        public DateTime? SecondCodingInputDate { get; set; }//二次编码表上传时间
+        /// <summary>
+        /// 二次编码表上传时间
+        /// </summary>
+        public DateTime? SecondCodingInputDate { get; set; }
+        #endregion
 
-        [StringLength(500)]
-        public string SampleDelegationFileName { get; set; }//送样委托单文件名
+        /// <summary>
+        /// 添加人员ID
+        /// </summary>
+        public int InputPerson { get; set; }
 
-        public int SampleDelegationInputPerson { get; set; }//送样委托单上传人员
-
+        /// <summary>
+        /// 添加人员姓名
+        /// </summary>
         [StringLength(100)]
-        public string SampleDelegationInputPersonName { get; set; }//送样委托单上传人员姓名
+        public string InputPersonName { get; set; }
 
-        public DateTime? SampleDelegationInputDate { get; set; }//送样委托单上传时间
-
-        [StringLength(500)]
-        public string SampleDelegationFileNameOne { get; set; }//送样委托单文件名One
-
-        public int SampleDelegationInputPersonOne { get; set; }//送样委托单上传人员One
-
-        [StringLength(100)]
-        public string SampleDelegationInputPersonNameOne { get; set; }//送样委托单上传人员姓名One
-
-        public DateTime? SampleDelegationInputDateOne { get; set; }//送样委托单上传时间One
-
-        [StringLength(500)]
-        public string CheckReportFileName { get; set; }//检验报告文件名
-
-        public int CheckReportInputPerson { get; set; }//检验报告上传人员
-
-        [StringLength(100)]
-        public string CheckReportInputPersonName { get; set; }//检验报告上传人员姓名
-
-        public DateTime? CheckReportInputDate { get; set; }//检验报告上传时间
-
-        [StringLength(200)]
-        public string SampleDelegationState { get; set; }//送样委托状态
+        /// <summary>
+        /// 添加时间
+        /// </summary>
+        public DateTime? InputDateTime { get; set; }
     }
 }

@@ -23,5 +23,16 @@ namespace TenderInfo.App_Code
 
             return cells.ExportDataTableAsString(0, 0, cells.MaxDataRow + 1, cells.MaxDataColumn + 1, true);
         }
+
+        public static string GetDateTimeString()
+        {
+            return DateTime.Now.Year.ToString() +
+                DateTime.Now.Month.ToString() +
+                DateTime.Now.Day.ToString() +
+                DateTime.Now.Hour.ToString() +
+                DateTime.Now.Minute.ToString() +
+                DateTime.Now.Second.ToString() +
+                DateTime.Now.Millisecond.ToString();
+        }
     }
 }

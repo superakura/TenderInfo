@@ -3,17 +3,19 @@
     ViewBag.Title = "招标样品检测信息管理";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="modal fade" id="FirstCodeModal">
+<script src="~/ueditor/ueditor.config.js"></script>
+<script src="~/ueditor/ueditor.all.min.js"></script>
+<div class="modal fade" id="FirstModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h5 class="modal-title">一次编码表、送样委托单录入</h5>
+                <h5 class="modal-title">添加送样委托</h5>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="form-horizontal">
-                        <form id="FirstCodeForm" method="post" enctype="multipart/form-data">
+                        <form id="FirstForm" method="post" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="form-group">
@@ -24,8 +26,8 @@
                                 <div class="col-md-2"></div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="tbxStartTenderDate">开标时间<span class="text-danger">(必填)</span></label>
-                                        <input type="text" class="form-control" name="tbxStartTenderDate" id="tbxStartTenderDate" placeholder="开标时间">
+                                        <label for="tbxSampleNum">样品个数<span class="text-danger">(必填)</span></label>
+                                        <input type="text" class="form-control" name="tbxSampleNum" id="tbxSampleNum" placeholder="样品个数">
                                     </div>
 
                                 </div>
@@ -40,7 +42,7 @@
                                 <div class="col-md-2"></div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="ddlSampleDelegationAcceptPerson">技术处送样委托单接收人</label>
+                                        <label for="ddlSampleDelegationAcceptPerson">送样委托技术接收人</label>
                                         <select id="ddlSampleDelegationAcceptPerson" name="ddlSampleDelegationAcceptPerson" class="form-control"></select>
                                     </div>
                                 </div>
@@ -48,15 +50,8 @@
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="firstCodingFile">一次编码表<span class="text-danger">(必填)</span></label>
-                                        <input id="firstCodingFile" name="firstCodingFile" type="file" class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="col-md-2"></div>
-                                <div class="col-md-5">
-                                    <div class="form-group">
-                                        <label for="sampleDelegationFirstFile">送样委托单<span class="text-danger">(必填)</span></label>
-                                        <input id="sampleDelegationFirstFile" name="sampleDelegationFirstFile" type="file" class="form-control" />
+                                        <label for="tbxStartTenderDate">开标时间<span class="text-danger">(必填)</span></label>
+                                        <input type="text" class="form-control" name="tbxStartTenderDate" id="tbxStartTenderDate" placeholder="开标时间">
                                     </div>
                                 </div>
                             </div>
@@ -73,40 +68,36 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="SecondCodeModal">
-    <div class="modal-dialog">
+<div class="modal fade" id="SecondModal">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h5 class="modal-title">二次编码表、送样委托单录入</h5>
+                <h5 class="modal-title">送样委托技术要求录入</h5>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="form-horizontal">
-                        <form id="SecondCodeForm" method="post" enctype="multipart/form-data">
+                        <form id="SecondForm" method="post" enctype="multipart/form-data">
                             <input id="secondInfoID" name="secondInfoID" class="hidden" type="text" />
                             <div class="row">
-                                <div class="col-md-12">
-                                    <div class="callout callout-success">
-                                        <h4>招标中心送样委托单</h4>
-                                        <p><a id="lblSampleDelegationFirstFileName" href="#">送样委托单</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-5">
-                                    <div class="form-group">
-                                        <label for="secondCodingFile">二次编码表<span class="text-danger">(必填)</span></label>
-                                        <input id="secondCodingFile" name="secondCodingFile" type="file" class="form-control" />
-                                    </div>
+                                    <h4>
+                                        样品名称：<span id="lblSampleNameSecond"></span>
+                                    </h4>
                                 </div>
                                 <div class="col-md-2"></div>
                                 <div class="col-md-5">
-                                    <div class="form-group">
-                                        <label for="sampleDelegationFile">送样委托单<span class="text-danger">(必填)</span></label>
-                                        <input id="sampleDelegationFile" name="sampleDelegationFile" type="file" class="form-control" />
-                                    </div>
+                                    <h4>
+                                        样品数量：<span id="lblSampleNumSecond"></span>
+                                    </h4>
                                 </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <label for="tbxContent">样品技术要求</label>
+                                <script id="editor" type="text/plain" style="height:400px;">
+                                </script>
                             </div>
                         </form>
                     </div>
@@ -162,6 +153,39 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="UploadModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">文件上传</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="UploadForm" method="post" enctype="multipart/form-data">
+                            <input id="UploadInfoID" name="UploadInfoID" class="hidden" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="uploadFile">上传文件<span class="text-danger">(必填)</span></label>
+                                        <input id="uploadFile" name="uploadFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnUploadFileSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="EditTenderDateModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -194,7 +218,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="tbxEditTenderDateReason">修改原因<span class="text-danger">(必填)</span></label>
-                                        <textarea id="tbxEditTenderDateReason" name="tbxEditTenderDateReason"  class="form-control" rows="2" cols="20"></textarea>
+                                        <textarea id="tbxEditTenderDateReason" name="tbxEditTenderDateReason" class="form-control" rows="2" cols="20"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -234,6 +258,92 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="ShowModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">送样委托单</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <span id="lblSampleDelegationIDShow" class="hidden"></span>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h5>样品名称：<span id="lblSampleNameShow"></span></h5>
+                            </div>
+                            <div class="col-md-2"></div>
+                            <div class="col-md-5">
+                                <h5>样品数量：<span id="lblSampleNumShow"></span></h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h5>招标负责人：<span id="lblProjectResponsiblePersonNameShow"></span></h5>
+                            </div>
+                            <div class="col-md-2"></div>
+                            <div class="col-md-5">
+                                <h5>技术接收人：<span id="lblAcceptPersonNameShow"></span></h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h5>开标时间：<span id="lblStartTenderDateShow"></span></h5>
+                            </div>
+                            <div class="col-md-2"></div>
+                            <div class="col-md-5">
+                            </div>
+                        </div>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">检验技术要求</div>
+                            <div class="panel-body">
+                                <div id="lblSampleTechnicalRequirementShow"></div>
+                            </div>
+                        </div>
+                        <table class="table table-condensed table-bordered">
+                            <thead>
+                                <tr class="success">
+                                    <th colspan="5" class="text-center">
+                                        送样委托单接收、回退、确认信息
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>操作人</th>
+                                    <th>操作时间</th>
+                                    <th>状态</th>
+                                    <th>回退原因</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableCheckAudit"></tbody>
+                        </table>
+                        <div class="row" id="panelBackReason">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="tbxBackReason">回退原因</label>
+                                    <textarea id="tbxBackReason" name="tbxBackReason" class="form-control" rows="2" cols="20"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnAuditBackSubmit" class="btn btn-danger">
+                        <i class="glyphicon glyphicon-remove"></i> 回退
+                    </button>
+                    <button type="button" id="btnAuditOkSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 接收
+                    </button>
+                    <button type="button" id="btnAuditLeaderSubmit" class="btn btn-success">
+                        <i class="glyphicon glyphicon-ok"></i> 确认
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">招标样品检测信息管理</h3>
@@ -265,6 +375,8 @@
 
 <script>
     $(function () {
+        var ue = UE.getEditor('editor');
+
         //加载项目负责人列表
         GetProjectResponsiblePersonList("search");
         function GetProjectResponsiblePersonList(type) {
@@ -294,8 +406,8 @@
         }
 
         //清空FirstCodeModal表单函数
-        function clearFirstCodeModal() {
-            $("#tbxSampleName,#tbxStartTenderDate,#firstCodingFile,#sampleDelegationFirstFile").val("");
+        function clearFirstModal() {
+            $("FirstForm input").val("");
             $("label.error").hide();
             $(".error").removeClass("error");
         }
@@ -313,19 +425,18 @@
 
         //新增按钮
         $("#btnAdd").click(function () {
-            clearFirstCodeModal();
+            clearFirstModal();
             GetAcceptUserList("modal");
             GetProjectResponsiblePersonList();
-            $('#FirstCodeModal').modal('show');
+            $('#FirstModal').modal('show');
         });
 
-        //对FirstCodeForm表单进行前端验证
-        var validFirstCode = $("#FirstCodeForm").validate({
+        //对FirstForm表单进行前端验证
+        var validFirstForm = $("#FirstForm").validate({
             rules: {
                 tbxSampleName: { required: true, maxlength: 100 },
                 tbxStartTenderDate: { required: true, maxlength: 20 },
-                firstCodingFile: { required: true },
-                sampleDelegationFirstFile: { required: true }
+                tbxSampleNum: { required: true, number: true }
             }
         });
 
@@ -353,20 +464,27 @@
             }
         });
 
-        //一次编码表提交按钮
+        //对UploadForm表单进行前端验证
+        var validUploadForm = $("#UploadForm").validate({
+            rules: {
+                uploadFile: { required: true }
+            }
+        });
+
+        //添加送样委托提交按钮
         $("#btnFirstSubmit").click(function () {
-            if (validFirstCode.form()) {
+            if (validFirstForm.form()) {
                 Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
                     if (!e) {
                         return;
                     }
                     else {
-                        $("#FirstCodeForm").ajaxSubmit({
-                            url: "/SampleDelegation/UploadFirstCodingFile",
+                        $("#FirstForm").ajaxSubmit({
+                            url: "/SampleDelegation/Insert",
                             type: "post",
                             success: function (result) {
-                                if (result.state == "ok") {
-                                    $("#FirstCodeModal").modal("hide");
+                                if (result === "ok") {
+                                    $("#FirstModal").modal("hide");
                                     toastr.success("操作成功！", "提示");
                                     $("#bsTable").bootstrapTable('refresh');
                                 }
@@ -378,38 +496,35 @@
                         });
                     }
                 });
-            };
+            }
         });
 
-        //二次编码表提交按钮
+        //技术要求提交按钮
         $("#btnSecondSubmit").click(function () {
-            if (validSecondCode.form()) {
-                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                    if (!e) {
-                        return;
-                    }
-                    else {
-                        $("#SecondCodeForm").ajaxSubmit({
-                            url: "/SampleDelegation/UploadSecondCodingFile",
-                            type: "post",
-                            success: function (result) {
-                                if (result.state === "ok") {
-                                    $("#SecondCodeModal").modal("hide");
-                                    toastr.success("操作成功！", "提示");
-                                    $("#bsTable").bootstrapTable('refresh');
-                                }
-                            },
-                            error: function (error) {
-                                toastr.error(error, "提示");
-                                return;
-                            }
-                        });
-                    }
-                });
-            };
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var id = $("#secondInfoID").val();
+                    var content = UE.getEditor("editor").getContent();
+                    var args = { "id": id, "content": content };
+                    $.post("/SampleDelegation/UpdateSampleTechnicalRequirement", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result === "ok") {
+                            $("#SecondModal").modal("hide");
+                            toastr.success("操作成功！", "提示");
+                            $("#bsTable").bootstrapTable('refresh');
+                        }
+                        else {
+                            $("#SecondModal").modal("hide");
+                            toastr["error"]("保存错误，请联系5613877！", "提示");
+                        }
+                    });
+                }
+            });
         });
 
-        //二次编码表提交按钮
+        //检验报告提交按钮
         $("#btnCheckReportSubmit").click(function () {
             if (validCheckReport.form()) {
                 Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
@@ -463,6 +578,34 @@
                     }
                 });
             };
+        });
+
+        //文件上传提交按钮
+        $("#btnUploadFileSubmit").click(function () {
+            if (validUploadForm.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#UploadForm").ajaxSubmit({
+                            url: "/SampleDelegation/UploadFile",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#UploadModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            }
         });
     });
 </script>
