@@ -13,39 +13,73 @@ namespace TenderInfo.Models
         [Key]
         public int LogID { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string LogType { get; set; }//日志记录类型
+        /// <summary>
+        /// 日志记录类型，非空
+        /// </summary>
+        [Required][StringLength(100)]
+        public string LogType { get; set; }
 
-        [Required]
+        /// <summary>
+        /// 日志内容，非空
+        /// </summary>
+        [Required][StringLength(500)]
+        public string LogContent { get; set; }
+
+        /// <summary>
+        /// 日志操作数据ID，非空
+        /// </summary>
+        public int LogDataID { get; set; }
+
+        /// <summary>
+        /// 日志产生原因，可空
+        /// </summary>
         [StringLength(500)]
-        public string LogContent { get; set; }//日志内容
+        public string LogReason { get; set; }
 
-        public int LogDataID { get; set; }//日志操作数据ID
+        /// <summary>
+        /// 操作人员ID，非空
+        /// </summary>
+        public int InputPersonID { get; set; }
 
-        [StringLength(500)]
-        public string LogReason { get; set; }//日志产生原因
-
-        public int InputPersonID { get; set; }//操作人员ID
-
+        /// <summary>
+        /// 操作人员姓名，可空
+        /// </summary>
         [StringLength(50)]
-        public string InputPersonName { get; set; }//操作人员姓名
+        public string InputPersonName { get; set; }
 
-        public DateTime InputDateTime { get; set; }//操作日期
+        /// <summary>
+        /// 操作日期时间，非空
+        /// </summary>
+        public DateTime InputDateTime { get; set; }
 
+        /// <summary>
+        /// 备用字段1，可空
+        /// </summary>
         [StringLength(500)]
-        public string Col1 { get; set; }//备用字段1
+        public string Col1 { get; set; }
 
+        /// <summary>
+        /// 备用字段2，可空
+        /// </summary>
         [StringLength(500)]
-        public string Col2 { get; set; }//备用字段2
+        public string Col2 { get; set; }
 
+        /// <summary>
+        /// 备用字段2，可空
+        /// </summary>
         [StringLength(500)]
-        public string Col3 { get; set; }//备用字段3
+        public string Col3 { get; set; }
 
+        /// <summary>
+        /// 备用字段2，可空
+        /// </summary>
         [StringLength(500)]
-        public string Col4 { get; set; }//备用字段4
+        public string Col4 { get; set; }
 
+        /// <summary>
+        /// 备用字段2，可空
+        /// </summary>
         [StringLength(500)]
-        public string Col5 { get; set; }//备用字段5
+        public string Col5 { get; set; }
     }
 }

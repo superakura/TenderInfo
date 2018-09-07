@@ -118,5 +118,17 @@ namespace TenderInfo.Models
         /// 添加时间
         /// </summary>
         public DateTime? InputDateTime { get; set; }
+
+        /// <summary>
+        /// 修改开标时间状态，【修改中、空值】
+        /// </summary>
+        [StringLength(100)]
+        public string ChangeStartTenderDateState { get; set; }
+
+        /// <summary>
+        /// 检验报告全否选项，【全否、空值】
+        /// </summary>
+        [StringLength(100)]
+        public string CheckResultAllError { get; set; }
     }
 }

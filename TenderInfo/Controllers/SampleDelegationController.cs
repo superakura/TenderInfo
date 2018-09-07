@@ -38,10 +38,17 @@ namespace TenderInfo.Controllers
             {
                 ViewBag.PageRole = "样品检测业务员查看";
             }
+            if (User.IsInRole("质检领导确认"))
+            {
+                ViewBag.PageRole = "质检领导确认";
+            }
             return View();
         }
 
-        //添加送样委托单
+        /// <summary>
+        /// 添加送样委托单
+        /// </summary>
+        /// <returns>ok</returns>
         [HttpPost]
         public string Insert()
         {
@@ -83,7 +90,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //获取送样委托信息列表
+        /// <summary>
+        /// 获取送样委托信息列表
+        /// </summary>
+        /// <returns>json</returns>
         [HttpPost]
         public JsonResult GetList()
         {
@@ -134,6 +144,7 @@ namespace TenderInfo.Controllers
                                  SampleDelegationAcceptPersonName = ua.UserName,
                                  SampleDelegationAcceptPersonPhone = ua.UserPhone + "/" + ua.UserMobile,
                                  s.SampleDelegationAcceptPerson,
+                                 s.ChangeStartTenderDateState,
                                  s.SampleDelegationState
                              };
                 if (!string.IsNullOrEmpty(sampleName))
@@ -154,10 +165,10 @@ namespace TenderInfo.Controllers
                     var dateEnd = Convert.ToDateTime(startTenderDateEnd);
                     result = result.Where(w => System.Data.Entity.DbFunctions.DiffMinutes(w.StartTenderDate, dateStart) <= 0 && System.Data.Entity.DbFunctions.DiffMinutes(w.StartTenderDate, dateEnd) >= 0);
                 }
-                //if (User.IsInRole("一次编码表录入"))
-                //{
-                //    result = result.Where(w => w.FirstCodingInputPerson == userInfo.UserID);
-                //}
+                if (User.IsInRole("一次编码表录入"))
+                {
+                    result = result.Where(w => w.InputPerson == userInfo.UserID);
+                }
                 if (User.IsInRole("二次编码表录入"))
                 {
                     result = result.Where(w => w.SampleDelegationAcceptPerson == userInfo.UserID);
@@ -170,7 +181,18 @@ namespace TenderInfo.Controllers
                 {
                     result = result.Where(w => w.ProjectResponsiblePerson == userInfo.UserID);
                 }
-                return Json(new { total = result.Count(), rows = result.Skip(offset).Take(limit).ToList() });
+
+                var sampleDelegationList = result.Skip(offset).Take(limit).ToList();
+                List<Models.ViewSampleDelegation> viewList = new List<Models.ViewSampleDelegation>();
+                foreach (var item in sampleDelegationList)
+                {
+                    var viewRow = new Models.ViewSampleDelegation();
+                    var checkFile = db.CheckReportFile.Where(w => w.SampleDelegationID == item.SampleDelegationID).ToList();
+                    viewRow.sampleDelegation = item;
+                    viewRow.checkReportFile = checkFile;
+                    viewList.Add(viewRow);
+                }
+                return Json(new { total = result.Count(), rows = viewList });
             }
             catch (Exception ex)
             {
@@ -178,7 +200,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //获取技术处接收人员列表
+        /// <summary>
+        /// 获取技术处接收人员列表
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetAcceptPersonList()
         {
@@ -191,7 +216,10 @@ namespace TenderInfo.Controllers
             return Json(list);
         }
 
-        //获取招标业务员列表
+        /// <summary>
+        /// 获取招标业务员列表
+        /// </summary>
+        /// <returns>json</returns>
         [HttpPost]
         public JsonResult GetProjectResponsiblePersonList()
         {
@@ -210,18 +238,28 @@ namespace TenderInfo.Controllers
             return Json(list);
         }
 
-        //修改招标开始时间
+        /// <summary>
+        /// 修改招标开始时间
+        /// </summary>
+        /// <param name="editTenderDateFile"></param>
+        /// <returns>json</returns>
         [HttpPost]
-        public JsonResult EditTenderStartDate(HttpPostedFileBase editTenderDateFile)
+        public string EditTenderStartDate(HttpPostedFileBase editTenderDateFile)
         {
             try
             {
                 var user = App_Code.Commen.GetUserFromSession();
                 var id = 0;
                 int.TryParse(Request.Form["EditTenderDateInfoID"], out id);
-                var editTenderStartDate = Convert.ToDateTime(Request.Form["tbxEditTenderDate"]);
-                var editTenderDateReason = Request.Form["tbxEditTenderDateReason"];
+                var editTenderStartDate = Convert.ToDateTime(Request.Form["tbxEditTenderDate"]);//要修改的招标开始时间
+                var editTenderDateReason = Request.Form["tbxEditTenderDateReason"];//修改原因
+                var sampleDelegation = db.SampleDelegation.Find(id);
+                if (sampleDelegation.ChangeStartTenderDateState=="修改中")
+                {
+                    return "error";
+                }
 
+                //上传修改招标开始时间说明文件
                 var newName = string.Empty;
                 if (editTenderDateFile != null)
                 {
@@ -232,7 +270,6 @@ namespace TenderInfo.Controllers
                     editTenderDateFile.SaveAs(fullName);
                 }
 
-                var sampleDelegation = db.SampleDelegation.Find(id);
                 var log = new Models.Log();
                 log.InputDateTime = DateTime.Now;
                 log.InputPersonID = user.UserID;
@@ -241,22 +278,25 @@ namespace TenderInfo.Controllers
                 log.LogType = "修改招标开始时间";
                 log.LogContent = "招标开始时间由【" + sampleDelegation.StartTenderDate + "】修改为【" + editTenderStartDate + "】";
                 log.LogReason = editTenderDateReason;
-                log.Col1 = newName;
-                log.Col2 = sampleDelegation.StartTenderDate + "#" + editTenderStartDate;//记录用，原招标开始时间，用#分隔，修改后的招标开始时间
+                log.Col1 = newName;//招标开始时间修改说明文件
+                log.Col2 = sampleDelegation.StartTenderDate.ToString();//原招标开始时间
+                log.Col3 = editTenderStartDate.ToString();//要修改的招标开始时间
                 db.Log.Add(log);
 
-                sampleDelegation.StartTenderDate = editTenderStartDate;
-
+                sampleDelegation.ChangeStartTenderDateState = "修改中";
                 db.SaveChanges();
-                return Json(new { state = "ok" });
+                return "ok";
             }
             catch (Exception ex)
             {
-                return Json(ex.Message);
+                return ex.Message;
             }
         }
 
-        //获取修改招标开始时间记录信息
+        /// <summary>
+        /// 获取修改招标开始时间记录信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetEditTenderDateLog()
         {
@@ -409,9 +449,11 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //添加检验技术要求
-        [HttpPost]
-        [ValidateInput(false)]
+        /// <summary>
+        /// 添加检验技术要求
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost][ValidateInput(false)]
         public string UpdateSampleTechnicalRequirement()
         {
             try
@@ -432,7 +474,7 @@ namespace TenderInfo.Controllers
                 log.InputPersonName = userInfo.UserName;
                 log.InputDateTime = DateTime.Now;
                 log.LogContent = "样品检验技术要求更新：样品名称【" + info.SampleName + "】";
-                log.LogType = "样品检验技术要求";
+                log.LogType = "送样委托质检审核";
                 db.Log.Add(log);
 
                 db.SaveChanges();
@@ -539,6 +581,251 @@ namespace TenderInfo.Controllers
                     checkReportFile.SampleDelegationID = sampleDelegationID;
                     db.CheckReportFile.Add(checkReportFile);
                 }
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 质检技术人员审核，确认接收委托单
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost]
+        public string AuditOk()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+                var info = db.SampleDelegation.Find(id);
+
+                info.SampleDelegationState = "质检领导确认";
+
+                var log = new Models.Log();
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.InputDateTime = DateTime.Now;
+                log.LogDataID = id;
+                log.LogContent = "质检技术人员同意接收：样品名称【" + info.SampleName + "】";
+                log.LogType = "送样委托质检审核";
+                db.Log.Add(log);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 质检技术人员审核，回退委托单，添加回退原因
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost]
+        public string AuditBack()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+
+                var backReason = infoList["reason"].ToString();
+                var info = db.SampleDelegation.Find(id);
+
+                info.SampleDelegationState = "质检接收回退";
+
+                var log = new Models.Log();
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.InputDateTime = DateTime.Now;
+                log.LogDataID = id;
+                log.LogContent = "质检回退送样委托：样品名称【" + info.SampleName + "】";
+                log.LogReason = backReason;
+                log.LogType = "送样委托质检审核";
+                db.Log.Add(log);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 获取送样委托单质检接收审核过程
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetAuditLog()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+
+                return Json(db.Log.Where(w=>w.LogType== "送样委托质检审核" && w.LogDataID==id).OrderBy(o=>o.InputDateTime).ToList());
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 质检领导确认
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost]
+        public string AuditLeader()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+                var info = db.SampleDelegation.Find(id);
+
+                info.SampleDelegationState = "检验报告上传";
+
+                var log = new Models.Log();
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.InputDateTime = DateTime.Now;
+                log.LogDataID = id;
+                log.LogContent = "质检领导确认：样品名称【" + info.SampleName + "】";
+                log.LogType = "送样委托质检审核";
+                db.Log.Add(log);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 删除已上传的检验报告文件
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost]
+        public string DelCheckFile()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+                var info = db.CheckReportFile.Find(id);
+                var filePath = Request.MapPath("~/FileUpload");
+
+                if (info.CheckReportFileName != null)
+                {
+                    var file = info.CheckReportFileName;
+                    var fullName = Path.Combine(filePath, file ?? "");
+                    if (System.IO.File.Exists(fullName))
+                    {
+                        System.IO.File.Delete(fullName);
+                    }
+                }
+                db.CheckReportFile.Remove(info);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 招标中心领导，审核招标开始时间，同意
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost]
+        public string ChangeTenderDateOk()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+
+                var info = db.SampleDelegation.Find(id);
+                var logInfo = db.Log.Where(w => w.LogDataID == id && w.LogType == "修改招标开始时间").FirstOrDefault();
+                info.ChangeStartTenderDateState =null;//将修改招标开始时间状态变为null
+                info.StartTenderDate =Convert.ToDateTime(logInfo.Col3);//领导同意后，将要修改的招标开始时间进行赋值
+
+                var log = new Models.Log();
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.InputDateTime = DateTime.Now;
+                log.LogDataID = id;
+                log.LogContent = "修改招标开始时间领导审核通过：样品名称【" + info.SampleName + "】";
+                log.LogType = "修改招标开始时间";
+                db.Log.Add(log);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 招标中心领导，审核招标开始时间，回退
+        /// </summary>
+        /// <returns>ok</returns>
+        [HttpPost]
+        public string ChangeTenderDateBack()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;
+                int.TryParse(infoList["id"].ToString(), out id);
+                var backReason = infoList["reason"].ToString();
+
+                var info = db.SampleDelegation.Find(id);
+                var logInfo = db.Log.Where(w => w.LogDataID == id && w.LogType == "修改招标开始时间").FirstOrDefault();
+                info.ChangeStartTenderDateState = null;//将修改招标开始时间状态变为null
+
+                var log = new Models.Log();
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.InputDateTime = DateTime.Now;
+                log.LogDataID = id;
+                log.LogReason = backReason;
+                log.LogContent = "修改招标开始时间领导审核回退：样品名称【" + info.SampleName + "】";
+                log.LogType = "修改招标开始时间";
+                db.Log.Add(log);
 
                 db.SaveChanges();
                 return "ok";

@@ -691,6 +691,10 @@
     <Compile Include="Migrations\201809050556553_edit25.Designer.cs">
       <DependentUpon>201809050556553_edit25.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809070246362_edit26.cs" />
+    <Compile Include="Migrations\201809070246362_edit26.Designer.cs">
+      <DependentUpon>201809070246362_edit26.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -717,6 +721,7 @@
     <Compile Include="Models\UserDept.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\UserRole.cs" />
+    <Compile Include="Models\ViewSampleDelegation.cs" />
     <Compile Include="Models\ViewAccout.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ueditor\net\App_Code\Config.cs" />
@@ -850,6 +855,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809050556553_edit25.resx">
       <DependentUpon>201809050556553_edit25.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809070246362_edit26.resx">
+      <DependentUpon>201809070246362_edit26.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

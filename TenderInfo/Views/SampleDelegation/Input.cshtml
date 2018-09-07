@@ -96,9 +96,26 @@
                             <hr />
                             <div class="row">
                                 <label for="tbxContent">样品技术要求</label>
-                                <script id="editor" type="text/plain" style="height:400px;">
+                                <script id="editor" type="text/plain" style="height:300px;">
                                 </script>
                             </div>
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                    <tr class="success">
+                                        <th colspan="5" class="text-center">
+                                            送样委托单接收、回退、确认信息
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>操作人</th>
+                                        <th>操作时间</th>
+                                        <th>状态</th>
+                                        <th>回退原因</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableCheckAuditSecond"></tbody>
+                            </table>
                         </form>
                     </div>
                 </div>
@@ -253,6 +270,12 @@
                     <button type="button" id="btnEditTenderDateSubmit" class="btn btn-primary">
                         <i class="glyphicon glyphicon-ok"></i> 提交
                     </button>
+                    <button type="button" id="btnChangeTenderDateBackSubmit" class="btn btn-danger">
+                        <i class="glyphicon glyphicon-remove"></i> 回退
+                    </button>
+                    <button type="button" id="btnChangeTenderDateOkSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 同意
+                    </button>
                 </div>
             </div>
         </div>
@@ -339,6 +362,7 @@
                     <button type="button" id="btnAuditLeaderSubmit" class="btn btn-success">
                         <i class="glyphicon glyphicon-ok"></i> 确认
                     </button>
+                    
                 </div>
             </div>
         </div>
@@ -601,6 +625,138 @@
                             error: function (error) {
                                 toastr.error(error, "提示");
                                 return;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        //质检接收提交按钮
+        $("#btnAuditOkSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var id = $("#lblSampleDelegationIDShow").text();
+                    var args = { "id": id };
+                    $.post("/SampleDelegation/AuditOk", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result === "ok") {
+                            $("#ShowModal").modal("hide");
+                            toastr.success("操作成功！", "提示");
+                            $("#bsTable").bootstrapTable('refresh');
+                        }
+                        else {
+                            $("#ShowModal").modal("hide");
+                            toastr["error"](result, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        //质检回退提交按钮
+        $("#btnAuditBackSubmit").click(function () {
+            var reason = $("#tbxBackReason").val();
+            if (reason.trim() === "") {
+                toastr.error("回退原因不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var id = $("#lblSampleDelegationIDShow").text();
+                        var args = { "id": id, "reason": reason };
+                        $.post("/SampleDelegation/AuditBack", encodeURIComponent(JSON.stringify(args)), function (result) {
+                            if (result === "ok") {
+                                $("#ShowModal").modal("hide");
+                                toastr.success("操作成功！", "提示");
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                            else {
+                                $("#ShowModal").modal("hide");
+                                toastr["error"](result, "提示");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        //质检领导确认提交按钮
+        $("#btnAuditLeaderSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var id = $("#lblSampleDelegationIDShow").text();
+                    var args = { "id": id };
+                    $.post("/SampleDelegation/AuditLeader", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result === "ok") {
+                            $("#ShowModal").modal("hide");
+                            toastr.success("操作成功！", "提示");
+                            $("#bsTable").bootstrapTable('refresh');
+                        }
+                        else {
+                            $("#ShowModal").modal("hide");
+                            toastr["error"](result, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        //审核修改招标开始时间同意
+        $("#btnChangeTenderDateOkSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var id = $("#EditTenderDateInfoID").val();
+                    var args = { "id": id };
+                    $.post("/SampleDelegation/AuditBack", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result === "ok") {
+                            $("#EditTenderDateModal").modal("hide");
+                            toastr.success("操作成功！", "提示");
+                            $("#bsTable").bootstrapTable('refresh');
+                        }
+                        else {
+                            $("#EditTenderDateModal").modal("hide");
+                            toastr["error"](result, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        //审核修改招标开始时间回退
+        $("#btnChangeTenderDateBackSubmit").click(function () {
+            var reason = $("#tbxEditTenderDateReason").val();
+            if (reason.trim() === "") {
+                toastr.error("回退原因不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var id = $("#EditTenderDateInfoID").val();
+                        var args = { "id": id, "reason": reason };
+                        $.post("/SampleDelegation/ChangeTenderDateBack", encodeURIComponent(JSON.stringify(args)), function (result) {
+                            if (result === "ok") {
+                                $("#EditTenderDateModal").modal("hide");
+                                toastr.success("操作成功！", "提示");
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                            else {
+                                $("#EditTenderDateModal").modal("hide");
+                                toastr["error"](result, "提示");
                             }
                         });
                     }
