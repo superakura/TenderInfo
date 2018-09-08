@@ -132,12 +132,12 @@ namespace TenderInfo.Controllers
                                  s.SampleTechnicalRequirement,
                                  s.StartTenderDate,
                                  FirstCodingFileName = isShow == 0 ? s.FirstCodingFileName : s.StartTenderDate <= DateTime.Now ? s.FirstCodingFileName : "",
+                                 s.FirstCodingInputDate,
                                  s.InputPerson,
                                  s.InputPersonName,
                                  s.InputDateTime,
                                  SecondCodingFileName = isShow == 0 ? s.SecondCodingFileName : s.StartTenderDate <= DateTime.Now ? s.SecondCodingFileName : "",
                                  s.SecondCodingInputDate,
-                                 s.SecondCodingInputPersonName,
                                  ProjectResponsiblePersonName = up.UserName,
                                  ProjectResponsiblePersonPhone = up.UserPhone + "/" + up.UserMobile,
                                  s.ProjectResponsiblePerson,
@@ -189,7 +189,22 @@ namespace TenderInfo.Controllers
                     var viewRow = new Models.ViewSampleDelegation();
                     var checkFile = db.CheckReportFile.Where(w => w.SampleDelegationID == item.SampleDelegationID).ToList();
                     viewRow.sampleDelegation = item;
-                    viewRow.checkReportFile = checkFile;
+                    if (User.IsInRole("样品检测业务员查看"))
+                    {
+                        if (item.StartTenderDate <= DateTime.Now)
+                        {
+                            viewRow.checkReportFile = checkFile;
+                        }
+                        else
+                        {
+                            viewRow.checkReportFile = null;
+                        }
+                    }
+                    else
+                    {
+                        viewRow.checkReportFile = checkFile;
+                    }
+
                     viewList.Add(viewRow);
                 }
                 return Json(new { total = result.Count(), rows = viewList });
@@ -254,38 +269,47 @@ namespace TenderInfo.Controllers
                 var editTenderStartDate = Convert.ToDateTime(Request.Form["tbxEditTenderDate"]);//要修改的招标开始时间
                 var editTenderDateReason = Request.Form["tbxEditTenderDateReason"];//修改原因
                 var sampleDelegation = db.SampleDelegation.Find(id);
-                if (sampleDelegation.ChangeStartTenderDateState=="修改中")
+
+                if (CheckTenderStartDateTime(sampleDelegation.StartTenderDate) == 0)
                 {
-                    return "error";
-                }
+                    if (sampleDelegation.ChangeStartTenderDateState == "修改中")
+                    {
+                        return "error";
+                    }
 
-                //上传修改招标开始时间说明文件
-                var newName = string.Empty;
-                if (editTenderDateFile != null)
+                    //上传修改招标开始时间说明文件
+                    var newName = string.Empty;
+                    if (editTenderDateFile != null)
+                    {
+                        var fileExt = Path.GetExtension(editTenderDateFile.FileName).ToLower();
+                        newName = "修改招标开始时间说明文件_" + DateTime.Now.ToString("yyMMddhhmmss") + DateTime.Now.Millisecond + fileExt;
+                        var filePath = Request.MapPath("~/FileUpload");
+                        var fullName = Path.Combine(filePath, newName);
+                        editTenderDateFile.SaveAs(fullName);
+                    }
+
+                    var log = new Models.Log();
+                    log.InputDateTime = DateTime.Now;
+                    log.InputPersonID = user.UserID;
+                    log.InputPersonName = user.UserName;
+                    log.LogDataID = id;
+                    log.LogType = "修改招标开始时间";
+                    log.LogContent = "开标时间由【" + sampleDelegation.StartTenderDate + "】修改为【" + editTenderStartDate + "】";
+                    log.LogReason = editTenderDateReason;
+                    log.Col1 = newName;//招标开始时间修改说明文件
+                    log.Col2 = sampleDelegation.StartTenderDate.ToString();//原招标开始时间
+                    log.Col3 = editTenderStartDate.ToString();//要修改的招标开始时间
+                    db.Log.Add(log);
+
+                    sampleDelegation.ChangeStartTenderDateState = "修改中";
+                    db.SaveChanges();
+                    return "ok";
+                }
+                else
                 {
-                    var fileExt = Path.GetExtension(editTenderDateFile.FileName).ToLower();
-                    newName = "修改招标开始时间说明文件_" + DateTime.Now.ToString("yyMMddhhmmss") + DateTime.Now.Millisecond + fileExt;
-                    var filePath = Request.MapPath("~/FileUpload");
-                    var fullName = Path.Combine(filePath, newName);
-                    editTenderDateFile.SaveAs(fullName);
+                    //如果超过开标时间，则不能删除检验报告文件
+                    return "errorTime";
                 }
-
-                var log = new Models.Log();
-                log.InputDateTime = DateTime.Now;
-                log.InputPersonID = user.UserID;
-                log.InputPersonName = user.UserName;
-                log.LogDataID = id;
-                log.LogType = "修改招标开始时间";
-                log.LogContent = "招标开始时间由【" + sampleDelegation.StartTenderDate + "】修改为【" + editTenderStartDate + "】";
-                log.LogReason = editTenderDateReason;
-                log.Col1 = newName;//招标开始时间修改说明文件
-                log.Col2 = sampleDelegation.StartTenderDate.ToString();//原招标开始时间
-                log.Col3 = editTenderStartDate.ToString();//要修改的招标开始时间
-                db.Log.Add(log);
-
-                sampleDelegation.ChangeStartTenderDateState = "修改中";
-                db.SaveChanges();
-                return "ok";
             }
             catch (Exception ex)
             {
@@ -313,7 +337,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //不同权限的人员删除操作
+        /// <summary>
+        /// 送样委托删除操作，删除修改开标时间、质检审批log，一、二次编码表文件，检验报告文件
+        /// </summary>
+        /// <returns>ok</returns>
         [HttpPost]
         public string Del()
         {
@@ -366,75 +393,6 @@ namespace TenderInfo.Controllers
                             db.Log.Remove(logDel);
                         }
                     }
-
-                    if (User.IsInRole("二次编码表录入"))
-                    {
-                        //技术处接收人员，执行删除操作：删除送样委托单、二次编码表文件，将状态改为“一次编码表完成”
-                        //将数据表中的上传人员、上传时间变为空
-                        if (info.SampleDelegationState == "二次编码表上传完成")
-                        {
-                            var file2 = info.SecondCodingFileName;
-                            var fullName2 = Path.Combine(filePath, file2);
-                            if (System.IO.File.Exists(fullName2))
-                            {
-                                System.IO.File.Delete(fullName2);
-                            }
-
-                            info.SecondCodingFileName = null;
-                            info.SecondCodingInputDate = null;
-                            info.SecondCodingInputPerson = 0;
-                            info.SecondCodingInputPersonName = null;
-
-                            info.SampleDelegationState = "一次编码表上传完成";
-
-                            var log = new Models.Log();
-                            var userInfo = App_Code.Commen.GetUserFromSession();
-                            log.InputPersonID = userInfo.UserID;
-                            log.InputPersonName = userInfo.UserName;
-                            log.InputDateTime = DateTime.Now;
-                            log.LogContent = "删除二次编码表：样品名称【" + info.SampleName + "】开标时间【" + info.StartTenderDate + "】";
-                            log.LogType = "送样委托删除";
-                            db.Log.Add(log);
-                        }
-                        else
-                        {
-                            return "只能删除二次编码表和送样委托单！";
-                        }
-                    }
-
-                    //if (User.IsInRole("检验报告录入"))
-                    //{
-                    //    //质检人员执行删除，删除检验报告文件，将相应数据字段置空，变更状态未“二次编码表上传完成”
-                    //    if (info.SampleDelegationState == "检验报告上传完成")
-                    //    {
-                    //        var file = info.CheckReportFileName;
-                    //        var fullName = Path.Combine(filePath, file);
-                    //        if (System.IO.File.Exists(fullName))
-                    //        {
-                    //            System.IO.File.Delete(fullName);
-                    //        }
-                    //        info.CheckReportFileName = null;
-                    //        info.CheckReportInputDate = null;
-                    //        info.CheckReportInputPerson = 0;
-                    //        info.CheckReportInputPersonName = null;
-
-                    //        info.SampleDelegationState = "二次编码表上传完成";
-
-                    //        var log = new Models.Log();
-                    //        var userInfo = App_Code.Commen.GetUserFromSession();
-                    //        log.InputPersonID = userInfo.UserID;
-                    //        log.InputPersonName = userInfo.UserName;
-                    //        log.InputDateTime = DateTime.Now;
-                    //        log.LogContent = "删除检验报告：样品名称【" + info.SampleName + "】开标时间【" + info.StartTenderDate + "】";
-                    //        log.LogType = "送样委托删除";
-                    //        db.Log.Add(log);
-                    //    }
-                    //    else
-                    //    {
-                    //        return "只能删除检验报告文件！";
-                    //    }
-                    //}
-
                     db.SaveChanges();
                     return "ok";
                 }
@@ -453,7 +411,8 @@ namespace TenderInfo.Controllers
         /// 添加检验技术要求
         /// </summary>
         /// <returns>ok</returns>
-        [HttpPost][ValidateInput(false)]
+        [HttpPost]
+        [ValidateInput(false)]
         public string UpdateSampleTechnicalRequirement()
         {
             try
@@ -463,22 +422,29 @@ namespace TenderInfo.Controllers
                 var id = 0;
                 int.TryParse(infoList["id"].ToString(), out id);
                 var info = db.SampleDelegation.Find(id);
+                if (CheckTenderStartDateTime(info.StartTenderDate) == 0)
+                {
+                    var content = infoList["content"].ToString();
+                    info.SampleTechnicalRequirement = content;
+                    info.SampleDelegationState = "质检接收审核";
 
-                var content = infoList["content"].ToString();
-                info.SampleTechnicalRequirement = content;
-                info.SampleDelegationState = "质检接收审核";
+                    var log = new Models.Log();
+                    var userInfo = App_Code.Commen.GetUserFromSession();
+                    log.InputPersonID = userInfo.UserID;
+                    log.InputPersonName = userInfo.UserName;
+                    log.InputDateTime = DateTime.Now;
+                    log.LogDataID = id;
+                    log.LogContent = "样品检验技术要求更新：样品名称【" + info.SampleName + "】";
+                    log.LogType = "送样委托质检审核";
+                    db.Log.Add(log);
 
-                var log = new Models.Log();
-                var userInfo = App_Code.Commen.GetUserFromSession();
-                log.InputPersonID = userInfo.UserID;
-                log.InputPersonName = userInfo.UserName;
-                log.InputDateTime = DateTime.Now;
-                log.LogContent = "样品检验技术要求更新：样品名称【" + info.SampleName + "】";
-                log.LogType = "送样委托质检审核";
-                db.Log.Add(log);
-
-                db.SaveChanges();
-                return "ok";
+                    db.SaveChanges();
+                    return "ok";
+                }
+                else
+                {
+                    return "errorTime";
+                }
             }
             catch (Exception ex)
             {
@@ -496,94 +462,96 @@ namespace TenderInfo.Controllers
         {
             try
             {
-                if (uploadFile == null)
-                {
-                    return "noFile";
-                }
-                var filePath = Request.MapPath("~/FileUpload");
-                var user = App_Code.Commen.GetUserFromSession();
+                var id = 0;
+                int.TryParse(Request.Form["UploadInfoID"], out id);
+                var info = db.SampleDelegation.Find(id);
 
-                if (User.IsInRole("一次编码表录入"))
+                if (CheckTenderStartDateTime(info.StartTenderDate) == 0)
                 {
-                    var id = 0;
-                    int.TryParse(Request.Form["UploadInfoID"], out id);
-                    var info = db.SampleDelegation.Find(id);
-
-                    //如果存在一次编码表文件，则先执行删除文件操作。
-                    //再上传新的文件进行覆盖。
-                    if (info.FirstCodingFileName != null)
+                    if (uploadFile == null)
                     {
-                        var firstCodingFile = info.FirstCodingFileName;
-                        var firstCodingFullName = Path.Combine(filePath, firstCodingFile ?? "");
-                        if (System.IO.File.Exists(firstCodingFullName))
+                        return "noFile";
+                    }
+                    var filePath = Request.MapPath("~/FileUpload");
+                    var user = App_Code.Commen.GetUserFromSession();
+
+                    if (User.IsInRole("一次编码表录入"))
+                    {
+                        //如果存在一次编码表文件，则先执行删除文件操作。
+                        //再上传新的文件进行覆盖。
+                        if (info.FirstCodingFileName != null)
                         {
-                            System.IO.File.Delete(firstCodingFullName);
+                            var firstCodingFile = info.FirstCodingFileName;
+                            var firstCodingFullName = Path.Combine(filePath, firstCodingFile ?? "");
+                            if (System.IO.File.Exists(firstCodingFullName))
+                            {
+                                System.IO.File.Delete(firstCodingFullName);
+                            }
                         }
+
+                        var fileExt = Path.GetExtension(uploadFile.FileName).ToLower();
+                        var newName = "一次编码表_" + Guid.NewGuid() + fileExt;
+                        var fullName = Path.Combine(filePath, newName);
+                        uploadFile.SaveAs(fullName);
+
+                        info.FirstCodingFileName = newName;
+                        info.FirstCodingInputDate = DateTime.Now;
+                        info.FirstCodingInputPerson = user.UserID;
+                        info.FirstCodingInputPersonName = user.UserName;
                     }
 
-                    var fileExt = Path.GetExtension(uploadFile.FileName).ToLower();
-                    var newName = "一次编码表_" + Guid.NewGuid() + fileExt;
-                    var fullName = Path.Combine(filePath, newName);
-                    uploadFile.SaveAs(fullName);
-
-                    info.FirstCodingFileName = newName;
-                    info.FirstCodingInputDate = DateTime.Now;
-                    info.FirstCodingInputPerson = user.UserID;
-                    info.FirstCodingInputPersonName = user.UserName;
-                }
-
-                if (User.IsInRole("二次编码表录入"))
-                {
-                    var id = 0;
-                    int.TryParse(Request.Form["UploadInfoID"], out id);
-                    var info = db.SampleDelegation.Find(id);
-
-                    //如果存在二次编码表文件，则先执行删除文件操作。
-                    //再上传新的文件进行覆盖。
-                    if (info.SecondCodingFileName != null)
+                    if (User.IsInRole("二次编码表录入"))
                     {
-                        var secondCodingFile = info.SecondCodingFileName;
-                        var secondCodingFullName = Path.Combine(filePath, secondCodingFile ?? "");
-                        if (System.IO.File.Exists(secondCodingFullName))
+
+                        //如果存在二次编码表文件，则先执行删除文件操作。
+                        //再上传新的文件进行覆盖。
+                        if (info.SecondCodingFileName != null)
                         {
-                            System.IO.File.Delete(secondCodingFullName);
+                            var secondCodingFile = info.SecondCodingFileName;
+                            var secondCodingFullName = Path.Combine(filePath, secondCodingFile ?? "");
+                            if (System.IO.File.Exists(secondCodingFullName))
+                            {
+                                System.IO.File.Delete(secondCodingFullName);
+                            }
                         }
+                        var fileExt = Path.GetExtension(uploadFile.FileName).ToLower();
+                        var newName = "二次编码表_" + Guid.NewGuid() + fileExt;
+                        var fullName = Path.Combine(filePath, newName);
+                        uploadFile.SaveAs(fullName);
+
+                        info.SecondCodingFileName = newName;
+                        info.SecondCodingInputDate = DateTime.Now;
+                        info.SecondCodingInputPerson = user.UserID;
+                        info.SecondCodingInputPersonName = user.UserName;
                     }
-                    var fileExt = Path.GetExtension(uploadFile.FileName).ToLower();
-                    var newName = "二次编码表_" + Guid.NewGuid() + fileExt;
-                    var fullName = Path.Combine(filePath, newName);
-                    uploadFile.SaveAs(fullName);
 
-                    info.SecondCodingFileName = newName;
-                    info.SecondCodingInputDate = DateTime.Now;
-                    info.SecondCodingInputPerson = user.UserID;
-                    info.SecondCodingInputPersonName = user.UserName;
+                    if (User.IsInRole("检验报告录入"))
+                    {
+                        var checkReportFile = new Models.CheckReportFile();
+
+                        var fileExt = Path.GetExtension(uploadFile.FileName).ToLower();
+                        var fileName = Path.GetFileNameWithoutExtension(uploadFile.FileName).ToLower();
+                        //检验报告格式设定为源文件名，加上当前日期时间毫秒字符串形式。
+                        var newName = fileName + App_Code.Commen.GetDateTimeString() + fileExt;
+                        var fullName = Path.Combine(filePath, newName);
+                        uploadFile.SaveAs(fullName);
+
+                        checkReportFile.CheckReportFileName = newName;
+                        checkReportFile.CheckReportInputDate = DateTime.Now;
+                        checkReportFile.CheckReportInputPerson = user.UserID;
+                        checkReportFile.CheckReportInputPersonName = user.UserName;
+                        checkReportFile.SampleDelegationID = id;
+                        db.CheckReportFile.Add(checkReportFile);
+                    }
+
+                    db.SaveChanges();
+                    return "ok";
                 }
-
-                if (User.IsInRole("检验报告录入"))
+                else
                 {
-                    var sampleDelegationID = 0;
-                    int.TryParse(Request.Form["UploadInfoID"], out sampleDelegationID);
-
-                    var checkReportFile = new Models.CheckReportFile();
-
-                    var fileExt = Path.GetExtension(uploadFile.FileName).ToLower();
-                    var fileName = Path.GetFileNameWithoutExtension(uploadFile.FileName).ToLower();
-                    //检验报告格式设定为源文件名，加上当前日期时间毫秒字符串形式。
-                    var newName = fileName + App_Code.Commen.GetDateTimeString() + fileExt;
-                    var fullName = Path.Combine(filePath, newName);
-                    uploadFile.SaveAs(fullName);
-
-                    checkReportFile.CheckReportFileName = newName;
-                    checkReportFile.CheckReportInputDate = DateTime.Now;
-                    checkReportFile.CheckReportInputPerson = user.UserID;
-                    checkReportFile.CheckReportInputPersonName = user.UserName;
-                    checkReportFile.SampleDelegationID = sampleDelegationID;
-                    db.CheckReportFile.Add(checkReportFile);
+                    //如果超过开标时间，则不能删除检验报告文件
+                    return "errorTime";
                 }
-
-                db.SaveChanges();
-                return "ok";
             }
             catch (Exception ex)
             {
@@ -680,7 +648,7 @@ namespace TenderInfo.Controllers
                 var id = 0;
                 int.TryParse(infoList["id"].ToString(), out id);
 
-                return Json(db.Log.Where(w=>w.LogType== "送样委托质检审核" && w.LogDataID==id).OrderBy(o=>o.InputDateTime).ToList());
+                return Json(db.Log.Where(w => w.LogType == "送样委托质检审核" && w.LogDataID == id).OrderBy(o => o.InputDateTime).ToList());
             }
             catch (Exception ex)
             {
@@ -738,20 +706,29 @@ namespace TenderInfo.Controllers
                 var id = 0;
                 int.TryParse(infoList["id"].ToString(), out id);
                 var info = db.CheckReportFile.Find(id);
-                var filePath = Request.MapPath("~/FileUpload");
-
-                if (info.CheckReportFileName != null)
+                var sampleDelegation = db.SampleDelegation.Find(info.SampleDelegationID);
+                if (CheckTenderStartDateTime(sampleDelegation.StartTenderDate) == 0)
                 {
-                    var file = info.CheckReportFileName;
-                    var fullName = Path.Combine(filePath, file ?? "");
-                    if (System.IO.File.Exists(fullName))
+                    var filePath = Request.MapPath("~/FileUpload");
+
+                    if (info.CheckReportFileName != null)
                     {
-                        System.IO.File.Delete(fullName);
+                        var file = info.CheckReportFileName;
+                        var fullName = Path.Combine(filePath, file ?? "");
+                        if (System.IO.File.Exists(fullName))
+                        {
+                            System.IO.File.Delete(fullName);
+                        }
                     }
+                    db.CheckReportFile.Remove(info);
+                    db.SaveChanges();
+                    return "ok";
                 }
-                db.CheckReportFile.Remove(info);
-                db.SaveChanges();
-                return "ok";
+                else
+                {
+                    //如果超过开标时间，则不能删除检验报告文件
+                    return "errorTime";
+                }
             }
             catch (Exception ex)
             {
@@ -774,9 +751,13 @@ namespace TenderInfo.Controllers
                 int.TryParse(infoList["id"].ToString(), out id);
 
                 var info = db.SampleDelegation.Find(id);
-                var logInfo = db.Log.Where(w => w.LogDataID == id && w.LogType == "修改招标开始时间").FirstOrDefault();
-                info.ChangeStartTenderDateState =null;//将修改招标开始时间状态变为null
-                info.StartTenderDate =Convert.ToDateTime(logInfo.Col3);//领导同意后，将要修改的招标开始时间进行赋值
+                var logInfo = db.Log
+                    .Where(w => w.LogDataID == id && w.LogType == "修改招标开始时间")
+                    .OrderBy(o => o.InputDateTime)
+                    .ToList();
+
+                info.ChangeStartTenderDateState = null;//将修改招标开始时间状态变为null
+                info.StartTenderDate = Convert.ToDateTime(logInfo.Last().Col3);//领导同意后，将要修改的招标开始时间进行赋值
 
                 var log = new Models.Log();
                 var userInfo = App_Code.Commen.GetUserFromSession();
@@ -784,7 +765,7 @@ namespace TenderInfo.Controllers
                 log.InputPersonName = userInfo.UserName;
                 log.InputDateTime = DateTime.Now;
                 log.LogDataID = id;
-                log.LogContent = "修改招标开始时间领导审核通过：样品名称【" + info.SampleName + "】";
+                log.LogContent = "修改开标时间审核通过：样品名称【" + info.SampleName + "】";
                 log.LogType = "修改招标开始时间";
                 db.Log.Add(log);
 
@@ -822,8 +803,8 @@ namespace TenderInfo.Controllers
                 log.InputPersonName = userInfo.UserName;
                 log.InputDateTime = DateTime.Now;
                 log.LogDataID = id;
-                log.LogReason = backReason;
-                log.LogContent = "修改招标开始时间领导审核回退：样品名称【" + info.SampleName + "】";
+                log.Col4 = backReason;
+                log.LogContent = "修改开标始时间审核回退：样品名称【" + info.SampleName + "】";
                 log.LogType = "修改招标开始时间";
                 db.Log.Add(log);
 
@@ -835,5 +816,24 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// 判断招标开始时间是否大于当前时间,小于等于返回1（int），大于返回0（int）
+        /// </summary>
+        /// <returns>int</returns>
+        public int CheckTenderStartDateTime(DateTime? tenderStartDateTime)
+        {
+            return tenderStartDateTime <= DateTime.Now ? 1 : 0;
+        }
+
+        //if (CheckTenderStartDateTime(sampleDelegation.StartTenderDate) == 0)
+        //        {
+
+        //    }
+        //    else
+        //        {
+        //            如果超过开标时间，则不能删除检验报告文件
+        //            return "errorTime";
+        //        }
     }
 }

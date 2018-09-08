@@ -76,16 +76,25 @@
                 if (pageRole !== "质检领导确认") {
                     $("#btnAuditLeaderSubmit").hide();
                 }
+                else {
+                    if (row.sampleDelegation.SampleDelegationState !== "质检领导确认") {
+                        $("#btnAuditLeaderSubmit").hide();
+                    }
+                    else {
+                        $("#btnAuditLeaderSubmit").show();
+                    }
+                }
                 var args = { "id": row.sampleDelegation.SampleDelegationID };
                 $.post("/SampleDelegation/GetAuditLog", encodeURIComponent(JSON.stringify(args)), function (result) {
                     var list = "";
                     $.each(result, function (indexInArray, val) {
+                        var logReason = val.LogReason === null ? "" : val.LogReason;
                         list += "<tr>";
                         list += "<td>" + (indexInArray + 1) + "</td>";
                         list += "<td>" + val.InputPersonName + "</td>";
                         list += "<td>" + getJsonDateTime(val.InputDateTime) + "</td>";
                         list += "<td>" + val.LogContent + "</td>";
-                        list += "<td>" + val.LogReason + "</td>";
+                        list += "<td>" + logReason + "</td>";
                         list += "</tr>";
                     });
                     $("#tableCheckAudit").empty().append(list);
@@ -103,38 +112,64 @@
 
         var editTenderStartDateEvents = {
             'click .editTenderDate': function (e, value, row, index) {
-                $("#tbxEditTenderDate").val("");
+                //清空表单
+                $("#tbxEditTenderDate,#tbxEditTenderDateReason,#editTenderDateFile").val("");
                 $("label.error").hide();
                 $(".error").removeClass("error");
 
+                //加载招标修改时间过程
                 $.post("/SampleDelegation/GetEditTenderDateLog", { "id": row.sampleDelegation.SampleDelegationID }, function (result) {
                     var list = "";
                     $.each(result, function (indexInArray, val) {
-                        list += "<tr><td>" + (indexInArray + 1) + "</td><td>" + val.InputPersonName + "</td><td>" + getJsonDateTime(val.InputDateTime) + "</td><td>" + val.LogContent + "</td>";
-                        list += "<td>" + val.LogReason + "</td><td><a target='_blank' href='" + val.Col1 + "'>" + val.Col1 + "</a></td><td></tr>";
+                        //console.log(val.LogReason);
+                        var logReason = val.LogReason === null ? "" : val.LogReason;
+                        var backReason = val.Col4 === null ? "" : val.Col4;
+                        var logFile = val.Col1 === null ? "" : "下载";
+                        list += "<tr>";
+                        list += "<td>" + (indexInArray + 1) + "</td><td>" + val.InputPersonName + "</td><td>" + getJsonDateTime(val.InputDateTime) + "</td><td>" + val.LogContent + "</td>";
+                        list += "<td>" + logReason + "</td>";
+                        list += "<td>" + backReason + "</td>";
+                        list += "<td><a target='_blank' href='" + val.Col1 + "'>" + logFile + "</a></td>";
+                        list += "</tr>";
                     });
                     $("#editTenderDateLogTable").empty().append(list);
                 });
 
-                var milliseconds = parseInt(row.sampleDelegation.StartTenderDate.replace(/\D/igm, ""));
-                var date = new Date(milliseconds);
-                var dateInfo = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日 ' + date.getHours() + ":" + date.getMinutes();
-                $('#EditTenderDateModal').modal('show');
-                $("#lblOldTenderStartDate").text(dateInfo);
+                //加载数据ID和原开标时间
+                $("#lblOldTenderStartDate").text(getJsonDateTimeMinute(row.sampleDelegation.StartTenderDate));
                 $("#EditTenderDateInfoID").val(row.sampleDelegation.SampleDelegationID);
+                $('#EditTenderDateModal').modal('show');
 
-                if (pageRole === "样品检测业务员查看") {
-                    $("#btnChangeTenderDateBackSubmit,#btnChangeTenderDateOkSubmit").hide();
-                }
+
+                //招标业务员
+                //如果开标时间修改状态为“修改中”，隐藏表单和提交按钮，否则显示
+                //招标科长
+                //如果开标时间修改状态为“修改中”，显示审批按钮、回退原因，否则隐藏。
                 if (row.sampleDelegation.ChangeStartTenderDateState === "修改中") {
-                    $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
+                    //如果招标科长查看，隐藏表单和修改提交按钮
+                    if (pageRole === "一次编码表录入") {
+                        $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
+                        $("#btnChangeTenderDateBackSubmit,#btnChangeTenderDateOkSubmit,#panelLeadersCheckBackReason").show();
+                    }
+                    //如果招标业务员查看，隐藏审批按钮、回退原因输入框
+                    if (pageRole === "样品检测业务员查看") {
+                        $("#btnChangeTenderDateBackSubmit,#btnChangeTenderDateOkSubmit,#panelLeadersCheckBackReason").hide();
+                        $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
+                    }
+                    //$("#btnChangeTenderDateBackSubmit,#btnChangeTenderDateOkSubmit,#panelLeadersCheckBackReason").show();
                 }
                 else {
-                    $("#PanelEditTenderDate,#btnEditTenderDateSubmit").show();
+                    if (pageRole === "一次编码表录入") {
+                        $("#btnChangeTenderDateBackSubmit,#btnChangeTenderDateOkSubmit,#panelLeadersCheckBackReason").hide();
+                        $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
+                    }
+                    //如果招标业务员查看，隐藏审批按钮、回退原因输入框
+                    if (pageRole === "样品检测业务员查看") {
+                        $("#btnChangeTenderDateBackSubmit,#btnChangeTenderDateOkSubmit,#panelLeadersCheckBackReason").hide();
+                        $("#PanelEditTenderDate,#btnEditTenderDateSubmit").show();
+                    }
                 }
-                if (pageRole === "一次编码表录入") {
-                    $("#PanelEditTenderDate,#btnEditTenderDateSubmit").hide();
-                }
+
             }
         };
 
@@ -174,8 +209,13 @@
                                 $("#bsTable").bootstrapTable('refresh');
                             }
                             else {
-                                console.log(result);
-                                toastr.error(result, "提示");
+                                if (result === "errorTime") {
+                                    toastr.error("超过开标时间，不能删除检验报告文件", "提示");
+                                }
+                                else {
+                                    console.log(result);
+                                    toastr.error(result, "提示");
+                                }
                             }
                         });
                     }
@@ -186,11 +226,9 @@
         function loadColumns() {
             var tempArray = [
                 {
-                    checkbox: true
-                },
-                {
                     title: '序号',
                     align: "center",
+                    valign: "middle",
                     formatter: function (value, row, index) {
                         return index + 1;
                     }
@@ -198,6 +236,7 @@
                 {
                     field: 'sampleDelegation.SampleDelegationID',
                     title: '数据ID',
+                    valign: "middle",
                     visible: false
                 },
                 {
@@ -210,11 +249,13 @@
                         }
                         return '<a class="upload" href="javascript: void (0)" title="上传">上传</a>';
                     },
+                    valign: "middle",
                     align: "center",
                     events: UploadEvents
                 },
                 {
                     title: '删除',
+                    valign: "middle",
                     formatter: function (value, row, index) {
                         switch (pageRole) {
                             case "一次编码表录入":
@@ -225,8 +266,19 @@
                     events: delEvents
                 },
                 {
+                    field: 'sampleDelegation.ChangeStartTenderDateState',
+                    valign: "middle",
+                    title: '开标时间修改状态'
+                },
+                {
+                    field: 'sampleDelegation.CheckResultAllError',
+                    valign: "middle",
+                    title: '全否状态'
+                },
+                {
                     field: 'sampleDelegation.SampleName',
-                    title: '样品名称',
+                    title: '送样委托单',
+                    valign: "middle",
                     visible: true,
                     formatter: function (value, row, index) {
                         switch (pageRole) {
@@ -241,6 +293,8 @@
                                 }
                             case "检验报告录入":
                                 return '<a class= "show" href="javascript: void (0)" title="查看">' + value + '</a>';
+                            case "样品检测业务员查看":
+                                return '<a class= "show" href="javascript: void (0)" title="查看">' + value + '</a>';
                             case "质检领导确认":
                                 return '<a class= "show" href="javascript: void (0)" title="查看">' + value + '</a>';
                         }
@@ -249,11 +303,13 @@
                 },
                 {
                     field: 'sampleDelegation.SampleNum',
+                    valign: "middle",
                     title: '样品数量'
                 },
                 {
                     field: 'sampleDelegation.StartTenderDate',
                     title: '开标时间',
+                    valign: "middle",
                     visible: true,
                     cellStyle: function (value, row, index) {
                         return {
@@ -276,6 +332,7 @@
                 {
                     field: 'sampleDelegation.SampleDelegationState',
                     title: '进度',
+                    valign: "middle",
                     visible: true,
                     width: 100,
                     formatter: function (value, row, index) {
@@ -296,27 +353,31 @@
                 {
                     field: 'sampleDelegation.ProjectResponsiblePersonName',
                     title: '招标负责人',
+                    valign: "middle",
                     formatter: function (value, row, index) {
-                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.ProjectResponsiblePersonPhone + "'>" + value + "</a>";
+                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.sampleDelegation.ProjectResponsiblePersonPhone + "'>" + value + "</a>";
                         return person;
                     }
                 },
                 {
                     field: 'sampleDelegation.SampleDelegationAcceptPersonName',
                     title: '技术接收人',
+                    valign: "middle",
                     formatter: function (value, row, index) {
-                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.SampleDelegationAcceptPersonPhone + "'>" + value + "</a>";
+                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.sampleDelegation.SampleDelegationAcceptPersonPhone + "'>" + value + "</a>";
                         return person;
                     }
                 },
                 {
                     field: 'sampleDelegation.InputPersonName',
                     title: '送样委托提交人员',
+                    valign: "middle",
                     visible: false
                 },
                 {
                     field: 'sampleDelegation.InputDateTime',
                     title: '送样委托提交时间',
+                    valign: "middle",
                     visible: false,
                     formatter: function (value, row, index) {
                         return getJsonDateTime(value);
@@ -325,109 +386,109 @@
                 {
                     field: 'sampleDelegation.FirstCodingFileName',
                     title: '一次编码表',
+                    valign: "middle",
                     formatter: function (value, row, index) {
-                        return "<a target='_blank' href='/FileUpload/" + value + "'>" + value + "</a>";
+                        if (value !== null) {
+
+                            return "<a target='_blank' href='/FileUpload/" + value + "'>" + value + "</a>";
+                        }
+                        else {
+                            return "";
+                        }
                     }
-                },
-                {
-                    field: 'sampleDelegation.FirstCodingInputPersonName',
-                    title: '一次编码表上传人员',
-                    visible: false
                 },
                 {
                     field: 'sampleDelegation.FirstCodingInputDate',
                     title: '一次编码表上传时间',
+                    valign: "middle",
                     visible: false,
                     formatter: function (value, row, index) {
-                        if (value === null) {
+                        if (row.sampleDelegation.FirstCodingInputDate === null) {
                             return "";
                         }
                         else {
-                            var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                            var date = new Date(milliseconds);
-                            return date.toLocaleString();
+                            return getJsonDateTime(row.sampleDelegation.FirstCodingInputDate);
                         }
                     }
                 },
                 {
                     field: 'sampleDelegation.SecondCodingFileName',
                     title: '二次编码表',
+                    valign: "middle",
                     formatter: function (value, row, index) {
                         return "<a target='_blank' href='/FileUpload/" + value + "'>" + (value === null ? "" : value) + "</a>";
                     }
                 },
                 {
-                    field: 'sampleDelegation.SecondCodingInputPersonName',
-                    title: '二次编码表上传人员',
-                    visible: false
-                },
-                {
                     field: 'sampleDelegation.SecondCodingInputDate',
                     title: '二次编码表上传时间',
+                    valign: "middle",
                     visible: false,
                     formatter: function (value, row, index) {
-                        if (value === null) {
-                            return "";
-                        }
-                        else {
-                            var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                            var date = new Date(milliseconds);
-                            return date.toLocaleString();
-                        }
+                        return getJsonDateTime(row.sampleDelegation.SecondCodingInputDate);
                     }
                 },
                 {
                     field: 'sampleDelegation.CheckReportFileName',
                     title: '检验报告',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px", "vertical-align": "top" },
+                            classes: "text-nowrap"
+                        };
+                    },
                     formatter: function (value, row, index) {
-                        var list = "<table class='table table-bordered'>";
+                        var list = "<table class='table table-condensed table-hover'>";
                         if (pageRole === "检验报告录入") {
-                            $.each(row.checkReportFile, function (indexInArray, valueOfElement) {
-                                list += "<tr>";
-                                list += "<td><a target='_blank' href='/FileUpload/" + valueOfElement.CheckReportFileName + "'>" + (valueOfElement.CheckReportFileName === null ? "" : valueOfElement.CheckReportFileName) + "</a></td>";
-                                list += "<td><button class='DelCheckFile btn btn-danger btn-xs' data-id='" + valueOfElement.CheckReportFileID+"'><span class='glyphicon glyphicon-remove'></span></button></td>";
-                                list += "</tr>";
-                            });
+                            if (row.checkReportFile !== null) {
+                                $.each(row.checkReportFile, function (indexInArray, valueOfElement) {
+                                    list += "<tr>";
+                                    list += "<td><button class='DelCheckFile btn btn-danger btn-xs' data-id='" + valueOfElement.CheckReportFileID + "'><span class='glyphicon glyphicon-remove'></span></button>";
+                                    list += "&nbsp;&nbsp;|&nbsp;&nbsp;<a target='_blank' href='/FileUpload/" + valueOfElement.CheckReportFileName + "'>" + (valueOfElement.CheckReportFileName === null ? "" : valueOfElement.CheckReportFileName) + "</a></td>";
+                                    list += "</tr>";
+                                });
+                            }
                         }
                         else {
-                            $.each(row.checkReportFile, function (indexInArray, valueOfElement) {
-                                list += "<tr>";
-                                list += "<td><a target='_blank' href='/FileUpload/" + valueOfElement.CheckReportFileName + "'>" + (valueOfElement.CheckReportFileName === null ? "" : valueOfElement.CheckReportFileName) + "</a></td>";
-                                list += "</tr>";
-                            });
+                            if (row.checkReportFile !== null) {
+                                $.each(row.checkReportFile, function (indexInArray, valueOfElement) {
+                                    list += "<tr>";
+                                    list += "<td><a target='_blank' href='/FileUpload/" + valueOfElement.CheckReportFileName + "'>" + (valueOfElement.CheckReportFileName === null ? "" : valueOfElement.CheckReportFileName) + "</a></td>";
+                                    list += "</tr>";
+                                });
+                            }
                         }
                         list += "</table>";
                         return list;
                     },
                     events: checkFileEvents
                 }];
-            //console.log(tempArray);
+            console.log(tempArray);
             switch ($("#userRole").text()) {
                 case "检验报告录入":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 12 && index != 13 && index != 14 && index != 15 && index != 16 && index != 17
+                        return index !== 3 && index !== 4 && index !== 14 && index !== 15 && index !== 16 && index !== 17;
                     });
                 case "质检领导确认":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 12 && index != 13 && index != 14 && index != 15 && index != 16 && index != 17
+                        return index !== 2 && index !== 3 && index !== 14 && index !== 15 && index !== 16 && index !== 17;
                     });
                 case "二次编码表录入":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 12 && index != 13 && index != 14 && index != 18 && index != 19 && index != 20
+                        return index !== 3 && index !== 14 && index !== 15;
                     });
                 case "样品检测业务员查看":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 3 && index != 9 && index != 10 && index != 11
+                        return index !== 4 && index !== 3;
                     });
                 case "一次编码表录入":
                     return $.grep(tempArray, function (ele, index) {
-                        return index != 15 && index != 16 && index != 17 && index != 18 && index != 19 && index != 20
+                        return index !== 17 && index !== 18;
                     });
             }
         }
 
         var columns = loadColumns();
-        //console.log(columns);
 
         //初始化BS-Table
         $('#bsTable').bootstrapTable({

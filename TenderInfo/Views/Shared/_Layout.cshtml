@@ -315,13 +315,18 @@
                 "hideEasing": "linear",
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
-            }
+            };
 
             //json日期时间格式化
             function getJsonDateTime(jsonDate) {
-                var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
-                var date = new Date(milliseconds);
-                return date.toLocaleString();
+                if (jsonDate !== null) {
+                    var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
+                    var date = new Date(milliseconds);
+                    return date.toLocaleString();
+                }
+                else {
+                    return "";
+                }
             }
 
             //json日期时间格式化

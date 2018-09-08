@@ -129,47 +129,6 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="CheckReportModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h5 class="modal-title">检验报告录入</h5>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="form-horizontal">
-                        <form id="CheckReportForm" method="post" enctype="multipart/form-data">
-                            <input id="CheckReportInfoID" name="CheckReportInfoID" class="hidden" type="text" />
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="callout callout-success">
-                                        <h4>送样委托单</h4>
-                                        <p><a id="lblSampleDelegationFileName" href="#">送样委托单</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="checkReportFile">检验报告<span class="text-danger">(必填)</span></label>
-                                        <input id="checkReportFile" name="checkReportFile" type="file" class="form-control" />
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" id="btnCheckReportSubmit" class="btn btn-primary">
-                        <i class="glyphicon glyphicon-ok"></i> 提交
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="modal fade" id="UploadModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -214,7 +173,7 @@
                 <div class="container-fluid">
                     <div class="form-horizontal" id="PanelEditTenderDate">
                         <form id="EditTenderDateForm" method="post" enctype="multipart/form-data">
-                            <input id="EditTenderDateInfoID" name="EditTenderDateInfoID" class="hidden" type="text" />
+                            <input id="EditTenderDateInfoID" name="EditTenderDateInfoID" class="" type="text" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="callout callout-info">
@@ -257,12 +216,21 @@
                                     <th>操作人</th>
                                     <th>操作时间</th>
                                     <th>内容</th>
-                                    <th>原因</th>
+                                    <th>修改说明</th>
+                                    <th>回退原因</th>
                                     <th>说明文件</th>
                                 </tr>
                             </thead>
                             <tbody id="editTenderDateLogTable"></tbody>
                         </table>
+                    </div>
+                    <div class="row" id="panelLeadersCheckBackReason">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxLeadersCheckBackReason">回退原因<span class="text-danger"></span></label>
+                                <textarea id="tbxLeadersCheckBackReason" name="tbxLeadersCheckBackReason" class="form-control" rows="2" cols="20"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -324,7 +292,7 @@
                                 <div id="lblSampleTechnicalRequirementShow"></div>
                             </div>
                         </div>
-                        <table class="table table-condensed table-bordered">
+                        <table class="table table-condensed table-bordered table-hover">
                             <thead>
                                 <tr class="success">
                                     <th colspan="5" class="text-center">
@@ -362,7 +330,7 @@
                     <button type="button" id="btnAuditLeaderSubmit" class="btn btn-success">
                         <i class="glyphicon glyphicon-ok"></i> 确认
                     </button>
-                    
+
                 </div>
             </div>
         </div>
@@ -464,21 +432,6 @@
             }
         });
 
-        //对SecondCodeForm表单进行前端验证
-        var validSecondCode = $("#SecondCodeForm").validate({
-            rules: {
-                secondCodingFile: { required: true },
-                sampleDelegationFile: { required: true }
-            }
-        });
-
-        //对CheckReportForm表单进行前端验证
-        var validCheckReport = $("#CheckReportForm").validate({
-            rules: {
-                checkReportFile: { required: true }
-            }
-        });
-
         //对EditTenderDate表单进行前端验证
         var validEditTenderDate = $("#EditTenderDateForm").validate({
             rules: {
@@ -540,40 +493,18 @@
                             $("#bsTable").bootstrapTable('refresh');
                         }
                         else {
-                            $("#SecondModal").modal("hide");
-                            toastr["error"]("保存错误，请联系5613877！", "提示");
+                            if (result === "errorTime") {
+                                $("#EditTenderDateModal").modal("hide");
+                                toastr.error("超过开标时间，不能操作！", "提示");
+                            }
+                            else {
+                                $("#SecondModal").modal("hide");
+                                toastr["error"](result, "提示");
+                            }
                         }
                     });
                 }
             });
-        });
-
-        //检验报告提交按钮
-        $("#btnCheckReportSubmit").click(function () {
-            if (validCheckReport.form()) {
-                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                    if (!e) {
-                        return;
-                    }
-                    else {
-                        $("#CheckReportForm").ajaxSubmit({
-                            url: "/SampleDelegation/UploadCheckReportFile",
-                            type: "post",
-                            success: function (result) {
-                                if (result.state == "ok") {
-                                    $("#CheckReportModal").modal("hide");
-                                    toastr.success("操作成功！", "提示");
-                                    $("#bsTable").bootstrapTable('refresh');
-                                }
-                            },
-                            error: function (error) {
-                                toastr.error(error, "提示");
-                                return;
-                            }
-                        });
-                    }
-                });
-            };
         });
 
         //修改招标开始时间提交按钮
@@ -588,10 +519,14 @@
                             url: "/SampleDelegation/EditTenderStartDate",
                             type: "post",
                             success: function (result) {
-                                if (result.state == "ok") {
+                                if (result === "ok") {
                                     $("#EditTenderDateModal").modal("hide");
                                     toastr.success("操作成功！", "提示");
                                     $("#bsTable").bootstrapTable('refresh');
+                                }
+                                if (result === "errorTime") {
+                                    $("#EditTenderDateModal").modal("hide");
+                                    toastr.error("超过开标时间，不能修改开标时间", "提示");
                                 }
                             },
                             error: function (error) {
@@ -601,7 +536,7 @@
                         });
                     }
                 });
-            };
+            }
         });
 
         //文件上传提交按钮
@@ -620,6 +555,10 @@
                                     $("#UploadModal").modal("hide");
                                     toastr.success("操作成功！", "提示");
                                     $("#bsTable").bootstrapTable('refresh');
+                                }
+                                if (result === "errorTime") {
+                                    $("#UploadModal").modal("hide");
+                                    toastr.error("超过开标时间，不能上传文件", "提示");
                                 }
                             },
                             error: function (error) {
@@ -710,7 +649,7 @@
             });
         });
 
-        //审核修改招标开始时间同意
+        //开标时间修改同意
         $("#btnChangeTenderDateOkSubmit").click(function () {
             Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
                 if (!e) {
@@ -719,7 +658,8 @@
                 else {
                     var id = $("#EditTenderDateInfoID").val();
                     var args = { "id": id };
-                    $.post("/SampleDelegation/AuditBack", encodeURIComponent(JSON.stringify(args)), function (result) {
+                    //console.log(args);
+                    $.post("/SampleDelegation/ChangeTenderDateOk", encodeURIComponent(JSON.stringify(args)), function (result) {
                         if (result === "ok") {
                             $("#EditTenderDateModal").modal("hide");
                             toastr.success("操作成功！", "提示");
@@ -728,15 +668,16 @@
                         else {
                             $("#EditTenderDateModal").modal("hide");
                             toastr["error"](result, "提示");
+                            console.log(result);
                         }
                     });
                 }
             });
         });
 
-        //审核修改招标开始时间回退
+        //开标时间修改回退
         $("#btnChangeTenderDateBackSubmit").click(function () {
-            var reason = $("#tbxEditTenderDateReason").val();
+            var reason = $("#tbxLeadersCheckBackReason").val();
             if (reason.trim() === "") {
                 toastr.error("回退原因不能为空！", "提示");
             }
