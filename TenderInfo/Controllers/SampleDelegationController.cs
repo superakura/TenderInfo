@@ -13,13 +13,10 @@ namespace TenderInfo.Controllers
         //SampleDelegation
         private Models.DB db = new Models.DB();
 
-        // 样品委托查询
-        public ViewResult Search()
-        {
-            return View();
-        }
-
-        // 样品委托录入
+        /// <summary>
+        /// 样品委托录入视图
+        /// </summary>
+        /// <returns></returns>
         public ViewResult Input()
         {
             if (User.IsInRole("一次编码表录入"))
@@ -131,12 +128,12 @@ namespace TenderInfo.Controllers
                                  s.SampleNum,
                                  s.SampleTechnicalRequirement,
                                  s.StartTenderDate,
-                                 FirstCodingFileName = isShow == 0 ? s.FirstCodingFileName : s.StartTenderDate <= DateTime.Now ? s.FirstCodingFileName : "",
+                                 FirstCodingFileName =s.CheckResultAllError=="全否"?s.FirstCodingFileName: isShow == 0 ? s.FirstCodingFileName : s.StartTenderDate <= DateTime.Now ? s.FirstCodingFileName : "",
                                  s.FirstCodingInputDate,
                                  s.InputPerson,
                                  s.InputPersonName,
                                  s.InputDateTime,
-                                 SecondCodingFileName = isShow == 0 ? s.SecondCodingFileName : s.StartTenderDate <= DateTime.Now ? s.SecondCodingFileName : "",
+                                 SecondCodingFileName = s.CheckResultAllError == "全否" ? s.SecondCodingFileName : isShow == 0 ? s.SecondCodingFileName : s.StartTenderDate <= DateTime.Now ? s.SecondCodingFileName : "",
                                  s.SecondCodingInputDate,
                                  ProjectResponsiblePersonName = up.UserName,
                                  ProjectResponsiblePersonPhone = up.UserPhone + "/" + up.UserMobile,
@@ -145,6 +142,7 @@ namespace TenderInfo.Controllers
                                  SampleDelegationAcceptPersonPhone = ua.UserPhone + "/" + ua.UserMobile,
                                  s.SampleDelegationAcceptPerson,
                                  s.ChangeStartTenderDateState,
+                                 s.CheckResultAllError,
                                  s.SampleDelegationState
                              };
                 if (!string.IsNullOrEmpty(sampleName))
@@ -191,13 +189,20 @@ namespace TenderInfo.Controllers
                     viewRow.sampleDelegation = item;
                     if (User.IsInRole("样品检测业务员查看"))
                     {
-                        if (item.StartTenderDate <= DateTime.Now)
+                        if (item.CheckResultAllError=="全否")
                         {
                             viewRow.checkReportFile = checkFile;
                         }
                         else
                         {
-                            viewRow.checkReportFile = null;
+                            if (item.StartTenderDate <= DateTime.Now)
+                            {
+                                viewRow.checkReportFile = checkFile;
+                            }
+                            else
+                            {
+                                viewRow.checkReportFile = null;
+                            }
                         }
                     }
                     else
@@ -338,7 +343,7 @@ namespace TenderInfo.Controllers
         }
 
         /// <summary>
-        /// 送样委托删除操作，删除修改开标时间、质检审批log，一、二次编码表文件，检验报告文件
+        /// 招标科长送样委托删除操作，【删除修改开标时间、质检审批log】，【一、二次编码表文件，检验报告文件】
         /// </summary>
         /// <returns>ok</returns>
         [HttpPost]
@@ -346,59 +351,81 @@ namespace TenderInfo.Controllers
         {
             try
             {
-                var id = 0;
-                int.TryParse(Request.Form["id"], out id);
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;//送样委托单ID
+                int.TryParse(infoList["id"].ToString(), out id);
 
+                var filePath = Request.MapPath("~/FileUpload");
                 var info = db.SampleDelegation.Find(id);
-                if (info.StartTenderDate > DateTime.Now)
+
+                //超过开标时间，禁止删除记录
+                if (CheckTenderStartDateTime(info.StartTenderDate) == 0)
                 {
-                    var filePath = Request.MapPath("~/FileUpload");
+                    #region 删除一、二次编码表
+                    var fileFirst = info.FirstCodingFileName;
+                    var fileSecond = info.SecondCodingFileName;
 
-                    if (User.IsInRole("一次编码表录入"))
+                    var fullNameFirst = Path.Combine(filePath, fileFirst ?? "");
+                    var fullNameSecond = Path.Combine(filePath, fileSecond ?? "");
+                    //删除一次编码表
+                    if (System.IO.File.Exists(fullNameFirst))
                     {
-                        //如果招标中心科长，执行删除操作，将5个文件删除，将数据库中记录删除，
-                        //将log表中的修改开标时间数据删除，在log表中增加删除操作的记录。
-                        var file3 = info.FirstCodingFileName;
-                        var file4 = info.SecondCodingFileName;
+                        System.IO.File.Delete(fullNameFirst);
+                    }
+                    //删除二次编码表
+                    if (System.IO.File.Exists(fullNameSecond))
+                    {
+                        System.IO.File.Delete(fullNameSecond);
+                    }
+                    #endregion
 
-                        var fullName3 = Path.Combine(filePath, file3 ?? "");
-                        var fullName4 = Path.Combine(filePath, file4 ?? "");
-                        if (System.IO.File.Exists(fullName3))
+                    #region 删除检验报告文件和表记录
+                    var checkFileList = db.CheckReportFile.Where(w => w.SampleDelegationID == id).ToList();
+                    //循环删除检验报告文件
+                    foreach (var item in checkFileList)
+                    {
+                        var fullNameCheckFile = Path.Combine(filePath, item.CheckReportFileName ?? "");
+                        if (System.IO.File.Exists(fullNameCheckFile))
                         {
-                            System.IO.File.Delete(fullName3);
-                        }
-                        if (System.IO.File.Exists(fullName4))
-                        {
-                            System.IO.File.Delete(fullName4);
-                        }
-                        db.SampleDelegation.Remove(info);
-
-                        var log = new Models.Log();
-                        var userInfo = App_Code.Commen.GetUserFromSession();
-                        log.InputPersonID = userInfo.UserID;
-                        log.InputPersonName = userInfo.UserName;
-                        log.InputDateTime = DateTime.Now;
-                        log.LogContent = "删除送样委托单：样品名称【" + info.SampleName + "】开标时间【" + info.StartTenderDate + "】";
-                        log.LogType = "删除送样委托单";
-                        db.Log.Add(log);
-
-                        var logDel = db.Log.Where(w => w.LogType == "修改招标开始时间" && w.LogDataID == id).FirstOrDefault();
-                        if (logDel != null)
-                        {
-                            var logFile = Path.Combine(filePath, logDel.Col1 ?? "");
-                            if (System.IO.File.Exists(logFile))
-                            {
-                                System.IO.File.Delete(logFile);
-                            }
-                            db.Log.Remove(logDel);
+                            System.IO.File.Delete(fullNameCheckFile);
                         }
                     }
+                    //删除检验报告表信息
+                    db.CheckReportFile.RemoveRange(checkFileList);
+                    #endregion
+
+                    #region 将删除送样委托单操作，写入日志信息
+                    var log = new Models.Log();
+                    var userInfo = App_Code.Commen.GetUserFromSession();
+                    log.InputPersonID = userInfo.UserID;
+                    log.InputPersonName = userInfo.UserName;
+                    log.InputDateTime = DateTime.Now;
+                    log.LogContent = "删除送样委托单：样品名称【" + info.SampleName + "】开标时间【" + info.StartTenderDate + "】";
+                    log.LogType = "删除送样委托单";
+                    db.Log.Add(log);
+                    #endregion
+
+                    #region 删除修改招标时间日志，删除送样委托质检审核日志，删除修改招标开始时间说明文件
+                    var logList = db.Log.Where(w => w.LogDataID == id).ToList();
+                    foreach (var item in logList)
+                    {
+                        var logFile = Path.Combine(filePath, item.Col1 ?? "");
+                        if (System.IO.File.Exists(logFile))
+                        {
+                            System.IO.File.Delete(logFile);
+                        }
+                    }
+                    db.Log.RemoveRange(logList);
+                    #endregion
+
+                    db.SampleDelegation.Remove(info);//最后删除送样委托单记录
                     db.SaveChanges();
                     return "ok";
                 }
                 else
                 {
-                    return "已超过招标开始时间，不能执行删除操作！";
+                    return "errorTime";
                 }
             }
             catch (Exception ex)
@@ -824,6 +851,73 @@ namespace TenderInfo.Controllers
         public int CheckTenderStartDateTime(DateTime? tenderStartDateTime)
         {
             return tenderStartDateTime <= DateTime.Now ? 1 : 0;
+        }
+
+
+        /// <summary>
+        /// 设置送样委托检验报告全否，如果全否，则不到开标日期也显示所以文件
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string SetCheckFileAllError()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;//送样委托单ID
+                int.TryParse(infoList["id"].ToString(), out id);
+                var info = db.SampleDelegation.Find(id);
+                if (CheckTenderStartDateTime(info.StartTenderDate) == 0)
+                {
+                    info.CheckResultAllError = "全否";
+                    db.SaveChanges();
+
+                    return "ok";
+                }
+                else
+                {
+                    //如果超过开标时间，则不能删除检验报告文件
+                    return "errorTime";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 取消送样委托检验报告全否
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string ResetCheckFileAllError()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var id = 0;//送样委托单ID
+                int.TryParse(infoList["id"].ToString(), out id);
+                var info = db.SampleDelegation.Find(id);
+                if (CheckTenderStartDateTime(info.StartTenderDate) == 0)
+                {
+                    info.CheckResultAllError = null;
+                    db.SaveChanges();
+
+                    return "ok";
+                }
+                else
+                {
+                    //如果超过开标时间，则不能删除检验报告文件
+                    return "errorTime";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         //if (CheckTenderStartDateTime(sampleDelegation.StartTenderDate) == 0)

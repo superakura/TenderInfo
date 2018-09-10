@@ -180,13 +180,66 @@
                         return;
                     }
                     else {
-                        $.post("/SampleDelegation/Del", { "id": row.sampleDelegation.SampleDelegationID }, function (result) {
+                        var args = { "id": row.sampleDelegation.SampleDelegationID };
+                        $.post("/SampleDelegation/Del", { "id": encodeURIComponent(JSON.stringify(args)) }, function (result) {
                             if (result === "ok") {
                                 toastr.success("操作成功！", "提示");
                                 $("#bsTable").bootstrapTable('refresh');
                             }
                             else {
                                 toastr.error(result, "提示");
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        var SetAllErrorEvents = {
+            'click .SetError': function (e, value, row, index) {
+                Ewin.confirm({ message: "确定要操作吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var args = { "id": row.sampleDelegation.SampleDelegationID };
+                        
+                        $.post("/SampleDelegation/SetCheckFileAllError", encodeURIComponent(JSON.stringify(args)), function (result) {
+                            if (result === "ok") {
+                                toastr.success("操作成功！", "提示");
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                            else {
+                                if (result === "errorTime") {
+                                    toastr.error("超过开标时间，不能进行操作！", "提示");
+                                }
+                                else {
+                                    toastr.error(result, "提示");
+                                }
+                            }
+                        });
+                    }
+                });
+            },
+            'click .ResetError': function (e, value, row, index) {
+                Ewin.confirm({ message: "确定要操作吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var args = { "id": row.sampleDelegation.SampleDelegationID };
+                        $.post("/SampleDelegation/ResetCheckFileAllError", encodeURIComponent(JSON.stringify(args)), function (result) {
+                            if (result === "ok") {
+                                toastr.success("操作成功！", "提示");
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                            else {
+                                if (result === "errorTime") {
+                                    toastr.error("超过开标时间，不能进行操作！", "提示");
+                                }
+                                else {
+                                    toastr.error(result, "提示");
+                                }
                             }
                         });
                     }
@@ -273,7 +326,22 @@
                 {
                     field: 'sampleDelegation.CheckResultAllError',
                     valign: "middle",
-                    title: '全否状态'
+                    title: '全否状态',
+                    formatter: function (value, row, index) {
+                        if (pageRole === "检验报告录入") {
+                            if (row.sampleDelegation.CheckResultAllError === "全否") {
+                                return '<a class="ResetError" href="javascript: void (0)" title="取消全否">取消全否</a>';
+                            }
+                            else {
+                                return '<a class="SetError" href="javascript: void (0)" title="设置全否">设置全否</a>';
+                            }
+                        }
+                        else {
+                            return value;
+                        }
+                    },
+                    align: "center",
+                    events: SetAllErrorEvents
                 },
                 {
                     field: 'sampleDelegation.SampleName',
@@ -483,7 +551,7 @@
                     });
                 case "一次编码表录入":
                     return $.grep(tempArray, function (ele, index) {
-                        return index !== 17 && index !== 18;
+                        return index !== 16 && index !== 17;
                     });
             }
         }

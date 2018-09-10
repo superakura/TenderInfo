@@ -29,7 +29,7 @@ namespace TenderInfo.Models
 
         /// <summary>
         /// 送样委托状态
-        /// 技术要求录入、质检接收审核、质检接收回退、质检领导确认、检验报告上传、全否
+        /// 技术要求录入、质检接收审核、质检接收回退、质检领导确认、检验报告上传
         /// </summary>
         [StringLength(200)]
         public string SampleDelegationState { get; set; }
