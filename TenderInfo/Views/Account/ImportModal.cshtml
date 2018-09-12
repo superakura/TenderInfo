@@ -1,0 +1,115 @@
+﻿<div class="modal fade" id="ImportModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">批量导入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="ImportForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxImportID" name="tbxImportID" type="text" />
+                            <input id="tbxImportType" name="tbxImportType" type="text" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <h4><a id="linkTemplate">导入模板下载</a></h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxImportFile">
+                                            选择上传文件
+                                        </label>
+                                        <input id="tbxImportFile" name="tbxImportFile" class="form-control" type="file" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnImportSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $(".InfoImport").click(function () {
+            $("#tbxImportFile").val("");
+            $("#tbxImportID").val($("#tbxAccountIDEdit").val());
+
+            var type = $(this).attr("data-type");
+            $("#tbxImportType").val(type);
+            switch (type) {
+                case "FirstProject":
+                    $("#linkTemplate").attr("href", "/Template/FirstProject.xls");
+                    break;
+                case "FirstMaterial":
+                    $("#linkTemplate").attr("href", "/Template/FirstMaterial.xls");
+                    break;
+                case "FirstFrame":
+                    $("#linkTemplate").attr("href", "/Template/FirstFrame.xls");
+                    break;
+            }
+            $('#ImportModal').modal('show');
+        });
+
+        $(".InfoRemove").click(function () {
+            var id = $("#tbxAccountIDEdit").val();
+            Ewin.confirm({ message: "确认要清空吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "accountID": id };
+                    $.post("/Account/RemoveFirst", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetFirstTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $("#btnImportSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $("#ImportForm").ajaxSubmit({
+                        url: "/Account/UploadImportFirst",
+                        type: "post",
+                        success: function (result) {
+                            if (result === "ok") {
+                                GetFirstTable();
+                                $("#ImportModal").modal("hide");
+                                toastr.success("操作成功！", "提示");
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

@@ -181,13 +181,18 @@
                     }
                     else {
                         var args = { "id": row.sampleDelegation.SampleDelegationID };
-                        $.post("/SampleDelegation/Del", { "id": encodeURIComponent(JSON.stringify(args)) }, function (result) {
+                        $.post("/SampleDelegation/Del", encodeURIComponent(JSON.stringify(args)), function (result) {
                             if (result === "ok") {
                                 toastr.success("操作成功！", "提示");
                                 $("#bsTable").bootstrapTable('refresh');
                             }
                             else {
-                                toastr.error(result, "提示");
+                                if (result === "errorTime") {
+                                    toastr.error("超过开标时间，不能进行操作！", "提示");
+                                }
+                                else {
+                                    toastr.error(result, "提示");
+                                }
                             }
                         });
                     }

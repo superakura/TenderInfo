@@ -761,6 +761,7 @@
     <Content Include="Views\Account\Frame.cshtml" />
     <Content Include="Views\Account\EditAccountFrame.cshtml" />
     <Content Include="Views\Account\TableInfoFrame.cshtml" />
+    <Content Include="Views\Account\ImportModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -771,6 +772,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="FileUpload\" />
+    <Folder Include="Template\" />
     <Folder Include="ueditor\net\upload\file\" />
   </ItemGroup>
   <ItemGroup>
@@ -874,7 +876,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>7872</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:7872/</IISUrl>
+          <IISUrl>http://localhost:7872</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

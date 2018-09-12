@@ -1092,6 +1092,135 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        [HttpPost]
+        public string UploadImportFirst(HttpPostedFileBase tbxImportFile)
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxImportID"], out accountID);
+                var typeFile = Request.Form["tbxImportType"].ToString();
+
+                //将文件临时上传，写入数据库后删除
+                var fileExt = Path.GetExtension(tbxImportFile.FileName).ToLower();
+                var filePath = Request.MapPath("~/FileUpload");
+                var newName = Guid.NewGuid() + fileExt;
+                var fullName = Path.Combine(filePath, newName);
+                tbxImportFile.SaveAs(fullName);
+
+                //调用excel读取方法，将excel表中的数据读取到dataset
+                var excel = App_Code.Commen.ReadExcel(fullName);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                List<Models.AccountChild> list = new List<Models.AccountChild>();
+                switch (typeFile)
+                {
+                    case "FirstProject":
+                        for (int i = 0; i < excel.Rows.Count; i++)
+                        {
+                            var info = new Models.AccountChild();
+                            info.TableType = "first";
+                            info.AccountID = accountID;
+                            info.TenderFilePlanPayPerson = 
+                                excel.Rows[i]["购买招标文件潜在投标人"].ToString().Trim()==""?"-": excel.Rows[i]["购买招标文件潜在投标人"].ToString();
+                            info.TenderPerson = excel.Rows[i]["投标人"].ToString().Trim()==""?"-": excel.Rows[i]["投标人"].ToString();
+                            info.ProductManufacturer = null;
+                            info.NegationExplain = null;
+                            decimal price = 0;
+                            decimal.TryParse(excel.Rows[i]["报价（万元）"].ToString(), out price);
+                            info.QuotedPriceSum = price;
+                            info.QuotedPriceUnit = 0;
+                            info.InputDate = DateTime.Now;
+                            info.InputPerson = userInfo.UserID;
+
+                            list.Add(info);
+                        }
+                        break;
+                    case "FirstMaterial":
+                        for (int i = 0; i < excel.Rows.Count; i++)
+                        {
+                            var info = new Models.AccountChild();
+                            info.TableType = "first";
+                            info.AccountID = accountID;
+                            info.TenderFilePlanPayPerson =
+                                excel.Rows[i]["购买招标文件潜在投标人"].ToString().Trim() == "" ? "-" : excel.Rows[i]["购买招标文件潜在投标人"].ToString();
+                            info.TenderPerson = excel.Rows[i]["投标人"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标人"].ToString();
+                            info.ProductManufacturer = excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString().Trim()==""?"-": excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString();
+
+                            decimal priceOne = 0;
+                            decimal.TryParse(excel.Rows[i]["报价--单价"].ToString(), out priceOne);
+                            info.QuotedPriceUnit = priceOne;
+
+                            decimal priceSum = 0;
+                            decimal.TryParse(excel.Rows[i]["报价--总价（万元）"].ToString(), out priceSum);
+                            info.QuotedPriceSum = priceSum;
+
+                            info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim()==""?"-": excel.Rows[i]["初步评审是否被否决"].ToString();
+                            info.InputDate = DateTime.Now;
+                            info.InputPerson = userInfo.UserID;
+
+                            list.Add(info);
+                        }
+                        break;
+                    case "FirstFrame":
+                        for (int i = 0; i < excel.Rows.Count; i++)
+                        {
+                            var info = new Models.AccountChild();
+                            info.TableType = "first";
+                            info.AccountID = accountID;
+                            info.TenderFilePlanPayPerson =
+                                excel.Rows[i]["购买招标文件潜在投标人"].ToString().Trim() == "" ? "-" : excel.Rows[i]["购买招标文件潜在投标人"].ToString();
+                            info.TenderPerson = excel.Rows[i]["投标人"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标人"].ToString();
+                            info.ProductManufacturer = excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString();
+
+                            info.QuotedPriceUnit = 0 ;
+
+                            decimal priceSum = 0;
+                            decimal.TryParse(excel.Rows[i]["投标总价（万元）"].ToString(), out priceSum);
+                            info.QuotedPriceSum = priceSum;
+
+                            info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim() == "" ? "-" : excel.Rows[i]["初步评审是否被否决"].ToString();
+                            info.InputDate = DateTime.Now;
+                            info.InputPerson = userInfo.UserID;
+
+                            list.Add(info);
+                        }
+                        break;
+                }
+                db.AccountChild.AddRange(list);
+                db.SaveChanges();
+
+                if (System.IO.File.Exists(fullName))
+                {
+                    System.IO.File.Delete(fullName);
+                }
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string RemoveFirst()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["accountID"], out accountID);
+
+                var list = db.AccountChild.Where(w => w.TableType == "first" && w.AccountID == accountID).ToList();
+                db.AccountChild.RemoveRange(list);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         #endregion
     }
 }

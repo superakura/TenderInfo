@@ -430,6 +430,7 @@
         </div>
     </div>
 </div>
+@Html.Partial("ImportModal")
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">招标管理台账--框架</h3>
@@ -594,6 +595,8 @@
                         <div class="panel-heading">
                             投标人信息
                             <button id="btnFirstAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                            <button id="btnFirstImport" type="button" data-type="FirstFrame" class="btn btn-info btn-sm InfoImport">批量导入</button>
+                            <button id="btnFirstRemove" type="button" data-type="FirstFrame" class="btn bg-olive btn-sm InfoRemove">清空</button>
                         </div>
                         <div class="panel-body">
                             <div class="row">
@@ -859,6 +862,24 @@
     </div>
 </div>
 <script>
+    function GetFirstTable() {
+        var accountID = $("#tbxAccountIDEdit").val();
+        $.post("/Account/GetListEdit", { "accountID": accountID, "type": "first" }, function (result) {
+            var list = "";
+            $.each(result, function (indexInArray, valueOfElement) {
+                list += "<tr>";
+                list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
+                list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
+                list += "<td>" + valueOfElement["ProductManufacturer"] + "</td>";
+                list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
+                list += "<td>" + valueOfElement["NegationExplain"] + "</td>";
+                list += "</tr>";
+            });
+            $("#tableFirst").empty().append(list);
+        });
+    }
     $(function () {
         $(".accountDate").datetimepicker({
             language: 'zh-CN',
@@ -1217,24 +1238,7 @@
             });
         });
 
-        function GetFirstTable() {
-            var accountID = $("#tbxAccountIDEdit").val();
-            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "first" }, function (result) {
-                var list = "";
-                $.each(result, function (indexInArray, valueOfElement) {
-                    list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
-                    list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
-                    list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
-                    list += "<td>" + valueOfElement["ProductManufacturer"] + "</td>";
-                    list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
-                    list += "<td>" + valueOfElement["NegationExplain"] + "</td>";
-                    list += "</tr>";
-                });
-                $("#tableFirst").empty().append(list);
-            });
-        }
+
 
         function GetSecondTable() {
             var accountID = $("#tbxAccountIDEdit").val();
