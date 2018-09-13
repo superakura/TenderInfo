@@ -22,8 +22,7 @@ namespace TenderInfo.Models
         /// <summary>
         /// 项目名称
         /// </summary>
-        [Required]
-        [StringLength(200)]
+        [Required][StringLength(200)]
         public string ProjectName { get; set; }
 
         /// <summary>

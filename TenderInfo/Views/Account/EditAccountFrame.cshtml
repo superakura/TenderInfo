@@ -845,6 +845,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -854,6 +855,9 @@
                         </div>
                         <button type="button" id="btnSubmit" class="btn btn-primary">
                             <i class="glyphicon glyphicon-ok"></i> 提交
+                        </button>
+                        <button type="button" id="btnReturn" class="btn bg-black">
+                            <i class="glyphicon glyphicon-share-alt"></i> 返回
                         </button>
                     </div>
                 </form>
@@ -880,6 +884,7 @@
             $("#tableFirst").empty().append(list);
         });
     }
+
     $(function () {
         $(".accountDate").datetimepicker({
             language: 'zh-CN',
@@ -1557,7 +1562,8 @@
                         success: function (result) {
                             if (result === "ok") {
                                 toastr.success("操作成功！", "提示");
-                                window.location.href = "/Account/Frame";
+                                //window.location.href = "/Account/Frame";
+                                window.history.back(-1);
                             }
                         },
                         error: function (error) {
@@ -1568,6 +1574,10 @@
                     });
                 }
             });
+        });
+
+        $("#btnReturn").click(function () {
+            window.history.back(-1);
         });
 
         function GetInfo() {

@@ -34,15 +34,17 @@ namespace TenderInfo.Controllers
             return View();
         }
 
-        public ViewResult EditAccountMaterial(string id)
+        public ViewResult EditAccountMaterial(string id, string type)
         {
             ViewBag.id = id;
+            ViewBag.type = type;
             return View();
         }
 
-        public ViewResult EditAccountFrame(string id)
+        public ViewResult EditAccountFrame(string id, string type)
         {
             ViewBag.id = id;
+            ViewBag.type = type;
             return View();
         }
 
@@ -272,6 +274,7 @@ namespace TenderInfo.Controllers
                     var accountChildThird = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "third").ToList();
                     var accountChildFour = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "four").ToList();
                     var accountChildFive = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "five").ToList();
+                    viewList.AccountID = item.AccountID;
                     viewList.account = item;
                     viewList.accountChildFirst = accountChildFirst;
                     viewList.accountChildSecond = accountChildSecond;

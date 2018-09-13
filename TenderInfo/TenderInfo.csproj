@@ -581,6 +581,7 @@
     <Compile Include="Controllers\ProgressInfoController.cs" />
     <Compile Include="Controllers\RoleInfoController.cs" />
     <Compile Include="Controllers\SampleDelegationController.cs" />
+    <Compile Include="Controllers\TechnicSpecifictionController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Migrations\201807140054525_EditDB.cs" />
@@ -695,6 +696,10 @@
     <Compile Include="Migrations\201809070246362_edit26.Designer.cs">
       <DependentUpon>201809070246362_edit26.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809130515551_edit27.cs" />
+    <Compile Include="Migrations\201809130515551_edit27.Designer.cs">
+      <DependentUpon>201809130515551_edit27.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -707,6 +712,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DeptInfo.cs" />
+    <Compile Include="Models\FileMinPriceChild.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
     <Compile Include="Models\ProgressInfo.cs" />
@@ -717,7 +723,7 @@
     <Compile Include="Models\AccountMaterialChild.cs" />
     <Compile Include="Models\ProgressMaterial.cs" />
     <Compile Include="Models\SampleDelegation.cs" />
-    <Compile Include="Models\TechnicSpecificationApprove.cs" />
+    <Compile Include="Models\FileMinPrice.cs" />
     <Compile Include="Models\UserDept.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\UserRole.cs" />
@@ -762,6 +768,8 @@
     <Content Include="Views\Account\EditAccountFrame.cshtml" />
     <Content Include="Views\Account\TableInfoFrame.cshtml" />
     <Content Include="Views\Account\ImportModal.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\MinPrice.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\Comprehensive.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -859,6 +867,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809070246362_edit26.resx">
       <DependentUpon>201809070246362_edit26.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809130515551_edit27.resx">
+      <DependentUpon>201809130515551_edit27.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
