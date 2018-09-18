@@ -1,0 +1,66 @@
+﻿
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="tbxFileNameSearch">文件名称：</label>
+                <input type="text" id="tbxFileNameSearch" class="form-control" placeholder="文件名称">
+            </div>
+            <div class="form-group">
+                <label for="ddlApproveLevelSearch">审批级别：</label>
+                <select id="ddlApproveLevelSearch" name="ddlApproveLevelSearch" class="form-control">
+                    <option value="">全部</option>
+                    <option value="一级">一级</option>
+                    <option value="二级">二级</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ddlApproveStateSearch">审批状态：</label>
+                <select id="ddlApproveStateSearch" name="ddlApproveStateSearch" class="form-control">
+                    <option value="">全部</option>
+                    <option value="待审核">待审核</option>
+                    <option value="一级审批完成">一级审批完成</option>
+                    <option value="一级审批回退">一级审批回退</option>
+                    <option value="二级审批完成">二级审批完成</option>
+                    <option value="二级审批回退">二级审批回退</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ddlApproveDeptSearch">提交部门：</label>
+                <select id="ddlApproveDeptSearch" name="ddlApproveDeptSearch" class="form-control">
+                </select>
+            </div>
+            <button type="button" id="btnSearch" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+            <button type="button" id="btnReset" class="btn bg-navy">
+                <span class="glyphicon glyphicon-repeat"></span> 重置
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    var queryParams = function (params) {
+        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            limit: params.limit,   //页面大小
+            offset: params.offset,  //页码
+            tbxFileNameSearch: $("#tbxFileNameSearch").val(),
+            ddlApproveLevelSearch: $("#ddlApproveLevelSearch").val(),
+            ddlApproveStateSearch: $("#ddlApproveStateSearch").val()
+        };
+        return temp;
+    };
+    $(document).ready(function () {
+        getDeptInfoSearch();
+        function getDeptInfoSearch() {
+            $.post("/TechnicSpecifiction/GetDeptForSearch", "", function (result) {
+                var list = "<option value=''>全部</option>";
+                $.each(result, function (indexInArray, val) {
+                    list += "<option value='" + val.DeptID + "'>" + val.DeptName+"</option>";
+                });
+                $("#ddlApproveDeptSearch").append(list);
+            });
+        }
+    });
+</script>

@@ -23,6 +23,12 @@ namespace TenderInfo.Models
         public string TechnicSpecificationFile { get; set; }
 
         /// <summary>
+        /// 技术规格书文件名，显示用
+        /// </summary>
+        [StringLength(200)]
+        public string TechnicSpecificationFileShow { get; set; }
+
+        /// <summary>
         /// 审批级别
         /// </summary>
         [StringLength(200), Required]
@@ -55,6 +61,17 @@ namespace TenderInfo.Models
         /// </summary>
         [StringLength(100)]
         public string InputPersonDeptName { get; set; }
+
+        /// <summary>
+        /// 提交人员父级部门ID
+        /// </summary>
+        public int InputPersonFatherDeptID { get; set; }
+
+        /// <summary>
+        /// 提交人员父级部门名称
+        /// </summary>
+        [StringLength(100)]
+        public string InputPersonFatherDeptName { get; set; }
 
         /// <summary>
         /// 提交日期时间

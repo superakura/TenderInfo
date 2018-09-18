@@ -336,5 +336,22 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        [HttpPost]
+        public JsonResult GetApprovePersonList()
+        {
+            try
+            {
+                var infoList =
+   JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var deptID = 0;
+                int.TryParse(infoList["id"].ToString(), out deptID);
+                return Json(db.UserInfo.Where(w => w.UserDeptID == deptID).ToList());
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
     }
 }

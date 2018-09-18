@@ -57,9 +57,20 @@ namespace TenderInfo.Models
         public string ApprovePersonDeptName { get; set; }
 
         /// <summary>
+        /// 审批人员父级部门ID
+        /// </summary>
+        public int ApprovePersonFatherDeptID { get; set; }
+
+        /// <summary>
+        /// 审批人员父级部门名称
+        /// </summary>
+        [StringLength(100)]
+        public string ApprovePersonFatherDeptName { get; set; }
+
+        /// <summary>
         /// 审批日期时间
         /// </summary>
-        public DateTime ApproveDateTime { get; set; }
+        public DateTime? ApproveDateTime { get; set; }
 
         /// <summary>
         /// 审批回退原因

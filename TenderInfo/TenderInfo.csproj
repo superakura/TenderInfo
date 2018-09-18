@@ -700,6 +700,18 @@
     <Compile Include="Migrations\201809130515551_edit27.Designer.cs">
       <DependentUpon>201809130515551_edit27.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809140636085_edit28.cs" />
+    <Compile Include="Migrations\201809140636085_edit28.Designer.cs">
+      <DependentUpon>201809140636085_edit28.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809150017465_edit29.cs" />
+    <Compile Include="Migrations\201809150017465_edit29.Designer.cs">
+      <DependentUpon>201809150017465_edit29.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809150544268_edit30.cs" />
+    <Compile Include="Migrations\201809150544268_edit30.Designer.cs">
+      <DependentUpon>201809150544268_edit30.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -770,6 +782,8 @@
     <Content Include="Views\Account\ImportModal.cshtml" />
     <Content Include="Views\TechnicSpecifiction\MinPrice.cshtml" />
     <Content Include="Views\TechnicSpecifiction\Comprehensive.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\TableInfoMinPrice.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\SearchInfoMinPrice.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -870,6 +884,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809130515551_edit27.resx">
       <DependentUpon>201809130515551_edit27.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809140636085_edit28.resx">
+      <DependentUpon>201809140636085_edit28.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809150017465_edit29.resx">
+      <DependentUpon>201809150017465_edit29.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809150544268_edit30.resx">
+      <DependentUpon>201809150544268_edit30.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

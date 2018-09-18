@@ -1,0 +1,206 @@
+﻿
+<table id="bsTable"></table>
+<script>
+    $(function () {
+        var firstApproveEvents = {
+            'click .firstApprove': function (e, value, row, index) {
+                //清空表单
+                $("#tbxFirstBackReason").val("");
+                $("label.error").hide();
+                $(".error").removeClass("error");
+
+                $("#tbxFirstID").val(row.FileMinPriceID);
+
+                //审批人员列表
+                var args = { "id": row.FileMinPriceID };
+                $.post("/TechnicSpecifiction/GetFirstPersonList", encodeURIComponent(JSON.stringify(args)), function (result) {
+                    var list = "";
+                    $.each(result, function (indexInArray, val) {
+                        var reason = val.ApproveBackReason === null ? "" : val.ApproveBackReason;
+                        list += "<tr>";
+                        list += "<td>" + (indexInArray + 1) + "</td>";
+                        list += "<td>" + val.ApprovePersonName + "</td>";
+                        list += "<td>" + val.ApprovePersonFatherDeptName + "-" + val.ApprovePersonDeptName + "</td>";
+                        list += "<td>" + val.ApproveState + "</td>";
+                        list += "<td>" + getJsonDateTime(val.ApproveDateTime) + "</td>";
+                        list += "<td>" + reason + "</td>";
+                        list += "</tr>";
+                    });
+                    $("#tableFirstPerson").empty().append(list);
+                });
+
+                if (row.ApproveState !== "待审核") {
+                    $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").hide();
+                }
+                else {
+                    $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").show();
+                }
+
+                $('#firstModal').modal('show');
+            }
+        };
+
+        var secondApproveEvents = {
+            'click .secondApprove': function (e, value, row, index) {
+                //清空表单
+                $("#tbxSecondBackReason").val("");
+                $("label.error").hide();
+                $(".error").removeClass("error");
+
+                $("#tbxSecondID").val(row.FileMinPriceID);
+
+                //审批人员列表
+                var args = { "id": row.FileMinPriceID };
+                $.post("/TechnicSpecifiction/GetSecondPersonList", encodeURIComponent(JSON.stringify(args)), function (result) {
+                    var list = "";
+                    $.each(result, function (indexInArray, val) {
+                        var reason = val.ApproveBackReason === null ? "" : val.ApproveBackReason;
+                        list += "<tr>";
+                        list += "<td>" + (indexInArray + 1) + "</td>";
+                        list += "<td>" + val.ApprovePersonName + "</td>";
+                        list += "<td>" + val.ApprovePersonFatherDeptName + "-" + val.ApprovePersonDeptName + "</td>";
+                        list += "<td>" + val.ApproveState + "</td>";
+                        list += "<td>" + getJsonDateTime(val.ApproveDateTime) + "</td>";
+                        list += "<td>" + reason + "</td>";
+                        list += "</tr>";
+                    });
+                    $("#tableSecondPerson").empty().append(list);
+                });
+
+                if (row.ApproveState !== "一级审批完成") {
+                    $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").hide();
+                }
+                else {
+                    $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").show();
+                }
+
+                $('#secondModal').modal('show');
+            }
+        };
+
+        var columns = [
+            {
+                title: '序号',
+                formatter: function (value, row, index) {
+                    return index + 1;
+                }
+            },
+            {
+                title: '技术规格书文件',
+                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                    if (row.ApproveLevel === "一级") {
+                        if (row.ApproveState === "一级审批完成") {
+                            return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                        }
+                        else {
+                            return row.TechnicSpecificationFileShow;
+                        }
+                    }
+                    if (row.ApproveLevel === "二级") {
+                        if (row.ApproveState === "二级审批完成") {
+                            return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                        }
+                        else {
+                            return row.TechnicSpecificationFileShow;
+                        }
+                    }
+                }
+            },
+            {
+                field: 'ApproveLevel',
+                title: '审批级别'
+            },
+            {
+                field: 'ApproveState',
+                title: '审批状态'
+            },
+            {
+                title: '一级审批',
+                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                    return '<a class="firstApprove" href="javascript: void (0)" title="一级审批">查看</a>';
+
+                },
+                events: firstApproveEvents
+            },
+            {
+                title: '二级审批',
+                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                    if (row.ApproveLevel === "二级") {
+                        return '<a class="secondApprove" href="javascript: void (0)" title="二级审批">查看</a>';
+                    }
+                    else {
+                        return '';
+                    }
+                },
+                events: secondApproveEvents
+            },
+            {
+                field: 'InputPersonName',
+                title: '提交人员'
+            },
+            {
+                title: '提交部门',
+                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                    return row.InputPersonFatherDeptName + "-" + row.InputPersonDeptName;
+                }
+            },
+            {
+                field: 'InputDateTime',
+                title: '提交时间',
+                formatter: function (value, row, index) {
+                    return getJsonDateTime(value);
+                }
+            }
+        ];
+
+        //初始化BS-Table
+        $('#bsTable').bootstrapTable({
+            url: '/TechnicSpecifiction/GetMinPriceList',         //请求后台的URL（*）
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'post',                     //请求方式（*）
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: false,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            queryParams: queryParams,           //传递参数（*）
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [5, 10, 15, 20],        //可供选择的每页的行数（*）
+            search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: false,                //是否启用点击选中行
+            //height: 600,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "FileMinPriceID",          //每一行的唯一标识，一般为主键列
+            showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                   //是否显示父子表
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+            showExport: false,                     //是否显示导出
+            rowStyle: function (row, index) {
+                if (row.ApproveState === "一级审批回退" || row.ApproveState === "二级审批回退") {
+                    return { classes: "danger" };
+                }
+                else {
+                    if (row.ApproveState === "待审核") {
+                        return { classes: "warning" };
+
+                    }
+                    else {
+                        return { classes: "default" };
+                    }
+                }
+            },
+            columns: columns
+        })
+            .on('all.bs.table', function (e, name, args) {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+    });
+</script>
