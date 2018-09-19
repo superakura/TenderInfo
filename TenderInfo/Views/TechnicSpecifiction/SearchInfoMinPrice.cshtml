@@ -47,7 +47,8 @@
             offset: params.offset,  //页码
             tbxFileNameSearch: $("#tbxFileNameSearch").val(),
             ddlApproveLevelSearch: $("#ddlApproveLevelSearch").val(),
-            ddlApproveStateSearch: $("#ddlApproveStateSearch").val()
+            ddlApproveStateSearch: $("#ddlApproveStateSearch").val(),
+            ddlApproveDeptSearch: $("#ddlApproveDeptSearch").val()
         };
         return temp;
     };
@@ -62,5 +63,16 @@
                 $("#ddlApproveDeptSearch").append(list);
             });
         }
+
+        //查询按钮
+        $("#btnSearch").click(function () {
+            $("#bsTable").bootstrapTable('refresh');
+        });
+
+        //重置按钮
+        $("#btnReset").click(function () {
+            $("#tbxFileNameSearch,#ddlApproveLevelSearch,#ddlApproveStateSearch,#ddlApproveDeptSearch").val("");
+            $("#bsTable").bootstrapTable('refresh');
+        });
     });
 </script>

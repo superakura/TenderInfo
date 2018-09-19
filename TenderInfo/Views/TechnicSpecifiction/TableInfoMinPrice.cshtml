@@ -33,9 +33,15 @@
                     $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").hide();
                 }
                 else {
-                    $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").show();
+                    $.post("/TechnicSpecifiction/CheckMinPriceFirstPerson", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result === "ok") {
+                            $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").show();
+                        }
+                        else {
+                            $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").hide();
+                        }
+                    });
                 }
-
                 $('#firstModal').modal('show');
             }
         };
@@ -71,7 +77,14 @@
                     $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").hide();
                 }
                 else {
-                    $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").show();
+                    $.post("/TechnicSpecifiction/CheckMinPriceSecondPerson", encodeURIComponent(JSON.stringify(args)), function (result) {
+                        if (result === "ok") {
+                            $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").show();
+                        }
+                        else {
+                            $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").hide();
+                        }
+                    });
                 }
 
                 $('#secondModal').modal('show');
@@ -84,6 +97,11 @@
                 formatter: function (value, row, index) {
                     return index + 1;
                 }
+            },
+            {
+                field: 'FileMinPriceID',
+                title: 'ID',
+                visible: false
             },
             {
                 title: '技术规格书文件',

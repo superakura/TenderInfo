@@ -181,6 +181,8 @@ namespace TenderInfo.Controllers
                 var fileName = Request.Form["tbxFileNameSearch"];//文件名称
                 var approveLevel = Request.Form["ddlApproveLevelSearch"];//审批级别
                 var approveState = Request.Form["ddlApproveStateSearch"];//审批状态
+                var inputPersonFatherDeptID = 0;
+                int.TryParse(Request.Form["ddlApproveDeptSearch"], out inputPersonFatherDeptID);
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var result = from m in db.FileMinPrice
@@ -188,6 +190,14 @@ namespace TenderInfo.Controllers
                 if (User.IsInRole("技术规格书提报"))
                 {
                     result = result.Where(w=>w.InputPersonID==userInfo.UserID);
+                }
+                if (User.IsInRole("技术规格书审批"))
+                {
+                    var approvePersonIDList = db.FileMinPriceChild
+                        .Where(w => w.ApprovePersonID == userInfo.UserID)
+                        .Select(s=>s.FileMinPriceID)
+                        .ToList();
+                    result = result.Where(w => approvePersonIDList.Contains(w.FileMinPriceID));
                 }
                 if (!string.IsNullOrEmpty(fileName))
                 {
@@ -197,9 +207,13 @@ namespace TenderInfo.Controllers
                 {
                     result = result.Where(w => w.ApproveLevel==approveLevel);
                 }
-                if (!string.IsNullOrEmpty(fileName))
+                if (!string.IsNullOrEmpty(approveState))
                 {
                     result = result.Where(w => w.ApproveState==approveState);
+                }
+                if (inputPersonFatherDeptID!=0)
+                {
+                    result = result.Where(w => w.InputPersonFatherDeptID==inputPersonFatherDeptID);
                 }
                 return Json(new { total = result.Count(), rows = result.OrderBy(o => o.InputDateTime).Skip(offset).Take(limit).ToList() });
             }
@@ -228,6 +242,10 @@ namespace TenderInfo.Controllers
                 var fileMinPriceChild = db.FileMinPriceChild
                     .Where(w => w.FileMinPriceID == fileMinPriceID && w.ApproveLevel == "一级" && w.ApprovePersonID == userInfo.UserID)
                     .FirstOrDefault();
+                if (fileMinPriceChild.ApproveState!= "待审批")
+                {
+                    return "不能重复进行审批！";
+                }
 
                 fileMinPriceChild.ApproveDateTime = DateTime.Now;
                 if (approveType=="back")
@@ -246,7 +264,6 @@ namespace TenderInfo.Controllers
                     .Where(w => w.FileMinPriceID == fileMinPriceID&&w.ApproveLevel== "一级")
                     .ToList();
 
-                //var count = fileMinPriceChildFirstList.Count;
                 var okSum = 0;
                 foreach (var item in fileMinPriceChildFirstList)
                 {
@@ -292,6 +309,10 @@ namespace TenderInfo.Controllers
                 var fileMinPriceChild = db.FileMinPriceChild
                     .Where(w => w.FileMinPriceID == fileMinPriceID && w.ApproveLevel == "二级" && w.ApprovePersonID == userInfo.UserID)
                     .FirstOrDefault();
+                if (fileMinPriceChild.ApproveState!= "待审批")
+                {
+                    return "不能重复进行审批！";
+                }
 
                 fileMinPriceChild.ApproveDateTime = DateTime.Now;
                 if (approveType == "back")
@@ -350,7 +371,7 @@ namespace TenderInfo.Controllers
                 var minPriceID = 0;//最低价审批id
                 int.TryParse(infoList["id"].ToString(), out minPriceID);
                 var list = db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID && w.ApproveLevel == "一级").ToList();
-
+                
                 return Json(list);
             }
             catch (Exception ex)
@@ -391,12 +412,84 @@ namespace TenderInfo.Controllers
         {
             try
             {
-                var list = db.DeptInfo.Where(w => w.DeptFatherID == 1).ToList();
-                return Json(list);
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var list = db.DeptInfo.Where(w => w.DeptFatherID == 1);
+                if (User.IsInRole("技术规格书提报"))
+                {
+                    var deptFatherID = db.DeptInfo.Where(w => w.DeptID == userInfo.UserDeptID).FirstOrDefault().DeptFatherID;
+                    list = list.Where(w => w.DeptID == deptFatherID);
+                }
+                return Json(list.ToList());
             }
             catch (Exception ex)
             {
                 return Json(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 判断最低价法审批用户，是否能够执行一级审批操作
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CheckMinPriceFirstPerson()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var minPriceID = 0;//最低价审批id
+                int.TryParse(infoList["id"].ToString(), out minPriceID);
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var userIDList = db.FileMinPriceChild
+                    .Where(w => w.FileMinPriceID == minPriceID&&w.ApproveLevel=="一级"&&w.ApproveState== "待审批")
+                    .Select(s => s.ApprovePersonID)
+                    .ToList();
+                if (userIDList.Contains(userInfo.UserID))
+                {
+                    return "ok";
+                }
+                else
+                {
+                    return "error";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 判断最低价法审批用户，是否能够执行二级审批操作
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CheckMinPriceSecondPerson()
+        {
+            try
+            {
+                var infoList =
+  JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
+                var minPriceID = 0;//最低价审批id
+                int.TryParse(infoList["id"].ToString(), out minPriceID);
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var userIDList = db.FileMinPriceChild
+                    .Where(w => w.FileMinPriceID == minPriceID && w.ApproveLevel == "二级"&&w.ApproveState== "待审批")
+                    .Select(s => s.ApprovePersonID)
+                    .ToList();
+                if (userIDList.Contains(userInfo.UserID))
+                {
+                    return "ok";
+                }
+                else
+                {
+                    return "error";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
             }
         }
     }
