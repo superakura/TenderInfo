@@ -10,14 +10,22 @@ namespace TenderInfo.Models
     [Table("RoleInfo")]
     public class RoleInfo
     {
+        /// <summary>
+        /// 角色ID
+        /// </summary>
         [Key]
-        public int RoleID { get; set; }//角色ID
+        public int RoleID { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string RoleName { get; set; }//角色名称
+        /// <summary>
+        /// 角色名称
+        /// </summary>
+        [Required,StringLength(50)]
+        public string RoleName { get; set; }
 
+        /// <summary>
+        /// 角色描述
+        /// </summary>
         [StringLength(100)]
-        public string RoleDescribe { get; set; }//角色描述
+        public string RoleDescribe { get; set; }
     }
 }

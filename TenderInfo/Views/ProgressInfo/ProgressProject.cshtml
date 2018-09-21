@@ -9,6 +9,15 @@
         @:招标管理
     }
 </span>
+<style>
+    .bs-checkbox {
+        vertical-align: middle;
+    }
+
+    .table > tbody > tr > td {
+        vertical-align: middle;
+    }
+</style>
 <div class="modal fade" id="NewProgressModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -234,6 +243,53 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="selectMaterialAccountModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">选择招标台账--同步数据</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    已选择招标进度信息
+                                </div>
+                                <div class="panel-body">
+                                    <span id="lblProgressInfoID"></span>
+                                    拟招标项目名称或物资名称：【<span id="lblProjectName"></span>】
+                                    <br />
+                                    类型：【<span id="lblProgressTypeChild"></span>】
+                                    <br />
+                                    招标项目负责人：【<span id="lblProjectResponsiblePersonName"></span>】
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    选择要同步的招标台账信息
+                                </div>
+                                <div class="panel-body">
+                                    <table id="bsTableSelectAccount"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnSelectAccountSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">招标进度--工程、服务</h3>
@@ -387,6 +443,28 @@
                             toastr.error(result, "提示");
                         }
                     });
+                }
+            });
+        });
+
+        //同步台账信息提交
+        $("#btnSelectAccountSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var selectInfo = $('#bsTableSelectAccount').bootstrapTable('getSelections');
+                    var accountID = selectInfo[0].AccountID;
+                    var progressID = $("#lblProgressInfoID").text();
+                    $.post("/Account/UpdateProgress", { "accountID": accountID, "progressID": progressID },
+                        function (data, textStatus, jqXHR) {
+                            if (data === "ok") {
+                                $("#selectMaterialAccountModal").modal("hide");
+                                toastr.success("操作成功！", "提示");
+                            }
+                        }
+                    );
                 }
             });
         });

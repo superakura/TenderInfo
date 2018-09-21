@@ -10,12 +10,21 @@ namespace TenderInfo.Models
     [Table("UserRole")]
     public class UserRole
     {
+        /// <summary>
+        /// 用户角色关系表ID
+        /// </summary>
         [Key]
-        public int UserRoleID { get; set; }//用户角色关系表ID
+        public int UserRoleID { get; set; }
 
-        public int UserID { get; set; }//用户ID
+        /// <summary>
+        /// 用户ID
+        /// </summary>
+        public int UserID { get; set; }
 
-        public int RoleID { get; set; }//角色ID
+        /// <summary>
+        /// 角色ID
+        /// </summary>
+        public int RoleID { get; set; }
 
         [ForeignKey("UserID")]
         public UserInfo UserInfo { get; set; }

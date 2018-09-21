@@ -10,12 +10,21 @@ namespace TenderInfo.Models
     [Table("UserDept")]
     public class UserDept
     {
+        /// <summary>
+        /// 用户部门关系表ID
+        /// </summary>
         [Key]
-        public int UserDeptID { get; set; }//用户部门关系表ID
+        public int UserDeptID { get; set; }
 
-        public int UserID { get; set; }//用户表ID
+        /// <summary>
+        /// 用户表ID
+        /// </summary>
+        public int UserID { get; set; }
 
-        public int DeptID { get; set; }//部门表ID
+        /// <summary>
+        /// 部门表ID
+        /// </summary>
+        public int DeptID { get; set; }
 
         //[ForeignKey("DeptID")]
         //public DeptInfo DeptInfo { get; set; }

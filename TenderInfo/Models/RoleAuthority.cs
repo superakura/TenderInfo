@@ -11,12 +11,21 @@ namespace TenderInfo.Models
     [Table("RoleAuthority")]
     public class RoleAuthority
     {
+        /// <summary>
+        /// 权限角色关系表ID
+        /// </summary>
         [Key]
-        public int RoleAuthorityID { get; set; }//权限角色关系表ID
+        public int RoleAuthorityID { get; set; }
 
-        public int RoleID { get; set; }//角色ID
+        /// <summary>
+        /// 角色ID
+        /// </summary>
+        public int RoleID { get; set; }
 
-        public int AuthorityID { get; set; }//权限ID
+        /// <summary>
+        /// 权限ID
+        /// </summary>
+        public int AuthorityID { get; set; }
 
         [ForeignKey("RoleID")]
         public RoleInfo RoleInfo { get; set; }
