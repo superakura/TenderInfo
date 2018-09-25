@@ -32,6 +32,15 @@ namespace TenderInfo.Controllers
         }
 
         /// <summary>
+        /// 技术规格书审批--综合评标法添加视图
+        /// </summary>
+        /// <returns></returns>
+        public ViewResult AddComprehensive()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// 技术规格书审批后上传视图
         /// </summary>
         /// <returns></returns>

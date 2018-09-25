@@ -726,6 +726,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DeptInfo.cs" />
+    <Compile Include="Models\FileComprehensive.cs" />
     <Compile Include="Models\FileMinPriceChild.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
@@ -786,6 +787,7 @@
     <Content Include="Views\TechnicSpecifiction\Comprehensive.cshtml" />
     <Content Include="Views\TechnicSpecifiction\TableInfoMinPrice.cshtml" />
     <Content Include="Views\TechnicSpecifiction\SearchInfoMinPrice.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\AddComprehensive.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,8 +1,497 @@
 ﻿
 @{
-    ViewBag.Title = "Comprehensive";
+    ViewBag.Title = "技术规格书--综合评标法";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Comprehensive</h2>
+<link href="~/Content/metroStyle/metroStyle.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.ztree.all-3.5.min.js"></script>
+<style>
+    select[multiple] {
+        height: 450px;
+    }
+</style>
+<div class="modal fade" id="AddModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新增--综合评标法技术规格书审批</h4>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-custom">
+                    <div class="container-fluid">
+                        <form id="AddForm" class="form-inline" method="post" enctype="multipart/form-data">
+                            <input id="tbxFirstListOne" name="tbxFirstListOne" class="hidden" />
+                            <input id="tbxSecondListOne" name="tbxSecondListOne" class="hidden" />
+                            <input id="tbxFirstListTwo" name="tbxFirstListTwo" class="hidden" />
+                            <input id="tbxSecondListTwo" name="tbxSecondListTwo" class="hidden" />
+                            <input id="tbxFirstListThird" name="tbxFirstListThird" class="hidden" />
+                            <input id="tbxSecondListThird" name="tbxSecondListThird" class="hidden" />
+                            <div class="form-group">
+                                <label for="fileTechnicalSpecification">技术规格书<span class="text-danger">(必填)</span></label>
+                                <input id="fileTechnicalSpecification" name="fileTechnicalSpecification" type="file" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="fileComprehensiveTechnical">评分标准(技术)<span class="text-danger">(必填)</span></label>
+                                <input id="fileComprehensiveTechnical" name="fileComprehensiveTechnical" type="file" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="fileComprehensiveBusiness">评分标准(商务)<span class="text-danger">(必填)</span></label>
+                                <input id="fileComprehensiveBusiness" name="fileComprehensiveBusiness" type="file" class="form-control" />
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-md-12" id="listApprove">
+                                <div class="col-md-4">
+                                    <h5>【选择部门】</h5>
+                                    <ul class="ztree well" id="approveDeptList"></ul>
+                                </div>
+                                <div class="col-md-2">
+                                    <h5>【人员列表】</h5>
+                                    <select multiple class="form-control" id="approvePersonList"></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="nav-tabs-custom">
+                                        <ul class="nav nav-tabs">
+                                            <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">技术规格书</a></li>
+                                            <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="true">评分标准(技术)</a></li>
+                                            <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="true">评分标准(商务)</a></li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="tab_1">
+                                                <div class="container-fluid">
+                                                    <div class="col-md-6">
+                                                        【一级】
+                                                        <button id="btnAddFirstPersonOne" class="btn btn-info btn-xs">
+                                                            添加
+                                                        </button>
+                                                        <button id="btnRemoveFirstPersonOne" class="btn btn-danger btn-xs">
+                                                            移除
+                                                        </button>
+                                                        <select multiple class="form-control" id="firstPersonListOne"></select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        【二级】
+                                                        <button id="btnAddSecondPersonOne" class="btn btn-info btn-xs">
+                                                            添加
+                                                        </button>
+                                                        <button id="btnRemoveSecondPersonOne" class="btn btn-danger btn-xs">
+                                                            移除
+                                                        </button>
+                                                        <select multiple class="form-control" id="secondPersonListOne"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane" id="tab_2">
+                                                <div class="container-fluid">
+                                                    <div class="col-md-6">
+                                                        【一级】
+                                                        <button id="btnAddFirstPersonTwo" class="btn btn-info btn-xs">
+                                                            添加
+                                                        </button>
+                                                        <button id="btnRemoveFirstPersonTwo" class="btn btn-danger btn-xs">
+                                                            移除
+                                                        </button>
+                                                        <select multiple class="form-control" id="firstPersonListTwo"></select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        【二级】
+                                                        <button id="btnAddSecondPersonTwo" class="btn btn-info btn-xs">
+                                                            添加
+                                                        </button>
+                                                        <button id="btnRemoveSecondPersonTwo" class="btn btn-danger btn-xs">
+                                                            移除
+                                                        </button>
+                                                        <select multiple class="form-control" id="secondPersonListTwo"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane" id="tab_3">
+                                                <div class="container-fluid">
+                                                    <div class="col-md-6">
+                                                        【一级】
+                                                        <button id="btnAddFirstPersonThird" class="btn btn-info btn-xs">
+                                                            添加
+                                                        </button>
+                                                        <button id="btnRemoveFirstPersonThird" class="btn btn-danger btn-xs">
+                                                            移除
+                                                        </button>
+                                                        <select multiple class="form-control" id="firstPersonListThird"></select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        【二级】
+                                                        <button id="btnAddSecondPersonThird" class="btn btn-info btn-xs">
+                                                            添加
+                                                        </button>
+                                                        <button id="btnRemoveSecondPersonThird" class="btn btn-danger btn-xs">
+                                                            移除
+                                                        </button>
+                                                        <select multiple class="form-control" id="secondPersonListThird"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnSubmit" class="btn btn-primary">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="firstModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">一级审批</h4>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-custom">
+                    <div class="container-fluid">
+                        <form id="firstApproveForm" method="post" enctype="multipart/form-data">
+                            @*加载一级审批的信息id*@
+                            <input id="tbxFirstID" name="tbxFirstID" class="hidden" />
+                            <input id="tbxFirstType" name="tbxFirstType" class="hidden" />
 
+                            <div class="row">
+                                <table class="table table-hover table-condensed">
+                                    <thead>
+                                        <tr class="success">
+                                            <th colspan="6" class="text-center">一级审批人员</th>
+                                        </tr>
+                                        <tr>
+                                            <th>序号</th>
+                                            <th>姓名</th>
+                                            <th>部门</th>
+                                            <th>状态</th>
+                                            <th>审批时间</th>
+                                            <th>回退原因</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableFirstPerson"></tbody>
+                                </table>
+                            </div>
+                            <div class="row" id="panelFirstBackReason">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxFirstBackReason">回退原因</label>
+                                        <textarea id="tbxFirstBackReason" name="tbxFirstBackReason" rows="2" cols="20" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnFirstApproveBack" class="btn btn-danger">回退</button>
+                <button type="button" id="btnFirstApproveOk" class="btn btn-primary">同意</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="secondModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">二级审批</h4>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-custom">
+                    <div class="container-fluid">
+                        <form id="secondApproveForm" method="post" enctype="multipart/form-data">
+                            @*加载二级审批的信息id*@
+                            <input id="tbxSecondID" name="tbxSecondID" class="hidden" />
+                            <input id="tbxSecondType" name="tbxSecondType" class="hidden" />
+
+                            <div class="row">
+                                <table class="table table-hover table-condensed">
+                                    <thead>
+                                        <tr class="success">
+                                            <th colspan="6" class="text-center">二级审批人员</th>
+                                        </tr>
+                                        <tr>
+                                            <th>序号</th>
+                                            <th>姓名</th>
+                                            <th>部门</th>
+                                            <th>状态</th>
+                                            <th>审批时间</th>
+                                            <th>回退原因</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableSecondPerson"></tbody>
+                                </table>
+                            </div>
+                            <div class="row" id="panelSecondBackReason">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxSecondBackReason">回退原因</label>
+                                        <textarea id="tbxSecondBackReason" name="tbxSecondBackReason" rows="2" cols="20" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnSecondApproveBack" class="btn btn-danger">回退</button>
+                <button type="button" id="btnSecondApproveOk" class="btn btn-primary">同意</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">技术规格书--综合评标法技术规格书审批</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        @Html.Partial("SearchInfoMinPrice")
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                @if (User.IsInRole("技术规格书提报"))
+                {
+                    <div id="toolbar" class="btn-group">
+                        <button id="btnAdd" type="button" class="btn btn-info">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                    </div>
+                }
+                @Html.Partial("TableInfoMinPrice")
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        //加载部门信息
+        var setting = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: zTreeOnClick
+            },
+            check: {
+                enable: false,
+                chkDisabledInherit: false,
+                nocheckInherit: false
+            }
+        };
+        function zTreeOnClick(event, treeId, treeNode) {
+            //console.log(treeNode.id);
+            var args = { "id": treeNode.id };
+            $.post("/UserInfo/GetApprovePersonList", encodeURIComponent(JSON.stringify(args)), function (result) {
+                //console.log(result);
+                var list = "";
+                $.each(result, function (index, val) {
+                    list += "<option value='" + val.UserID + "'>" + val.UserName + "</option>";
+                });
+                $("#approvePersonList").empty().append(list);
+            });
+        }
+        function LoadDeptList(ele, set) {
+            $(ele).remove("li");
+            $.ajax({
+                url: "/Dept/LoadDeptList",
+                cache: false,
+                dataType: "json",
+                success: function (result) {
+                    $.fn.zTree.init($(ele), set, result);
+                }
+            });
+        }
+
+        function clearAddModal() {
+            $("#listApprove select").empty();
+            $("#AddForm input").val("");
+        }
+        $("#btnAdd").click(function () {
+            clearAddModal();
+            LoadDeptList("#approveDeptList", setting);
+            $('#AddModal').modal('show');
+            //window.location.href = "/TechnicSpecifiction/AddComprehensive";
+        });
+
+        $("#btnAddFirstPersonOne").click(function () {
+            var itemText = $("#approvePersonList").find("option:selected").text();
+            var itemVal = $("#approvePersonList").val();
+            if (itemVal !== null) {
+                $("#firstPersonListOne").append("<option value='" + itemVal + "'>" + itemText + "</option>");
+                getFirstOneStr();
+            }
+        });
+        $("#btnRemoveFirstPersonOne").click(function () {
+            $("#firstPersonListOne").find("option:selected").remove();
+            getFirstOneStr();
+        });
+        $("#btnAddSecondPersonOne").click(function () {
+            var itemText = $("#approvePersonList").find("option:selected").text();
+            var itemVal = $("#approvePersonList").val();
+            if (itemVal !== null) {
+                $("#secondPersonListOne").append("<option value='" + itemVal + "'>" + itemText + "</option>");
+                getSecondOneStr();
+            }
+        });
+        $("#btnRemoveSecondPersonOne").click(function () {
+            $("#secondPersonListOne").find("option:selected").remove();
+            getSecondOneStr();
+        });
+        function getFirstOneStr() {
+            var list = "";
+            $("#firstPersonListOne option").each(function () {
+                list += $(this).val() + "&";
+            });
+            $("#tbxFirstListOne").val(list);
+        }
+        function getSecondOneStr() {
+            var list = "";
+            $("#secondPersonListOne option").each(function () {
+                list += $(this).val() + "&";
+            });
+            $("#tbxSecondListOne").val(list);
+        }
+
+        $("#btnAddFirstPersonTwo").click(function () {
+            var itemText = $("#approvePersonList").find("option:selected").text();
+            var itemVal = $("#approvePersonList").val();
+            if (itemVal !== null) {
+                $("#firstPersonListTwo").append("<option value='" + itemVal + "'>" + itemText + "</option>");
+                getFirstTwoStr();
+            }
+        });
+        $("#btnRemoveFirstPersonTwo").click(function () {
+            $("#firstPersonListTwo").find("option:selected").remove();
+            getFirstTwoStr();
+        });
+        $("#btnAddSecondPersonTwo").click(function () {
+            var itemText = $("#approvePersonList").find("option:selected").text();
+            var itemVal = $("#approvePersonList").val();
+            if (itemVal !== null) {
+                $("#secondPersonListTwo").append("<option value='" + itemVal + "'>" + itemText + "</option>");
+                getSecondTwoStr();
+            }
+        });
+        $("#btnRemoveSecondPersonTwo").click(function () {
+            $("#secondPersonListTwo").find("option:selected").remove();
+            getSecondTwoStr();
+        });
+        function getFirstTwoStr() {
+            var list = "";
+            $("#firstPersonListTwo option").each(function () {
+                list += $(this).val() + "&";
+            });
+            $("#tbxFirstListTwo").val(list);
+        }
+        function getSecondTwoStr() {
+            var list = "";
+            $("#secondPersonListTwo option").each(function () {
+                list += $(this).val() + "&";
+            });
+            $("#tbxSecondListTwo").val(list);
+        }
+
+        $("#btnAddFirstPersonThird").click(function () {
+            var itemText = $("#approvePersonList").find("option:selected").text();
+            var itemVal = $("#approvePersonList").val();
+            if (itemVal !== null) {
+                $("#firstPersonListThird").append("<option value='" + itemVal + "'>" + itemText + "</option>");
+                getFirstThirdStr();
+            }
+        });
+        $("#btnRemoveFirstPersonThird").click(function () {
+            $("#firstPersonListThird").find("option:selected").remove();
+            getFirstThirdStr();
+        });
+        $("#btnAddSecondPersonThird").click(function () {
+            var itemText = $("#approvePersonList").find("option:selected").text();
+            var itemVal = $("#approvePersonList").val();
+            if (itemVal !== null) {
+                $("#secondPersonListThird").append("<option value='" + itemVal + "'>" + itemText + "</option>");
+                getSecondThirdStr();
+            }
+        });
+        $("#btnRemoveSecondPersonThird").click(function () {
+            $("#secondPersonListThird").find("option:selected").remove();
+            getSecondThirdStr();
+        });
+        function getFirstThirdStr() {
+            var list = "";
+            $("#firstPersonListThird option").each(function () {
+                list += $(this).val() + "&";
+            });
+            $("#tbxFirstListThird").val(list);
+        }
+        function getSecondThirdStr() {
+            var list = "";
+            $("#secondPersonListThird option").each(function () {
+                list += $(this).val() + "&";
+            });
+            $("#tbxSecondListThird").val(list);
+        }
+
+        //对AddForm表单进行前端验证
+        var validAddForm = $("#AddForm").validate({
+            rules: {
+                fileTechnicalSpecification: { required: true },
+                fileComprehensiveTechnical: { required: true },
+                fileComprehensiveBusiness: { required: true }
+            }
+        });
+
+        //提交按钮
+        $("#btnSubmit").click(function () {
+            if ($("#tbxFirstList").val().trim() === "") {
+                toastr.error("一级审批必须填写！", "提示");
+                return;
+            }
+            if (validAddForm.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#UploadForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/InsertMinPriceFile",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#myModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                                else {
+                                    console.log(result);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>

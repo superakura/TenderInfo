@@ -1,0 +1,171 @@
+﻿
+@{
+    ViewBag.Title = "AddComprehensive";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/metroStyle/metroStyle.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.ztree.all-3.5.min.js"></script>
+<style>
+    select[multiple] {
+        height: 450px;
+    }
+</style>
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">技术规格书--综合评标法技术规格书添加</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        <form id="AddForm" method="post" enctype="multipart/form-data">
+            <input id="tbxFirstList" name="tbxFirstList" class="" />
+            <input id="tbxSecondList" name="tbxSecondList" class="" />
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="fileTechnicalSpecification">技术规格书--选择上传文件<span class="text-danger">(必填)</span></label>
+                        <input id="fileTechnicalSpecification" name="fileTechnicalSpecification" type="file" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="fileComprehensiveTechnical">综合评分标准（技术）<span class="text-danger">(必填)</span></label>
+                        <input id="fileComprehensiveTechnical" name="fileComprehensiveTechnical" type="file" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="fileComprehensiveBusiness">综合评分标准（商务）<span class="text-danger">(必填)</span></label>
+                        <input id="fileComprehensiveBusiness" name="fileComprehensiveBusiness" type="file" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <h5>【选择部门】</h5>
+                    <ul class="ztree well" id="approveDeptList"></ul>
+                </div>
+                <div class="col-md-2">
+                    <h5>【人员列表】</h5>
+                    <select multiple class="form-control" id="approvePersonList"></select>
+                </div>
+                <div class="col-md-6">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false">技术规格书</a></li>
+                            <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="true">综合评分标准（技术）</a></li>
+                            <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="true">综合评分标准（商务）</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <div class="col-md-2">
+                                    <h5>【一级审批】</h5>
+                                    <button id="btnAddFirstPersonOne" class="btn btn-info btn-xs">
+                                        添加
+                                    </button>
+                                    <button id="btnRemoveFirstPersonOne" class="btn btn-danger btn-xs">
+                                        移除
+                                    </button>
+                                    <select multiple class="form-control" id="firstPersonListOne"></select>
+                                </div>
+                                <div class="col-md-2">
+                                    <h5>【二级审批】</h5>
+                                    <button id="btnAddSecondPersonOne" class="btn btn-info btn-xs">
+                                        添加
+                                    </button>
+                                    <button id="btnRemoveSecondPersonOne" class="btn btn-danger btn-xs">
+                                        移除
+                                    </button>
+                                    <select multiple class="form-control" id="secondPersonListOne"></select>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_2">
+                                <div class="container-fluid">
+                                    <div class="col-md-2">
+                                        <h5>【一级审批】</h5>
+                                        <button id="btnAddFirstPersonTwo" class="btn btn-info btn-xs">
+                                            添加
+                                        </button>
+                                        <button id="btnRemoveFirstPersonTwo" class="btn btn-danger btn-xs">
+                                            移除
+                                        </button>
+                                        <select multiple class="form-control" id="firstPersonListTwo"></select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h5>【二级审批】</h5>
+                                        <button id="btnAddSecondPersonTwo" class="btn btn-info btn-xs">
+                                            添加
+                                        </button>
+                                        <button id="btnRemoveSecondPersonTwo" class="btn btn-danger btn-xs">
+                                            移除
+                                        </button>
+                                        <select multiple class="form-control" id="secondPersonListTwo"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_3">
+                                <div class="container-fluid">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        //加载部门信息
+        var setting = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: zTreeOnClick
+            },
+            check: {
+                enable: false,
+                chkDisabledInherit: false,
+                nocheckInherit: false
+            }
+        };
+        function zTreeOnClick(event, treeId, treeNode) {
+            //console.log(treeNode.id);
+            var args = { "id": treeNode.id };
+            $.post("/UserInfo/GetApprovePersonList", encodeURIComponent(JSON.stringify(args)), function (result) {
+                //console.log(result);
+                var list = "";
+                $.each(result, function (index, val) {
+                    list += "<option value='" + val.UserID + "'>" + val.UserName + "</option>";
+                });
+                $("#approvePersonList").empty().append(list);
+            });
+        }
+        function LoadDeptList(ele, set) {
+            $(ele).remove("li");
+            $.ajax({
+                url: "/Dept/LoadDeptList",
+                cache: false,
+                dataType: "json",
+                success: function (result) {
+                    $.fn.zTree.init($(ele), set, result);
+                }
+            });
+        }
+        LoadDeptList("#approveDeptList", setting);
+    });
+</script>
+
