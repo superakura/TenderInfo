@@ -714,6 +714,10 @@
     <Compile Include="Migrations\201809150544268_edit30.Designer.cs">
       <DependentUpon>201809150544268_edit30.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810080600125_edit31.cs" />
+    <Compile Include="Migrations\201810080600125_edit31.Designer.cs">
+      <DependentUpon>201810080600125_edit31.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -727,6 +731,7 @@
     </Compile>
     <Compile Include="Models\DeptInfo.cs" />
     <Compile Include="Models\FileComprehensive.cs" />
+    <Compile Include="Models\FileComprehensiveChild.cs" />
     <Compile Include="Models\FileMinPriceChild.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
@@ -788,6 +793,8 @@
     <Content Include="Views\TechnicSpecifiction\TableInfoMinPrice.cshtml" />
     <Content Include="Views\TechnicSpecifiction\SearchInfoMinPrice.cshtml" />
     <Content Include="Views\TechnicSpecifiction\AddComprehensive.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\TableInfoComprehensive.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\SearchInfoComprehensive.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -897,6 +904,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809150544268_edit30.resx">
       <DependentUpon>201809150544268_edit30.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810080600125_edit31.resx">
+      <DependentUpon>201810080600125_edit31.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

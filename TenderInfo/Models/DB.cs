@@ -46,6 +46,8 @@ namespace TenderInfo.Models
 
         public virtual DbSet<FileMinPrice> FileMinPrice { get; set; }//最低价评标法，审批表
         public virtual DbSet<FileMinPriceChild> FileMinPriceChild { get; set; }//最低价评标法，审批流程表
+        public virtual DbSet<FileComprehensive> FileComprehensive { get; set; }//综合评标法，审批表
+        public virtual DbSet<FileComprehensiveChild> FileComprehensiveChild { get; set; }//综合评标法，审批流程表
 
         public virtual DbSet<SampleDelegation> SampleDelegation { get; set; }//送样委托表
         public virtual DbSet<CheckReportFile> CheckReportFile { get; set; }//送样委托检验报告文件表
