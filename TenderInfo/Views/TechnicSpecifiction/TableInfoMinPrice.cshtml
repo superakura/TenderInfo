@@ -91,85 +91,148 @@
             }
         };
 
-        var columns = [
-            {
-                title: '序号',
-                formatter: function (value, row, index) {
-                    return index + 1;
-                }
-            },
-            {
-                field: 'FileMinPriceID',
-                title: 'ID',
-                visible: false
-            },
-            {
-                title: '技术规格书文件',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    if (row.ApproveLevel === "一级") {
-                        if (row.ApproveState === "一级审批完成") {
-                            return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
-                        }
-                        else {
-                            return row.TechnicSpecificationFileShow;
-                        }
-                    }
-                    if (row.ApproveLevel === "二级") {
-                        if (row.ApproveState === "二级审批完成") {
-                            return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
-                        }
-                        else {
-                            return row.TechnicSpecificationFileShow;
-                        }
-                    }
-                }
-            },
-            {
-                field: 'ApproveLevel',
-                title: '审批级别'
-            },
-            {
-                field: 'ApproveState',
-                title: '审批状态'
-            },
-            {
-                title: '一级审批',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    return '<a class="firstApprove" href="javascript: void (0)" title="一级审批">查看</a>';
-
-                },
-                events: firstApproveEvents
-            },
-            {
-                title: '二级审批',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    if (row.ApproveLevel === "二级") {
-                        return '<a class="secondApprove" href="javascript: void (0)" title="二级审批">查看</a>';
-                    }
-                    else {
-                        return '';
-                    }
-                },
-                events: secondApproveEvents
-            },
-            {
-                field: 'InputPersonName',
-                title: '提交人员'
-            },
-            {
-                title: '提交部门',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    return row.InputPersonFatherDeptName + "-" + row.InputPersonDeptName;
-                }
-            },
-            {
-                field: 'InputDateTime',
-                title: '提交时间',
-                formatter: function (value, row, index) {
-                    return getJsonDateTime(value);
-                }
+        var reLoadEvents = {
+            'click .reLoad': function (e, value, row, index) {
+                $('#reLoadModal').modal('show');
+                $("#tbxMinPriceIDReLoad").val(row.FileMinPriceID);
             }
-        ];
+        };
+        var logInfoEvents = {
+            'click .logInfo': function (e, value, row, index) {
+                $('#logModal').modal('show');
+                $.post("/TechnicSpecifiction/GetMinPriceLog", { "id": row.FileMinPriceID }, function (result) {
+                    console.log(result);
+                    var list = "";
+                    $.each(result, function (indexInArray, val) {
+                        list += "<tr>";
+                        list += "<td>" + (indexInArray + 1) + "</td>";
+                        list += "<td>" + val.LogContent + "</td>";
+                        list += "<td>" + val.InputPersonName + "</td>";
+                        list += "<td>" + getJsonDateTime(val.InputDateTime) + "</td>";
+                        var logReason = "";
+                        if (val.LogReason !== null) {
+                            logReason = val.LogReason;
+                        }
+                        list += "<td>" + logReason + "</td>";
+                        list += "<td><a target='_blank' href='/FileUpload/" + val.Col1 + "'>" + val.Col2+"</a></td>";
+                        //list += "<td>" + val.Col2 + "</td>";
+                        list += "</tr>";
+                    });
+                    $("#logTable").empty().append(list);
+                });
+            }
+        };
+
+        function loadColumns() {
+            var tempArray = [
+                {
+                    title: '序号',
+                    formatter: function (value, row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field: 'FileMinPriceID',
+                    title: 'ID',
+                    visible: false
+                },
+                {
+                    title: '重新上传技术规格书',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.ApproveState === "一级审批回退" || row.ApproveState === "二级审批回退") {
+                            return '<a class="reLoad" href="javascript: void (0)" title="上传">上传</a>';
+                        }
+                        else {
+                            return "";
+                        }
+                    },
+                    events: reLoadEvents
+                },
+                {
+                    title: '操作记录',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return '<a class="logInfo" href="javascript: void (0)" title="查看">查看</a>';
+                    },
+                    events: logInfoEvents
+                },
+                {
+                    title: '技术规格书文件',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.ApproveLevel === "一级") {
+                            if (row.ApproveState === "一级审批完成") {
+                                return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                            }
+                            else {
+                                return row.TechnicSpecificationFileShow;
+                            }
+                        }
+                        if (row.ApproveLevel === "二级") {
+                            if (row.ApproveState === "二级审批完成") {
+                                return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                            }
+                            else {
+                                return row.TechnicSpecificationFileShow;
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'ApproveLevel',
+                    title: '审批级别'
+                },
+                {
+                    field: 'ApproveState',
+                    title: '审批状态'
+                },
+                {
+                    title: '一级审批',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return '<a class="firstApprove" href="javascript: void (0)" title="一级审批">查看</a>';
+
+                    },
+                    events: firstApproveEvents
+                },
+                {
+                    title: '二级审批',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.ApproveLevel === "二级") {
+                            return '<a class="secondApprove" href="javascript: void (0)" title="二级审批">查看</a>';
+                        }
+                        else {
+                            return '';
+                        }
+                    },
+                    events: secondApproveEvents
+                },
+                {
+                    field: 'InputPersonName',
+                    title: '提交人员'
+                },
+                {
+                    title: '提交部门',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return row.InputPersonFatherDeptName + "-" + row.InputPersonDeptName;
+                    }
+                },
+                {
+                    field: 'InputDateTime',
+                    title: '提交时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(value);
+                    }
+                }
+            ];
+            console.log(tempArray);
+            if ($("#userRole").text() !== "技术规格书提报") {
+                return $.grep(tempArray, function (ele, index) {
+                    return index !== 2;
+                });
+            }
+            else {
+                return tempArray;
+            }
+        }
+        var columns = loadColumns();
 
         //初始化BS-Table
         $('#bsTable').bootstrapTable({

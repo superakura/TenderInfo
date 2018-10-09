@@ -13,12 +13,18 @@ namespace TenderInfo.Controllers
         private Models.DB db = new Models.DB();
         // TechnicSpecifiction
 
+        #region view
+
         /// <summary>
         /// 技术规格书审批--最低价法视图
         /// </summary>
         /// <returns></returns>
         public ViewResult MinPrice()
         {
+            if (User.IsInRole("技术规格书提报"))
+            {
+                ViewBag.userRole = "技术规格书提报";
+            }
             return View();
         }
 
@@ -40,6 +46,11 @@ namespace TenderInfo.Controllers
             return View();
         }
 
+        public ViewResult ApproveComprehensive()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 技术规格书审批后上传视图
         /// </summary>
@@ -57,6 +68,9 @@ namespace TenderInfo.Controllers
         {
             return View();
         }
+        #endregion
+
+        #region MinPrice
 
         /// <summary>
         /// 最低价评标法文件上传，提交审核
@@ -99,17 +113,19 @@ namespace TenderInfo.Controllers
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var info = new Models.FileMinPrice();
-
+                var newName = string.Empty;
+                var showName = string.Empty;
                 if (fileMinPrice != null)
                 {
                     var fileExt = Path.GetExtension(fileMinPrice.FileName).ToLower();
                     var fileName = Path.GetFileNameWithoutExtension(fileMinPrice.FileName).ToLower();
-                    var newName = fileName + Guid.NewGuid() + fileExt;
+                    newName = fileName + Guid.NewGuid() + fileExt;
                     var filePath = Request.MapPath("~/FileUpload");
                     var fullName = Path.Combine(filePath, newName);
                     fileMinPrice.SaveAs(fullName);
                     info.TechnicSpecificationFile = newName;
                     info.TechnicSpecificationFileShow = fileName + fileExt;
+                    showName= fileName + fileExt;
                 }
                 info.ApproveState = "待审核";
                 info.ApproveLevel = secondApprovePersonIDStr == null ? "一级" : "二级";
@@ -164,6 +180,19 @@ namespace TenderInfo.Controllers
                     list.Add(second);
                 }
                 db.FileMinPriceChild.AddRange(list);
+
+                #region 写入日志，新建技术规格书文件审批
+                var log = new Models.Log();
+                log.LogType = "最低价法审批";
+                log.LogDataID = info.FileMinPriceID;
+                log.InputDateTime = DateTime.Now;
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.LogContent = "新建技术规格书审批";
+                log.Col1 = newName;//记录上传存储的文件名
+                log.Col2 = showName;//记录上传显示的文件名
+                db.Log.Add(log);
+                #endregion
                 db.SaveChanges();
 
                 return "ok";
@@ -224,7 +253,7 @@ namespace TenderInfo.Controllers
                 {
                     result = result.Where(w => w.InputPersonFatherDeptID==inputPersonFatherDeptID);
                 }
-                return Json(new { total = result.Count(), rows = result.OrderBy(o => o.InputDateTime).Skip(offset).Take(limit).ToList() });
+                return Json(new { total = result.Count(), rows = result.OrderByDescending(o => o.InputDateTime).Skip(offset).Take(limit).ToList() });
             }
             catch (Exception ex)
             {
@@ -248,6 +277,7 @@ namespace TenderInfo.Controllers
                 var backReason = Request["tbxFirstBackReason"];
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
+                var fileMinPrice = db.FileMinPrice.Find(fileMinPriceID);
                 var fileMinPriceChild = db.FileMinPriceChild
                     .Where(w => w.FileMinPriceID == fileMinPriceID && w.ApproveLevel == "一级" && w.ApprovePersonID == userInfo.UserID)
                     .FirstOrDefault();
@@ -261,6 +291,19 @@ namespace TenderInfo.Controllers
                 {
                     fileMinPriceChild.ApproveBackReason = backReason;
                     fileMinPriceChild.ApproveState = "一级审批回退";
+                    #region 写入日志，一级审批回退原因
+                    var log = new Models.Log();
+                    log.LogType = "最低价法审批";
+                    log.LogDataID = fileMinPriceID;
+                    log.InputDateTime = DateTime.Now;
+                    log.InputPersonID = userInfo.UserID;
+                    log.InputPersonName = userInfo.UserName;
+                    log.LogContent = "一级审批回退";
+                    log.LogReason = backReason;
+                    log.Col2 = fileMinPrice.TechnicSpecificationFileShow;
+                    log.Col1 = fileMinPrice.TechnicSpecificationFile;
+                    db.Log.Add(log);
+                    #endregion
                 }
                 else
                 {
@@ -268,9 +311,10 @@ namespace TenderInfo.Controllers
                 }
                 db.SaveChanges();
 
+                #region 判断一级审批全部的完成状态
                 var fileMinPriceInfo = db.FileMinPrice.Find(fileMinPriceID);
                 var fileMinPriceChildFirstList = db.FileMinPriceChild
-                    .Where(w => w.FileMinPriceID == fileMinPriceID&&w.ApproveLevel== "一级")
+                    .Where(w => w.FileMinPriceID == fileMinPriceID && w.ApproveLevel == "一级")
                     .ToList();
 
                 var okSum = 0;
@@ -290,7 +334,9 @@ namespace TenderInfo.Controllers
                 {
                     fileMinPriceInfo.ApproveState = "一级审批完成";
                 }
+
                 db.SaveChanges();
+                #endregion
                 return "ok";
             }
             catch (Exception ex)
@@ -315,6 +361,7 @@ namespace TenderInfo.Controllers
                 var backReason = Request["tbxSecondBackReason"];
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
+                var fileMinPrice = db.FileMinPrice.Find(fileMinPriceID);
                 var fileMinPriceChild = db.FileMinPriceChild
                     .Where(w => w.FileMinPriceID == fileMinPriceID && w.ApproveLevel == "二级" && w.ApprovePersonID == userInfo.UserID)
                     .FirstOrDefault();
@@ -328,6 +375,19 @@ namespace TenderInfo.Controllers
                 {
                     fileMinPriceChild.ApproveBackReason = backReason;
                     fileMinPriceChild.ApproveState = "二级审批回退";
+                    #region 写入日志，二级审批回退原因
+                    var log = new Models.Log();
+                    log.LogType = "最低价法审批";
+                    log.LogDataID = log.LogDataID = fileMinPriceID;
+                    log.InputDateTime = DateTime.Now;
+                    log.InputPersonID = userInfo.UserID;
+                    log.InputPersonName = userInfo.UserName;
+                    log.LogContent = "二级审批回退";
+                    log.LogReason = backReason;
+                    log.Col2 = fileMinPrice.TechnicSpecificationFileShow;
+                    log.Col1 = fileMinPrice.TechnicSpecificationFile;
+                    db.Log.Add(log);
+                    #endregion
                 }
                 else
                 {
@@ -335,6 +395,7 @@ namespace TenderInfo.Controllers
                 }
                 db.SaveChanges();
 
+                #region 判断一级审批全部的完成状态
                 var fileMinPriceInfo = db.FileMinPrice.Find(fileMinPriceID);
                 var fileMinPriceChildSecondList = db.FileMinPriceChild
                     .Where(w => w.FileMinPriceID == fileMinPriceID && w.ApproveLevel == "二级")
@@ -358,6 +419,7 @@ namespace TenderInfo.Controllers
                     fileMinPriceInfo.ApproveState = "二级审批完成";
                 }
                 db.SaveChanges();
+                #endregion
                 return "ok";
             }
             catch (Exception ex)
@@ -501,5 +563,107 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// 重新上传技术规格书文件
+        /// </summary>
+        /// <param name="fileMinPriceReLoad"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public string MinPriceReLoad(HttpPostedFileBase fileMinPriceReLoad)
+        {
+            try
+            {
+                var minPriceID = 0;
+                int.TryParse(Request["tbxMinPriceIDReLoad"], out minPriceID);
+                var minPriceInfo = db.FileMinPrice.Find(minPriceID);
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var newName = "";
+                var showName = "";
+                //文件上传
+                if (fileMinPriceReLoad != null)
+                {
+                    var fileExt = Path.GetExtension(fileMinPriceReLoad.FileName).ToLower();
+                    var fileName = Path.GetFileNameWithoutExtension(fileMinPriceReLoad.FileName).ToLower();
+                    newName = fileName + Guid.NewGuid() + fileExt;
+                    var filePath = Request.MapPath("~/FileUpload");
+                    var fullName = Path.Combine(filePath, newName);
+                    fileMinPriceReLoad.SaveAs(fullName);
+                    minPriceInfo.TechnicSpecificationFile = newName;
+                    minPriceInfo.TechnicSpecificationFileShow = fileName + fileExt;
+                    showName = fileName + fileExt;
+                }
+                //如果是一级审批回退，将所有【一级】审批人员的审批状态变为【待审核】
+                if (minPriceInfo.ApproveState== "一级审批回退")
+                {
+                    var firstList = db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID).ToList();
+                    foreach (var item in firstList)
+                    {
+                        item.ApproveState = "待审批";
+                        item.ApproveBackReason = null;
+                        item.ApproveDateTime = null;
+                    }
+                }
+                //如果是一级审批回退，将所有【一级】和【二级】审批人员的审批状态变为【待审核】
+                if (minPriceInfo.ApproveState == "二级审批回退")
+                {
+                    var firstList = db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID&&w.ApproveLevel== "一级").ToList();
+                    foreach (var item in firstList)
+                    {
+                        item.ApproveState = "待审批";
+                        item.ApproveBackReason = null;
+                        item.ApproveDateTime = null;
+                    }
+                    var secondList= db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID && w.ApproveLevel == "二级").ToList();
+                    foreach (var item in firstList)
+                    {
+                        item.ApproveState = "待审批";
+                        item.ApproveBackReason = null;
+                        item.ApproveDateTime = null;
+                    }
+                }
+                minPriceInfo.ApproveState = "待审核";
+
+                #region 写入日志，重新上传技术规格书文件
+                var log = new Models.Log();
+                log.LogType = "最低价法审批";
+                log.LogDataID = minPriceID;
+                log.InputDateTime = DateTime.Now;
+                log.InputPersonID = userInfo.UserID;
+                log.InputPersonName = userInfo.UserName;
+                log.LogContent = "重新上传技术规格书文件";
+                log.Col1 = newName;//记录上传存储的文件名
+                log.Col2 = showName;//记录上传显示的文件名
+                db.Log.Add(log);
+                #endregion
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 获取最低价上传、审批记录
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetMinPriceLog()
+        {
+            try
+            {
+                var id = 0;
+                int.TryParse(Request.Form["id"], out id);
+                var list = db.Log.Where(w => w.LogType == "最低价法审批" & w.LogDataID == id).ToList();
+                return Json(list);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
+        #endregion
     }
 }

@@ -453,6 +453,7 @@
                             if (data === "ok") {
                                 $("#selectMaterialAccountModal").modal("hide");
                                 toastr.success("操作成功！", "提示");
+                                $("#bsTable").bootstrapTable('refresh');
                             }
                         }
                     );

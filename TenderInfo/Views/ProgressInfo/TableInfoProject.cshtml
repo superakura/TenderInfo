@@ -19,11 +19,12 @@
 
         $("#tbxContractDeptContactDateEdit").val(row.ContractDeptContactDate);
         $("#tbxProjectExplainEdit").val(row.ProjectExplain);
+        $("#tbxTenderProgramAuditDateEdit").val(row.TenderProgramAuditDate == null ? "" : getJsonDateShort(row.TenderProgramAuditDate));
 
         $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
-        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
-        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
-        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
+        $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateTimeMinute(row.TenderFileSaleStartDate));
+        $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateTimeMinute(row.TenderFileSaleEndDate));
+        $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateTimeMinute(row.TenderStartDate));
         $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
 
         $("#tbxOtherExplainEdit").val(row.OtherExplain);
@@ -44,7 +45,7 @@
 
         //初始化BS-Table
         $('#bsTableSelectAccount').bootstrapTable({
-            url: '/Account/GetMaterialListForSelect',         //请求后台的URL（*）
+            url: '/Account/GetAccountListForSelect',         //请求后台的URL（*）
             contentType: 'application/x-www-form-urlencoded',
             method: 'post',                     //请求方式（*）
             striped: true,                      //是否显示行间隔色
@@ -115,6 +116,29 @@
             ]
         });
     };
+    var DelSynchro = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        var progressID = row.ProgressInfoID;
+        var args = { "progressID": progressID };
+        var accountName = "";
+        $.post("/Account/GetAccountNameByProgressID", encodeURIComponent(JSON.stringify(args)), function (result) {
+            accountName = result;
+            Ewin.confirm({ message: "确认要删除与台账【" + accountName + "】的数据同步关系吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $.post("/Account/DelSynchroByProgressID", { "progressID": progressID }, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            $("#bsTable").bootstrapTable('refresh');
+                        }
+                    });
+                }
+            });
+        });
+    };
     $(function () {
         var operateEvents = {
             'click .editProgress': function (e, value, row, index) {
@@ -168,7 +192,7 @@
                         visible: true,
                         formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
                             if (row.IsSynchro === "是") {
-                                return '<button type="button" onclick="DelSynchro(' + row.ProgressInfoID + ')" class="btn btn-link">删除</button >';
+                                return '<button type="button" onclick="DelSynchro(' + row.ProgressInfoID + ')" class="btn btn-link">取消</button >';
                             }
                             else {
                                 return '<button type="button" onclick="selectModel(' + row.ProgressInfoID + ')" class="btn btn-link">选择</button >';
@@ -238,7 +262,7 @@
                     },
                     {
                         title: '项目前期对接进度',
-                        colspan: 2,
+                        colspan: 3,
                         rowspan: 1,
                         align: "center"
                     },
@@ -277,19 +301,19 @@
                         title: '项目对接需说明情况'
                     },
                     {
+                        field: 'TenderProgramAuditDate',
+                        valign: "middle",
+                        title: '招标方案联审时间',
+                        formatter: function (value, row, index) {
+                            return getJsonDateShort(row.TenderProgramAuditDate);
+                        }
+                    },
+                    {
                         field: 'ProgramAcceptDate',
                         valign: "middle",
                         title: '招标方案接收时间',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateShort(row.ProgramAcceptDate);
                         }
                     },
                     {
@@ -297,15 +321,7 @@
                         valign: "middle",
                         title: '发售招标文件开始日期',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateTimeMinute(row.TenderFileSaleStartDate);
                         }
                     },
                     {
@@ -313,15 +329,7 @@
                         valign: "middle",
                         title: '发售招标文件截止日期',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateTimeMinute(row.TenderFileSaleEndDate);
                         }
                     },
                     {
@@ -329,15 +337,7 @@
                         valign: "middle",
                         title: '开标日期',
                         formatter: function (value, row, index) {
-                            if (value == null) {
-                                return "";
-                            }
-                            else {
-                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
-                                var date = new Date(milliseconds);
-                                var month = (date.getMonth() + 1);
-                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                            }
+                            return getJsonDateTimeMinute(row.TenderStartDate);
                         }
                     },
                     {

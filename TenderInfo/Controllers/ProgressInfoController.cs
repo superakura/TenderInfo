@@ -139,6 +139,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 修改招标进度信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string Update()
         {
@@ -177,10 +181,10 @@ namespace TenderInfo.Controllers
                     {
                         info.SynthesizeEvaluationRuleApproveDate = Convert.ToDateTime(Request.Form["tbxSynthesizeEvaluationRuleApproveDateEdit"]);
                     }
-                    if (Request.Form["tbxTenderProgramAuditDateEdit"] != string.Empty)
-                    {
-                        info.TenderProgramAuditDate = Convert.ToDateTime(Request.Form["tbxTenderProgramAuditDateEdit"]);
-                    }
+                }
+                if (Request.Form["tbxTenderProgramAuditDateEdit"] != string.Empty)
+                {
+                    info.TenderProgramAuditDate = Convert.ToDateTime(Request.Form["tbxTenderProgramAuditDateEdit"]);
                 }
                 #endregion
                 #region 项目实施进度
@@ -212,6 +216,15 @@ namespace TenderInfo.Controllers
                 info.InputDateTime = DateTime.Now;
                 info.YearInfo = DateTime.Now.Year.ToString();
                 info.IsOver = Request.Form["tbxTenderSuccessFileDateEdit"].Trim() != string.Empty ? "已完成" : "未完成";
+                if (info.IsSynchro== "是")
+                {
+                    var infoAccount = db.Account.Find(info.AccountID);
+                    infoAccount.TenderProgramAuditDate = info.TenderProgramAuditDate;
+                    infoAccount.ProgramAcceptDate = info.ProgramAcceptDate;
+                    infoAccount.TenderFileSaleStartDate = info.TenderFileSaleStartDate;
+                    infoAccount.TenderFileSaleEndDate = info.TenderFileSaleEndDate;
+                    infoAccount.TenderStartDate = info.TenderStartDate;
+                }
 
                 db.SaveChanges();
                 return "ok";
