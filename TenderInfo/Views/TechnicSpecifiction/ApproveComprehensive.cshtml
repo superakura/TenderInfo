@@ -1,0 +1,281 @@
+﻿
+@{
+    ViewBag.Title = "综合评标法审批";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>综合评标法审批--<span id="projectName"></span></h2>
+@*审批文件信息*@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">审批文件信息</div>
+            <div class="panel-body">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>文件信息</th>
+                            <th>审批级别</th>
+                            <th>审批状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fileTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@*操作日志*@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-danger">
+            <div class="panel-heading">操作、审批记录</div>
+            <div class="panel-body">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>操作内容</th>
+                            <th>操作人员</th>
+                            <th>操作时间</th>
+                            <th>回退原因</th>
+                            <th>技术规格书文件</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*技术规格书审批*@
+<div class="row" id="panelOne">
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">技术规格书审批</div>
+            <div class="panel-body">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" class="text-center">一级审批信息</th>
+                        </tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>状态</th>
+                            <th>审批时间</th>
+                            <th>回退原因</th>
+                        </tr>
+                    </thead>
+                    <tbody id="SpecificationFirstTable"></tbody>
+                </table>
+                <hr />
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" class="text-center">二级审批信息</th>
+                        </tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>状态</th>
+                            <th>审批时间</th>
+                            <th>回退原因</th>
+                        </tr>
+                    </thead>
+                    <tbody id="SpecificationSecondTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*评分标准--技术*@
+<div class="row" id="panelTwo">
+    <div class="col-md-12">
+        <div class="panel panel-success">
+            <div class="panel-heading">评分标准（技术）审批</div>
+            <div class="panel-body">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" class="text-center">一级审批信息</th>
+                        </tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>状态</th>
+                            <th>审批时间</th>
+                            <th>回退原因</th>
+                        </tr>
+                    </thead>
+                    <tbody id="TechnologyFirstTable"></tbody>
+                </table>
+                <hr />
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" class="text-center">二级审批信息</th>
+                        </tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>状态</th>
+                            <th>审批时间</th>
+                            <th>回退原因</th>
+                        </tr>
+                    </thead>
+                    <tbody id="TechnologySecondTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*评分标准--商务*@
+<div class="row" id="panelThird">
+    <div class="col-md-12">
+        <div class="panel panel-warning">
+            <div class="panel-heading">评分标准（商务）审批</div>
+            <div class="panel-body">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" class="text-center">一级审批信息</th>
+                        </tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>状态</th>
+                            <th>审批时间</th>
+                            <th>回退原因</th>
+                        </tr>
+                    </thead>
+                    <tbody id="BusinessFirstTable"></tbody>
+                </table>
+                <hr />
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" class="text-center">二级审批信息</th>
+                        </tr>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>状态</th>
+                            <th>审批时间</th>
+                            <th>回退原因</th>
+                        </tr>
+                    </thead>
+                    <tbody id="BusinessSecondTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span id="infoID"></span>
+<script>
+    $(function () {
+        var id = getParam("id");
+        var projectName = unescape(getParam("projectName"));
+
+        $("#infoID").text(id);
+        $("#projectName").text(projectName);
+
+        GetLogInfo()
+        function GetLogInfo() {
+            $.post("/TechnicSpecifiction/GetComprehensiveLog", { "id": $("#infoID").text() }, function (result) {
+                //console.log(result);
+                var list = "";
+                $.each(result, function (indexInArray, val) {
+                    list += "<tr>";
+                    list += "<td>" + (indexInArray + 1) + "</td>";
+                    list += "<td>" + val.LogContent + "</td>";
+                    list += "<td>" + val.InputPersonName + "</td>";
+                    list += "<td>" + getJsonDateTime(val.InputDateTime) + "</td>";
+                    var logReason = "";
+                    if (val.LogReason !== null) {
+                        logReason = val.LogReason;
+                    }
+                    list += "<td>" + logReason + "</td>";
+                    var file = val.Col1 === null ? "" : "<a target='_blank' href='/FileUpload/" + val.Col1 + "'>" + val.Col2 + "</a>";
+                    list += "<td>" + file + "</td>";
+                    list += "</tr>";
+                });
+                $("#logTable").empty().append(list);
+            });
+        }
+
+        function GetApproveInfo(approveType, level, tableID) {
+            var args = { "fileComprehensiveID": $("#infoID").text(), "approveType": approveType, "approveLevel": level };
+            $.post("/TechnicSpecifiction/GetComprehensiveApproveInfo", encodeURIComponent(JSON.stringify(args)), function (result) {
+                //console.log(result);
+                var list = "";
+                $.each(result, function (indexInArray, val) {
+                    var reason = val.ApproveBackReason === null ? "" : val.ApproveBackReason;
+                    list += "<tr>";
+                    list += "<td>" + (indexInArray + 1) + "</td>";
+                    list += "<td>" + val.ApprovePersonName + "</td>";
+                    list += "<td>" + val.ApprovePersonFatherDeptName + "-" + val.ApprovePersonDeptName + "</td>";
+                    list += "<td>" + val.ApproveState + "</td>";
+                    list += "<td>" + getJsonDateTime(val.ApproveDateTime) + "</td>";
+                    list += "<td>" + reason + "</td>";
+                    list += "</tr>";
+                });
+                $("#" + tableID + "").empty().append(list);
+            });
+        }
+
+        GetApproveInfo("技术规格书", "一级", "SpecificationFirstTable")
+        GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable")
+
+        GetApproveInfo("评分标准(技术)", "一级", "TechnologyFirstTable")
+        GetApproveInfo("评分标准(技术)", "二级", "TechnologySecondTable")
+
+        GetApproveInfo("评分标准(商务)", "一级", "BusinessFirstTable")
+        GetApproveInfo("评分标准(商务)", "二级", "BusinessSecondTable")
+
+        GetFileList()
+        function GetFileList() {
+            $.post("/TechnicSpecifiction/GetComprehensiveFileListByID", { "id": $("#infoID").text() }, function (result) {
+                console.log(result[0]);
+                var list = "";
+                list += "<tr>";
+                list += "<td>技术规格书</td>";
+                list += "<td><a target='_blank' href='/FileUpload/" + result[0].TechnicSpecificationFile + "'>" + result[0].TechnicSpecificationFileShow + "</a></td>";
+                list += "<td>" + result[0].ApproveLevelSpecification + "</td>";
+                list += "<td>" + result[0].ApproveStateSpecification + "</td>";
+                list += "<td>重新上传</td>";
+                list += "</tr>";
+
+                list += "<tr>";
+                list += "<td>评分标准(技术)</td>";
+                list += "<td><a target='_blank' href='/FileUpload/" + result[0].TechnologyScoreStandardFile + "'>" + result[0].TechnologyScoreStandardFileShow + "</a></td>";
+                list += "<td>" + result[0].ApproveLevelTechnology + "</td>";
+                list += "<td>" + result[0].ApproveStateTechnology + "</td>";
+                list += "<td>重新上传</td>";
+                list += "</tr>";
+
+                list += "<tr>";
+                list += "<td>评分标准(商务)</td>";
+                list += "<td><a target='_blank' href='/FileUpload/" + result[0].BusinessScoreStandardFile + "'>" + result[0].BusinessScoreStandardFileShow + "</a></td>";
+                list += "<td>" + result[0].ApproveLevelBusiness + "</td>";
+                list += "<td>" + result[0].ApproveStateBusiness + "</td>";
+                list += "<td>重新上传</td>";
+                list += "</tr>";
+                $("#fileTable").empty().append(list);
+            });
+        }
+    });
+</script>
+

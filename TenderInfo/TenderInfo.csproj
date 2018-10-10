@@ -718,6 +718,26 @@
     <Compile Include="Migrations\201810080600125_edit31.Designer.cs">
       <DependentUpon>201810080600125_edit31.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810100027065_edit32.cs" />
+    <Compile Include="Migrations\201810100027065_edit32.Designer.cs">
+      <DependentUpon>201810100027065_edit32.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810100129594_edit33.cs" />
+    <Compile Include="Migrations\201810100129594_edit33.Designer.cs">
+      <DependentUpon>201810100129594_edit33.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810100216009_edit34.cs" />
+    <Compile Include="Migrations\201810100216009_edit34.Designer.cs">
+      <DependentUpon>201810100216009_edit34.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810100557261_edit35.cs" />
+    <Compile Include="Migrations\201810100557261_edit35.Designer.cs">
+      <DependentUpon>201810100557261_edit35.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810100626377_edit36.cs" />
+    <Compile Include="Migrations\201810100626377_edit36.Designer.cs">
+      <DependentUpon>201810100626377_edit36.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -795,6 +815,7 @@
     <Content Include="Views\TechnicSpecifiction\AddComprehensive.cshtml" />
     <Content Include="Views\TechnicSpecifiction\TableInfoComprehensive.cshtml" />
     <Content Include="Views\TechnicSpecifiction\SearchInfoComprehensive.cshtml" />
+    <Content Include="Views\TechnicSpecifiction\ApproveComprehensive.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -907,6 +928,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810080600125_edit31.resx">
       <DependentUpon>201810080600125_edit31.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810100027065_edit32.resx">
+      <DependentUpon>201810100027065_edit32.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810100129594_edit33.resx">
+      <DependentUpon>201810100129594_edit33.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810100216009_edit34.resx">
+      <DependentUpon>201810100216009_edit34.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810100557261_edit35.resx">
+      <DependentUpon>201810100557261_edit35.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810100626377_edit36.resx">
+      <DependentUpon>201810100626377_edit36.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

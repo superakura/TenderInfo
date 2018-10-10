@@ -18,10 +18,22 @@ namespace TenderInfo.Models
         public int FileComprehensiveID { get; set; }
 
         /// <summary>
+        /// 项目名称
+        /// </summary>
+        [StringLength(200)]
+        public string ProjectName { get; set; }
+
+        /// <summary>
         /// 合并后的技术规格书文件名
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string TechnicSpecificationFileMerge { get; set; }
+
+        /// <summary>
+        /// 合并后的技术规格书文件名--显示用
+        /// </summary>
+        [StringLength(200)]
+        public string TechnicSpecificationFileMergeShow { get; set; }
 
         /// <summary>
         /// 技术规格书文件名
@@ -30,16 +42,34 @@ namespace TenderInfo.Models
         public string TechnicSpecificationFile { get; set; }
 
         /// <summary>
+        /// 技术规格书文件名--显示用
+        /// </summary>
+        [StringLength(200), Required]
+        public string TechnicSpecificationFileShow { get; set; }
+
+        /// <summary>
         /// 评分标准--技术
         /// </summary>
         [StringLength(200), Required]
         public string TechnologyScoreStandardFile { get; set; }
 
         /// <summary>
+        /// 评分标准--技术--显示用
+        /// </summary>
+        [StringLength(200), Required]
+        public string TechnologyScoreStandardFileShow { get; set; }
+
+        /// <summary>
         /// 评分标准--商务
         /// </summary>
         [StringLength(200), Required]
         public string BusinessScoreStandardFile { get; set; }
+
+        /// <summary>
+        /// 评分标准--商务--显示用
+        /// </summary>
+        [StringLength(200), Required]
+        public string BusinessScoreStandardFileShow { get; set; }
 
         /// <summary>
         /// 审批级别--技术规格书

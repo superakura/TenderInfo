@@ -3,186 +3,95 @@
 <table id="bsTable"></table>
 <script>
     $(function () {
-        var firstApproveEvents = {
-            'click .firstApprove': function (e, value, row, index) {
-                //清空表单
-                $("#tbxFirstBackReason").val("");
-                $("label.error").hide();
-                $(".error").removeClass("error");
-
-                $("#tbxFirstID").val(row.FileMinPriceID);
-
-                //审批人员列表
-                var args = { "id": row.FileMinPriceID };
-                $.post("/TechnicSpecifiction/GetFirstPersonList", encodeURIComponent(JSON.stringify(args)), function (result) {
-                    var list = "";
-                    $.each(result, function (indexInArray, val) {
-                        var reason = val.ApproveBackReason === null ? "" : val.ApproveBackReason;
-                        list += "<tr>";
-                        list += "<td>" + (indexInArray + 1) + "</td>";
-                        list += "<td>" + val.ApprovePersonName + "</td>";
-                        list += "<td>" + val.ApprovePersonFatherDeptName + "-" + val.ApprovePersonDeptName + "</td>";
-                        list += "<td>" + val.ApproveState + "</td>";
-                        list += "<td>" + getJsonDateTime(val.ApproveDateTime) + "</td>";
-                        list += "<td>" + reason + "</td>";
-                        list += "</tr>";
-                    });
-                    $("#tableFirstPerson").empty().append(list);
-                });
-
-                if (row.ApproveState !== "待审核") {
-                    $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").hide();
-                }
-                else {
-                    $.post("/TechnicSpecifiction/CheckMinPriceFirstPerson", encodeURIComponent(JSON.stringify(args)), function (result) {
-                        if (result === "ok") {
-                            $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").show();
-                        }
-                        else {
-                            $("#btnFirstApproveBack,#btnFirstApproveOk,#panelFirstBackReason").hide();
-                        }
-                    });
-                }
-                $('#firstModal').modal('show');
+        var ApproveEvents = {
+            'click .approve': function (e, value, row, index) {
+                var id = row.FileComprehensiveID;
+                console.log(id);
+                window.location.href = "/TechnicSpecifiction/ApproveComprehensive?id=" + id + "&projectName=" + escape(row.ProjectName);
             }
         };
+        function loadColumns() {
+            var tempArray = [
+                {
+                    title: '序号',
+                    formatter: function (value, row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field: 'FileComprehensiveID',
+                    title: 'ID',
+                    visible: false
+                },
+                {
+                    field: 'ProjectName',
+                    title: '项目名称',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return "<a class='approve' href='javascript: void (0)' title='审批'>" + row.ProjectName+"</a>";
+                    },
+                    events: ApproveEvents
+                },
+                {
+                    title: '合并技术规格书文件',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
 
-        var secondApproveEvents = {
-            'click .secondApprove': function (e, value, row, index) {
-                //清空表单
-                $("#tbxSecondBackReason").val("");
-                $("label.error").hide();
-                $(".error").removeClass("error");
-
-                $("#tbxSecondID").val(row.FileMinPriceID);
-
-                //审批人员列表
-                var args = { "id": row.FileMinPriceID };
-                $.post("/TechnicSpecifiction/GetSecondPersonList", encodeURIComponent(JSON.stringify(args)), function (result) {
-                    var list = "";
-                    $.each(result, function (indexInArray, val) {
-                        var reason = val.ApproveBackReason === null ? "" : val.ApproveBackReason;
-                        list += "<tr>";
-                        list += "<td>" + (indexInArray + 1) + "</td>";
-                        list += "<td>" + val.ApprovePersonName + "</td>";
-                        list += "<td>" + val.ApprovePersonFatherDeptName + "-" + val.ApprovePersonDeptName + "</td>";
-                        list += "<td>" + val.ApproveState + "</td>";
-                        list += "<td>" + getJsonDateTime(val.ApproveDateTime) + "</td>";
-                        list += "<td>" + reason + "</td>";
-                        list += "</tr>";
-                    });
-                    $("#tableSecondPerson").empty().append(list);
-                });
-
-                if (row.ApproveState !== "一级审批完成") {
-                    $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").hide();
+                    }
+                },
+                {
+                    field: 'ApproveStateSpecification',
+                    title: '技术规格书审批',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return row.ApproveLevelSpecification + "--" + row.ApproveStateSpecification;
+                    }
+                },
+                {
+                    field: 'ApproveStateTechnology',
+                    title: '评分标准(技术)审批',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return row.ApproveLevelTechnology + "--" + row.ApproveStateTechnology;
+                    }
+                },
+                {
+                    field: 'ApproveStateBusiness',
+                    title: '评分标准(商务)审批',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return row.ApproveLevelBusiness + "--" + row.ApproveStateBusiness;
+                    }
+                },
+                {
+                    field: 'InputPersonName',
+                    title: '提交人员'
+                },
+                {
+                    title: '提交部门',
+                    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        return row.InputPersonFatherDeptName + "-" + row.InputPersonDeptName;
+                    }
+                },
+                {
+                    field: 'InputDateTime',
+                    title: '提交时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(value);
+                    }
                 }
-                else {
-                    $.post("/TechnicSpecifiction/CheckMinPriceSecondPerson", encodeURIComponent(JSON.stringify(args)), function (result) {
-                        if (result === "ok") {
-                            $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").show();
-                        }
-                        else {
-                            $("#btnSecondApproveBack,#btnSecondApproveOk,#panelSecondBackReason").hide();
-                        }
-                    });
-                }
-
-                $('#secondModal').modal('show');
-            }
-        };
-
-        var columns = [
-            {
-                title: '序号',
-                formatter: function (value, row, index) {
-                    return index + 1;
-                }
-            },
-            {
-                field: 'FileComprehensiveID',
-                title: 'ID',
-                visible: false
-            },
-            {
-                title: '操作',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-
-                }
-            },
-            {
-                title: '合并技术规格书文件',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-
-                }
-            },
-            //{
-            //    title: '技术规格书',
-            //    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    
-            //    }
-            //},
-            //{
-            //    title: '评分标准--技术',
-            //    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-
-            //    }
-            //},
-            //{
-            //    title: '评分标准--商务',
-            //    formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-
-            //    }
-            //},
-            {
-                field: 'ApproveLevelSpecification',
-                title: '技术规格书审批级别',
-                visible: false
-            },
-            {
-                field: 'ApproveStateSpecification',
-                title: '技术规格书审批状态'
-            },
-            {
-                field: 'ApproveLevelTechnology',
-                title: '评分标准--技术审批级别',
-                visible: false
-            },
-            {
-                field: 'ApproveStateTechnology',
-                title: '评分标准--技术审批状态'
-            },
-            {
-                field: 'ApproveLevelBusiness',
-                title: '评分标准--商务审批级别',
-                visible: false
-            },
-            {
-                field: 'ApproveStateBusiness',
-                title: '评分标准--商务审批状态'
-            },
-            {
-                field: 'InputPersonName',
-                title: '提交人员'
-            },
-            {
-                title: '提交部门',
-                formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                    return row.InputPersonFatherDeptName + "-" + row.InputPersonDeptName;
-                }
-            },
-            {
-                field: 'InputDateTime',
-                title: '提交时间',
-                formatter: function (value, row, index) {
-                    return getJsonDateTime(value);
-                }
-            }
-        ];
+            ];
+            return tempArray;
+            //console.log(tempArray);
+            //if ($("#userRole").text() === "技术规格书上传") {
+            //    return $.grep(tempArray, function (ele, index) {
+            //        return index !== 2;
+            //    });
+            //}
+            //else {
+            //    return tempArray;
+            //}
+        }
+        var columns = loadColumns();
 
         //初始化BS-Table
         $('#bsTable').bootstrapTable({
-            url: '/TechnicSpecifiction/GetMinPriceList',         //请求后台的URL（*）
+            url: '/TechnicSpecifiction/GetComprehensiveList',         //请求后台的URL（*）
             contentType: 'application/x-www-form-urlencoded',
             method: 'post',                     //请求方式（*）
             toolbar: '#toolbar',                //工具按钮用哪个容器

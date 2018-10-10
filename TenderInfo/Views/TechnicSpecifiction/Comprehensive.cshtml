@@ -22,12 +22,16 @@
                 <div class="nav-tabs-custom">
                     <div class="container-fluid">
                         <form id="AddForm" class="form-inline" method="post" enctype="multipart/form-data">
-                            <input id="tbxFirstListOne" name="tbxFirstListOne" class="hidden" />
-                            <input id="tbxSecondListOne" name="tbxSecondListOne" class="hidden" />
-                            <input id="tbxFirstListTwo" name="tbxFirstListTwo" class="hidden" />
-                            <input id="tbxSecondListTwo" name="tbxSecondListTwo" class="hidden" />
-                            <input id="tbxFirstListThird" name="tbxFirstListThird" class="hidden" />
-                            <input id="tbxSecondListThird" name="tbxSecondListThird" class="hidden" />
+                            <input id="tbxFirstListOne" name="tbxFirstListOne" class="" />
+                            <input id="tbxSecondListOne" name="tbxSecondListOne" class="" />
+                            <input id="tbxFirstListTwo" name="tbxFirstListTwo" class="" />
+                            <input id="tbxSecondListTwo" name="tbxSecondListTwo" class="" />
+                            <input id="tbxFirstListThird" name="tbxFirstListThird" class="" />
+                            <input id="tbxSecondListThird" name="tbxSecondListThird" class="" />
+                            <div class="form-group">
+                                <label for="tbxProjectName">项目名称<span class="text-danger">(必填)</span></label>
+                                <input id="tbxProjectName" name="tbxProjectName" type="text" class="form-control" />
+                            </div>
                             <div class="form-group">
                                 <label for="fileTechnicalSpecification">技术规格书<span class="text-danger">(必填)</span></label>
                                 <input id="fileTechnicalSpecification" name="fileTechnicalSpecification" type="file" class="form-control" />
@@ -146,112 +150,6 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="firstModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">一级审批</h4>
-            </div>
-            <div class="modal-body">
-                <div class="nav-tabs-custom">
-                    <div class="container-fluid">
-                        <form id="firstApproveForm" method="post" enctype="multipart/form-data">
-                            @*加载一级审批的信息id*@
-                            <input id="tbxFirstID" name="tbxFirstID" class="hidden" />
-                            <input id="tbxFirstType" name="tbxFirstType" class="hidden" />
-
-                            <div class="row">
-                                <table class="table table-hover table-condensed">
-                                    <thead>
-                                        <tr class="success">
-                                            <th colspan="6" class="text-center">一级审批人员</th>
-                                        </tr>
-                                        <tr>
-                                            <th>序号</th>
-                                            <th>姓名</th>
-                                            <th>部门</th>
-                                            <th>状态</th>
-                                            <th>审批时间</th>
-                                            <th>回退原因</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tableFirstPerson"></tbody>
-                                </table>
-                            </div>
-                            <div class="row" id="panelFirstBackReason">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="tbxFirstBackReason">回退原因</label>
-                                        <textarea id="tbxFirstBackReason" name="tbxFirstBackReason" rows="2" cols="20" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" id="btnFirstApproveBack" class="btn btn-danger">回退</button>
-                <button type="button" id="btnFirstApproveOk" class="btn btn-primary">同意</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="secondModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">二级审批</h4>
-            </div>
-            <div class="modal-body">
-                <div class="nav-tabs-custom">
-                    <div class="container-fluid">
-                        <form id="secondApproveForm" method="post" enctype="multipart/form-data">
-                            @*加载二级审批的信息id*@
-                            <input id="tbxSecondID" name="tbxSecondID" class="hidden" />
-                            <input id="tbxSecondType" name="tbxSecondType" class="hidden" />
-
-                            <div class="row">
-                                <table class="table table-hover table-condensed">
-                                    <thead>
-                                        <tr class="success">
-                                            <th colspan="6" class="text-center">二级审批人员</th>
-                                        </tr>
-                                        <tr>
-                                            <th>序号</th>
-                                            <th>姓名</th>
-                                            <th>部门</th>
-                                            <th>状态</th>
-                                            <th>审批时间</th>
-                                            <th>回退原因</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tableSecondPerson"></tbody>
-                                </table>
-                            </div>
-                            <div class="row" id="panelSecondBackReason">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="tbxSecondBackReason">回退原因</label>
-                                        <textarea id="tbxSecondBackReason" name="tbxSecondBackReason" rows="2" cols="20" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" id="btnSecondApproveBack" class="btn btn-danger">回退</button>
-                <button type="button" id="btnSecondApproveOk" class="btn btn-primary">同意</button>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="box box-danger">
     <div class="box-header">
         <h3 class="box-title">技术规格书--综合评标法技术规格书审批</h3>
@@ -279,6 +177,7 @@
         </div>
     </div>
 </div>
+<div id="userRole">@ViewBag.userRole</div>
 <script>
     $(function () {
         //加载部门信息
@@ -452,6 +351,7 @@
         //对AddForm表单进行前端验证
         var validAddForm = $("#AddForm").validate({
             rules: {
+                tbxProjectName: { required: true },
                 fileTechnicalSpecification: { required: true },
                 fileComprehensiveTechnical: { required: true },
                 fileComprehensiveBusiness: { required: true }
@@ -460,7 +360,7 @@
 
         //提交按钮
         $("#btnSubmit").click(function () {
-            if ($("#tbxFirstList").val().trim() === "") {
+            if ($("#tbxFirstListOne").val().trim() === "" || $("#tbxFirstListTwo").val().trim() === "" || $("#tbxFirstListThird").val().trim() === "") {
                 toastr.error("一级审批必须填写！", "提示");
                 return;
             }
@@ -470,12 +370,12 @@
                         return;
                     }
                     else {
-                        $("#UploadForm").ajaxSubmit({
-                            url: "/TechnicSpecifiction/InsertMinPriceFile",
+                        $("#AddForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/InsertComprehensiveFile",
                             type: "post",
                             success: function (result) {
                                 if (result === "ok") {
-                                    $("#myModal").modal("hide");
+                                    $("#AddModal").modal("hide");
                                     toastr.success("操作成功！", "提示");
                                     $("#bsTable").bootstrapTable('refresh');
                                 }

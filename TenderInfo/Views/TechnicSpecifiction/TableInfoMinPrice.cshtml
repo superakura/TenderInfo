@@ -97,10 +97,11 @@
                 $("#tbxMinPriceIDReLoad").val(row.FileMinPriceID);
             }
         };
+
         var logInfoEvents = {
             'click .logInfo': function (e, value, row, index) {
                 $('#logModal').modal('show');
-                $.post("/TechnicSpecifiction/GetMinPriceLog", { "id": row.FileMinPriceID }, function (result) {
+                $.post("/TechnicSpecifiction/GetComprehensiveFileListByID", { "id": row.FileMinPriceID }, function (result) {
                     console.log(result);
                     var list = "";
                     $.each(result, function (indexInArray, val) {
