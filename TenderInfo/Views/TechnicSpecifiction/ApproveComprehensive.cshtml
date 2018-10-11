@@ -27,6 +27,7 @@
         </div>
     </div>
 </div>
+
 @*操作日志*@
 <div class="row">
     <div class="col-md-12">
@@ -90,6 +91,18 @@
                     </thead>
                     <tbody id="SpecificationSecondTable"></tbody>
                 </table>
+                <div class="form">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxBackReasonOne">回退原因</label>
+                                <textarea id="tbxBackReasonOne" name="tbxBackReasonOne" rows="2" cols="20" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="btnApproveBackOne" class="btn btn-danger">回退</button>
+                    <button type="button" id="btnApproveOkOne" class="btn btn-primary">同意</button>
+                </div>
             </div>
         </div>
     </div>
@@ -134,6 +147,18 @@
                     </thead>
                     <tbody id="TechnologySecondTable"></tbody>
                 </table>
+                <div class="form">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxBackReasonTwo">回退原因</label>
+                                <textarea id="tbxBackReasonTwo" name="tbxBackReasonTwo" rows="2" cols="20" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="btnApproveBackTwo" class="btn btn-danger">回退</button>
+                    <button type="button" id="btnApproveOkTwo" class="btn btn-primary">同意</button>
+                </div>
             </div>
         </div>
     </div>
@@ -178,6 +203,18 @@
                     </thead>
                     <tbody id="BusinessSecondTable"></tbody>
                 </table>
+                <div class="form">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxBackReasonThird">回退原因</label>
+                                <textarea id="tbxBackReasonThird" name="tbxBackReasonThird" rows="2" cols="20" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="btnApproveBackThird" class="btn btn-danger">回退</button>
+                    <button type="button" id="btnApproveOkThird" class="btn btn-primary">同意</button>
+                </div>
             </div>
         </div>
     </div>
@@ -276,6 +313,176 @@
                 $("#fileTable").empty().append(list);
             });
         }
+
+        function ApproveComprehensive(approveType, approveResult, backReason, callback) {
+            var result = "";
+            var args = {
+                "fileComprehensiveID": $("#infoID").text(),
+                "approveType": approveType,
+                "approveResult": approveResult,
+                "backReason": backReason
+            };
+            $.ajax({
+                url: "/TechnicSpecifiction/ApproveComprehensiveChild",
+                type: "post",
+                data: encodeURIComponent(JSON.stringify(args)),
+                async: false,
+                success: function (data) {
+                    result = data;
+                }
+            });
+            return result;
+        }
+
+        $("#btnApproveOkOne").click(function (e) {
+            e.preventDefault();
+            Ewin.confirm({ message: "确认要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var result = ApproveComprehensive("技术规格书", "yes", "");
+                    if (result === "ok") {
+                        toastr.success("操作成功", "提示");
+                        //审批通过成功后，刷新技术规格书审批列表、文件审批信息列表
+                        GetApproveInfo("技术规格书", "一级", "SpecificationFirstTable")
+                        GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable")
+                        GetFileList()
+                    }
+                    else {
+                        toastr.error(result, "提示");
+                    }
+                }
+            });
+        });
+        $("#btnApproveBackOne").click(function (e) {
+            e.preventDefault();
+            var backReason = $("#tbxBackReasonOne").val();
+            if (backReason.trim() === "") {
+                toastr.error("回退原因不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确认要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var result = ApproveComprehensive("技术规格书", "no", backReason);
+                        if (result === "ok") {
+                            toastr.success("操作成功", "提示");
+                            //审批通过成功后，刷新技术规格书审批列表、文件审批信息列表、操作日志信息列表
+                            GetApproveInfo("技术规格书", "一级", "SpecificationFirstTable")
+                            GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable")
+                            GetFileList()
+                            GetLogInfo()
+                        }
+                        else {
+                            toastr.error(result, "提示");
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#btnApproveOkTwo").click(function (e) {
+            e.preventDefault();
+            Ewin.confirm({ message: "确认要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var result = ApproveComprehensive("评分标准(技术)", "yes", "");
+                    if (result === "ok") {
+                        toastr.success("操作成功", "提示");
+                        //审批通过成功后，刷新评分标准(技术)审批列表、文件审批信息列表
+                        GetApproveInfo("评分标准(技术)", "一级", "TechnologyFirstTable")
+                        GetApproveInfo("评分标准(技术)", "二级", "TechnologySecondTable")
+                        GetFileList()
+                    }
+                    else {
+                        toastr.error(result, "提示");
+                    }
+                }
+            });
+        });
+        $("#btnApproveBackTwo").click(function (e) {
+            e.preventDefault();
+            var backReason = $("#tbxBackReasonTwo").val();
+            if (backReason.trim() === "") {
+                toastr.error("回退原因不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确认要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var result = ApproveComprehensive("评分标准(技术)", "no", backReason);
+                        if (result === "ok") {
+                            toastr.success("操作成功", "提示");
+                            //审批通过成功后，刷新技术规格书审批列表、文件审批信息列表、操作日志信息列表
+                            GetApproveInfo("评分标准(技术)", "一级", "TechnologyFirstTable")
+                            GetApproveInfo("评分标准(技术)", "二级", "TechnologySecondTable")
+                            GetFileList()
+                            GetLogInfo()
+                        }
+                        else {
+                            toastr.error(result, "提示");
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#btnApproveOkThird").click(function (e) {
+            e.preventDefault();
+            Ewin.confirm({ message: "确认要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var result = ApproveComprehensive("评分标准(商务)", "yes", "");
+                    if (result === "ok") {
+                        toastr.success("操作成功", "提示");
+                        //审批通过成功后，刷新评分标准(商务)审批列表、文件审批信息列表
+                        GetApproveInfo("评分标准(商务)", "一级", "BusinessFirstTable")
+                        GetApproveInfo("评分标准(商务)", "二级", "BusinessSecondTable")
+                        GetFileList()
+                    }
+                    else {
+                        toastr.error(result, "提示");
+                    }
+                }
+            });
+        });
+        $("#btnApproveBackThird").click(function (e) {
+            e.preventDefault();
+            var backReason = $("#tbxBackReasonThird").val();
+            if (backReason.trim() === "") {
+                toastr.error("回退原因不能为空！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确认要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        var result = ApproveComprehensive("评分标准(商务)", "no", backReason);
+                        if (result === "ok") {
+                            toastr.success("操作成功", "提示");
+                            //审批通过成功后，刷新商务规格书审批列表、文件审批信息列表、操作日志信息列表
+                            GetApproveInfo("评分标准(商务)", "一级", "BusinessFirstTable")
+                            GetApproveInfo("评分标准(商务)", "二级", "BusinessSecondTable")
+                            GetFileList()
+                            GetLogInfo()
+                        }
+                        else {
+                            toastr.error(result, "提示");
+                        }
+                    }
+                });
+            }
+        });
     });
 </script>
 
