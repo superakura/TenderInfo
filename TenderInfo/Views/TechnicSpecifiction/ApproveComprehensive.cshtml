@@ -3,8 +3,104 @@
     ViewBag.Title = "综合评标法审批";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="modal fade" id="reLoadOneModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">重新上传--技术规格书</h4>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-custom">
+                    <div class="container-fluid">
+                        <form id="reloadOneForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxReLoadOneID" name="tbxReLoadOneID" class="" />
+                            <input id="tbxReLoadOneType" name="tbxReLoadOneType" class="" value="技术规格书" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="fileOneReLoad">技术规格书--选择上传文件<span class="text-danger">(必填)</span></label>
+                                        <input id="fileOneReLoad" name="fileOneReLoad" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnReLoadSubmitOne" class="btn btn-primary">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reLoadTwoModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">重新上传--评分标准(技术)</h4>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-custom">
+                    <div class="container-fluid">
+                        <form id="reloadTwoForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxReLoadTwoID" name="tbxReLoadTwoID" class="" />
+                            <input id="tbxReLoadTwoType" name="tbxReLoadTwoType" class="" value="评分标准(技术)" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="fileTwoReLoad">评分标准(技术)--选择上传文件<span class="text-danger">(必填)</span></label>
+                                        <input id="fileTwoReLoad" name="fileTwoReLoad" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnReLoadSubmitTwo" class="btn btn-primary">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reLoadThirdModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">重新上传--评分标准(商务)</h4>
+            </div>
+            <div class="modal-body">
+                <div class="nav-tabs-custom">
+                    <div class="container-fluid">
+                        <form id="reloadThirdForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxReLoadThirdID" name="tbxReLoadThirdID" class="" />
+                            <input id="tbxReLoadThirdType" name="tbxReLoadThirdType" class="" value="评分标准(商务)" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="fileThirdReLoad">评分标准(商务)--选择上传文件<span class="text-danger">(必填)</span></label>
+                                        <input id="fileThirdReLoad" name="fileThirdReLoad" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnReLoadSubmitThird" class="btn btn-primary">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h2>综合评标法审批--<span id="projectName"></span></h2>
+<h2><span id="projectName"></span><a class="btn bg-black" href="javascript:window.history.back(-1);">返回</a></h2>
 @*审批文件信息*@
 <div class="row">
     <div class="col-md-12">
@@ -31,18 +127,19 @@
 @*操作日志*@
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-danger">
+        <div class="panel panel-default">
             <div class="panel-heading">操作、审批记录</div>
             <div class="panel-body">
                 <table class="table table-condensed table-hover">
                     <thead>
                         <tr>
                             <th>序号</th>
+                            <th>审批类型</th>
                             <th>操作内容</th>
                             <th>操作人员</th>
                             <th>操作时间</th>
                             <th>回退原因</th>
-                            <th>技术规格书文件</th>
+                            <th>审批文件</th>
                         </tr>
                     </thead>
                     <tbody id="logTable"></tbody>
@@ -229,7 +326,7 @@
         $("#infoID").text(id);
         $("#projectName").text(projectName);
 
-        GetLogInfo()
+        GetLogInfo();
         function GetLogInfo() {
             $.post("/TechnicSpecifiction/GetComprehensiveLog", { "id": $("#infoID").text() }, function (result) {
                 //console.log(result);
@@ -237,6 +334,11 @@
                 $.each(result, function (indexInArray, val) {
                     list += "<tr>";
                     list += "<td>" + (indexInArray + 1) + "</td>";
+                    var fileType = "";
+                    if (val.Col3 != null) {
+                        fileType = val.Col3;
+                    }
+                    list += "<td>" + fileType + "</td>";
                     list += "<td>" + val.LogContent + "</td>";
                     list += "<td>" + val.InputPersonName + "</td>";
                     list += "<td>" + getJsonDateTime(val.InputDateTime) + "</td>";
@@ -273,42 +375,61 @@
             });
         }
 
-        GetApproveInfo("技术规格书", "一级", "SpecificationFirstTable")
-        GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable")
+        GetApproveInfo("技术规格书", "一级", "SpecificationFirstTable");
+        GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable");
 
-        GetApproveInfo("评分标准(技术)", "一级", "TechnologyFirstTable")
-        GetApproveInfo("评分标准(技术)", "二级", "TechnologySecondTable")
+        GetApproveInfo("评分标准(技术)", "一级", "TechnologyFirstTable");
+        GetApproveInfo("评分标准(技术)", "二级", "TechnologySecondTable");
 
-        GetApproveInfo("评分标准(商务)", "一级", "BusinessFirstTable")
-        GetApproveInfo("评分标准(商务)", "二级", "BusinessSecondTable")
+        GetApproveInfo("评分标准(商务)", "一级", "BusinessFirstTable");
+        GetApproveInfo("评分标准(商务)", "二级", "BusinessSecondTable");
 
-        GetFileList()
+        GetFileList();
         function GetFileList() {
             $.post("/TechnicSpecifiction/GetComprehensiveFileListByID", { "id": $("#infoID").text() }, function (result) {
                 console.log(result[0]);
                 var list = "";
-                list += "<tr>";
+
+                var reloadOne = "";
+                var colorOne = "";
+                if (result[0].ApproveStateSpecification == "一级审批回退" || result[0].ApproveStateSpecification == "二级审批回退") {
+                    reloadOne = "<td><a href='javascript:void(0)' id='btnReloadOne'>重新上传</a></td>";
+                    colorOne = "'danger'";
+                }
+                list += "<tr class=" + colorOne + ">";
                 list += "<td>技术规格书</td>";
                 list += "<td><a target='_blank' href='/FileUpload/" + result[0].TechnicSpecificationFile + "'>" + result[0].TechnicSpecificationFileShow + "</a></td>";
                 list += "<td>" + result[0].ApproveLevelSpecification + "</td>";
                 list += "<td>" + result[0].ApproveStateSpecification + "</td>";
-                list += "<td>重新上传</td>";
+                list += reloadOne;
                 list += "</tr>";
 
-                list += "<tr>";
+                var reloadTwo = "";
+                var colorTwo = "";
+                if (result[0].ApproveStateTechnology == "一级审批回退" || result[0].ApproveStateTechnology == "二级审批回退") {
+                    reloadTwo = "<td><a href='javascript:void(0)' id='btnReloadTwo'>重新上传</a></td>";
+                    colorTwo = "'danger'";
+                }
+                list += "<tr class=" + colorTwo + ">";
                 list += "<td>评分标准(技术)</td>";
                 list += "<td><a target='_blank' href='/FileUpload/" + result[0].TechnologyScoreStandardFile + "'>" + result[0].TechnologyScoreStandardFileShow + "</a></td>";
                 list += "<td>" + result[0].ApproveLevelTechnology + "</td>";
                 list += "<td>" + result[0].ApproveStateTechnology + "</td>";
-                list += "<td>重新上传</td>";
+                list += reloadTwo;
                 list += "</tr>";
 
-                list += "<tr>";
+                var reloadThird = "";
+                var colorThird = "";
+                if (result[0].ApproveStateBusiness == "一级审批回退" || result[0].ApproveStateBusiness == "二级审批回退") {
+                    reloadThird = "<td><a href='javascript:void(0)' id='btnReloadThird'>重新上传</a></td>";
+                    colorThird = "'danger'";
+                }
+                list += "<tr class=" + colorThird + ">";
                 list += "<td>评分标准(商务)</td>";
                 list += "<td><a target='_blank' href='/FileUpload/" + result[0].BusinessScoreStandardFile + "'>" + result[0].BusinessScoreStandardFileShow + "</a></td>";
                 list += "<td>" + result[0].ApproveLevelBusiness + "</td>";
                 list += "<td>" + result[0].ApproveStateBusiness + "</td>";
-                list += "<td>重新上传</td>";
+                list += reloadThird;
                 list += "</tr>";
                 $("#fileTable").empty().append(list);
             });
@@ -479,6 +600,139 @@
                         else {
                             toastr.error(result, "提示");
                         }
+                    }
+                });
+            }
+        });
+
+        $(document).on("click", "#btnReloadOne", function () {
+            $("#tbxReLoadOneID").val($("#infoID").text());
+            $('#reLoadOneModal').modal('show');
+        });
+        $(document).on("click", "#btnReloadTwo", function () {
+            $("#tbxReLoadTwoID").val($("#infoID").text());
+            $('#reLoadTwoModal').modal('show');
+        });
+        $(document).on("click", "#btnReloadThird", function () {
+            $("#tbxReLoadThirdID").val($("#infoID").text());
+            $('#reLoadThirdModal').modal('show');
+        });
+
+        //对reloadOneForm、reloadTwoForm、reloadThirdForm表单进行前端验证
+        var validReloadOneForm = $("#reloadOneForm").validate({
+            rules: {
+                fileOneReLoad: { required: true }
+            }
+        });
+        var validReloadTwoForm = $("#reloadTwoForm").validate({
+            rules: {
+                fileTwoReLoad: { required: true }
+            }
+        });
+        var validReloadThirdForm = $("#reloadThirdForm").validate({
+            rules: {
+                fileThirdReLoad: { required: true }
+            }
+        });
+
+        $("#btnReLoadSubmitOne").click(function () {
+            if (validReloadOneForm.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#reloadOneForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/ReLoadFileComprehensive",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#reLoadOneModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetFileList();
+                                    GetLogInfo();
+
+                                    GetApproveInfo("技术规格书", "一级", "SpecificationFirstTable");
+                                    GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable");
+                                }
+                                else {
+                                    console.log(result);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        $("#btnReLoadSubmitTwo").click(function () {
+            if (validReloadTwoForm.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#reloadTwoForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/ReLoadFileComprehensive",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#reLoadTwoModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetFileList();
+                                    GetLogInfo();
+
+                                    GetApproveInfo("评分标准(技术)", "一级", "TechnologyFirstTable");
+                                    GetApproveInfo("评分标准(技术)", "二级", "TechnologySecondTable");
+                                }
+                                else {
+                                    console.log(result);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        $("#btnReLoadSubmitThird").click(function () {
+            if (validReloadThirdForm.form()) {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#reloadThirdForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/ReLoadFileComprehensive",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#reLoadThirdModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetFileList();
+                                    GetLogInfo();
+
+                                    GetApproveInfo("评分标准(商务)", "一级", "BusinessFirstTable");
+                                    GetApproveInfo("评分标准(商务)", "二级", "BusinessSecondTable");
+                                }
+                                else {
+                                    console.log(result);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
                     }
                 });
             }

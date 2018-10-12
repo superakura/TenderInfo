@@ -600,7 +600,7 @@ namespace TenderInfo.Controllers
                 //如果是一级审批回退，将所有【一级】审批人员的审批状态变为【待审核】
                 if (minPriceInfo.ApproveState == "一级审批回退")
                 {
-                    var firstList = db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID).ToList();
+                    var firstList = db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID && w.ApproveLevel == "一级").ToList();
                     foreach (var item in firstList)
                     {
                         item.ApproveState = "待审批";
@@ -608,7 +608,7 @@ namespace TenderInfo.Controllers
                         item.ApproveDateTime = null;
                     }
                 }
-                //如果是一级审批回退，将所有【一级】和【二级】审批人员的审批状态变为【待审核】
+                //如果是二级审批回退，将所有【一级】和【二级】审批人员的审批状态变为【待审核】
                 if (minPriceInfo.ApproveState == "二级审批回退")
                 {
                     var firstList = db.FileMinPriceChild.Where(w => w.FileMinPriceID == minPriceID && w.ApproveLevel == "一级").ToList();
@@ -1171,9 +1171,9 @@ namespace TenderInfo.Controllers
                     if (child.ApproveState == "待审批")
                     {
                         //只有一级用户全部审批完成后，二级用户才能执行审批
-                        if (fileApproveLevel=="二级")
+                        if (fileApproveLevel == "二级")
                         {
-                            if (child.ApproveLevel== "二级")
+                            if (child.ApproveLevel == "二级")
                             {
                                 if (fileApproveState != "一级审批完成")
                                 {
@@ -1182,9 +1182,9 @@ namespace TenderInfo.Controllers
                             }
                         }
                         child.ApproveDateTime = DateTime.Now;
-                        if (approveResult=="yes")
+                        if (approveResult == "yes")
                         {
-                            child.ApproveState = child.ApproveLevel=="一级"? "一级审批同意" : "二级审批同意";
+                            child.ApproveState = child.ApproveLevel == "一级" ? "一级审批同意" : "二级审批同意";
                         }
                         else
                         {
@@ -1210,7 +1210,7 @@ namespace TenderInfo.Controllers
                         #region 判断文件的审批状态，写入审批信息表
                         var okSumFirst = 0;//一级审批数量
                         var childListFirst = db.FileComprehensiveChild
-                            .Where(w=>w.ApproveType==approveType&w.ApproveLevel=="一级"&w.FileComprehensiveID==fileComprehensiveID)
+                            .Where(w => w.ApproveType == approveType & w.ApproveLevel == "一级" & w.FileComprehensiveID == fileComprehensiveID)
                             .ToList();
                         foreach (var item in childListFirst)
                         {
@@ -1256,7 +1256,7 @@ namespace TenderInfo.Controllers
                             .Where(w => w.ApproveType == approveType & w.ApproveLevel == "二级" & w.FileComprehensiveID == fileComprehensiveID)
                             .ToList();
                         //如果存在二级审批的时候，执行判断审批状态
-                        if (childListSecond!=null)
+                        if (childListSecond.Count != 0)
                         {
                             foreach (var item in childListSecond)
                             {
@@ -1301,7 +1301,56 @@ namespace TenderInfo.Controllers
                         #endregion
 
                         #region 判断3种文件的状态，如果全部审批完成，则执行文件合并操作
-
+                        var fileSuccessCount = 0;//文件审批成功数量
+                        //判断技术规格书审批情况
+                        if (fileComprehensive.ApproveLevelSpecification == "二级")
+                        {
+                            if (fileComprehensive.ApproveStateSpecification == "二级审批完成")
+                            {
+                                fileSuccessCount += 1;
+                            }
+                        }
+                        else
+                        {
+                            if (fileComprehensive.ApproveStateSpecification == "一级审批完成")
+                            {
+                                fileSuccessCount += 1;
+                            }
+                        }
+                        //判断评分标准(技术)审批情况
+                        if (fileComprehensive.ApproveLevelTechnology == "二级")
+                        {
+                            if (fileComprehensive.ApproveStateTechnology == "二级审批完成")
+                            {
+                                fileSuccessCount += 1;
+                            }
+                        }
+                        else
+                        {
+                            if (fileComprehensive.ApproveStateTechnology == "一级审批完成")
+                            {
+                                fileSuccessCount += 1;
+                            }
+                        }
+                        //判断评分标准(商务)审批情况
+                        if (fileComprehensive.ApproveLevelBusiness == "二级")
+                        {
+                            if (fileComprehensive.ApproveStateBusiness == "二级审批完成")
+                            {
+                                fileSuccessCount += 1;
+                            }
+                        }
+                        else
+                        {
+                            if (fileComprehensive.ApproveStateBusiness == "一级审批完成")
+                            {
+                                fileSuccessCount += 1;
+                            }
+                        }
+                        if (fileSuccessCount == 3)
+                        {
+                            //执行文件合并操作
+                        }
                         #endregion
                         return "ok";
                     }
@@ -1314,6 +1363,263 @@ namespace TenderInfo.Controllers
                 {
                     return "不是审批用户！";
                 }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 重新上传综合评标法文件
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string ReLoadFileComprehensive(HttpPostedFileBase fileOneReLoad, HttpPostedFileBase fileTwoReLoad, HttpPostedFileBase fileThirdReLoad)
+        {
+            try
+            {
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var fileType = string.Empty;
+                var idString = string.Empty;
+                if (Request.Form["tbxReLoadOneID"] != null)
+                {
+                    fileType = Request.Form["tbxReLoadOneType"];
+                    idString = Request.Form["tbxReLoadOneID"];
+                }
+                if (Request.Form["tbxReLoadTwoID"] != null)
+                {
+                    fileType = Request.Form["tbxReLoadTwoType"];
+                    idString = Request.Form["tbxReLoadTwoID"];
+                }
+                if (Request.Form["tbxReLoadThirdID"] != null)
+                {
+                    fileType = Request.Form["tbxReLoadThirdType"];
+                    idString = Request.Form["tbxReLoadThirdID"];
+                }
+                var comprehensiveID = 0;
+                int.TryParse(idString, out comprehensiveID);
+
+                var comprehensiveInfo = db.FileComprehensive.Find(comprehensiveID);
+
+                switch (fileType)
+                {
+                    case "技术规格书":
+                        var newNameOne = "";
+                        var showNameOne = "";
+                        //文件上传
+                        if (fileOneReLoad != null)
+                        {
+                            var fileExt = Path.GetExtension(fileOneReLoad.FileName).ToLower();
+                            var fileName = Path.GetFileNameWithoutExtension(fileOneReLoad.FileName).ToLower();
+                            newNameOne = fileName + Guid.NewGuid() + fileExt;
+                            var filePath = Request.MapPath("~/FileUpload");
+                            var fullName = Path.Combine(filePath, newNameOne);
+                            fileOneReLoad.SaveAs(fullName);
+                            comprehensiveInfo.TechnicSpecificationFile = newNameOne;
+                            comprehensiveInfo.TechnicSpecificationFileShow = fileName + fileExt;
+                            showNameOne = fileName + fileExt;
+                        }
+
+                        //如果是一级审批回退，将所有【一级】审批人员的审批状态变为【待审核】
+                        if (comprehensiveInfo.ApproveStateSpecification == "一级审批回退")
+                        {
+                            var firstList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "技术规格书" & w.ApproveLevel == "一级")
+                                .ToList();
+                            foreach (var item in firstList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                        }
+
+                        //如果是二级审批回退，将所有【一级】和【二级】审批人员的审批状态变为【待审核】
+                        if (comprehensiveInfo.ApproveStateSpecification == "二级审批回退")
+                        {
+                            var firstList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "技术规格书" & w.ApproveLevel == "一级")
+                                .ToList();
+                            foreach (var item in firstList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                            var secondList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "技术规格书" & w.ApproveLevel == "二级")
+                                .ToList();
+                            foreach (var item in secondList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                        }
+
+                        //将技术规格书审批状态变为“待审核”
+                        comprehensiveInfo.ApproveStateSpecification = "待审核";
+
+                        #region 写入日志，重新上传技术规格书文件
+                        var logOne = new Models.Log();
+                        logOne.LogType = "综合评标法审批";
+                        logOne.LogDataID = comprehensiveID;
+                        logOne.InputDateTime = DateTime.Now;
+                        logOne.InputPersonID = userInfo.UserID;
+                        logOne.InputPersonName = userInfo.UserName;
+                        logOne.LogContent = "重新上传技术规格书文件";
+                        logOne.Col1 = newNameOne;//记录上传存储的文件名
+                        logOne.Col2 = showNameOne;//记录上传显示的文件名
+                        logOne.Col3 = "技术规格书";//审批文件类型
+                        db.Log.Add(logOne);
+                        #endregion
+                        break;
+                    case "评分标准(技术)":
+                        var newNameTwo = "";
+                        var showNameTwo = "";
+                        //文件上传
+                        if (fileTwoReLoad != null)
+                        {
+                            var fileExt = Path.GetExtension(fileTwoReLoad.FileName).ToLower();
+                            var fileName = Path.GetFileNameWithoutExtension(fileTwoReLoad.FileName).ToLower();
+                            newNameTwo = fileName + Guid.NewGuid() + fileExt;
+                            var filePath = Request.MapPath("~/FileUpload");
+                            var fullName = Path.Combine(filePath, newNameTwo);
+                            fileTwoReLoad.SaveAs(fullName);
+                            comprehensiveInfo.TechnologyScoreStandardFile = newNameTwo;
+                            comprehensiveInfo.TechnologyScoreStandardFileShow = fileName + fileExt;
+                            showNameTwo = fileName + fileExt;
+                        }
+
+                        //如果是一级审批回退，将所有【一级】审批人员的审批状态变为【待审核】
+                        if (comprehensiveInfo.ApproveStateTechnology == "一级审批回退")
+                        {
+                            var firstList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "评分标准(技术)" & w.ApproveLevel == "一级")
+                                .ToList();
+                            foreach (var item in firstList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                        }
+
+                        //如果是二级审批回退，将所有【一级】和【二级】审批人员的审批状态变为【待审核】
+                        if (comprehensiveInfo.ApproveStateTechnology == "二级审批回退")
+                        {
+                            var firstList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "评分标准(技术)" & w.ApproveLevel == "一级")
+                                .ToList();
+                            foreach (var item in firstList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                            var secondList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "评分标准(技术)" & w.ApproveLevel == "二级")
+                                .ToList();
+                            foreach (var item in secondList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                        }
+
+                        //将技术规格书审批状态变为“待审核”
+                        comprehensiveInfo.ApproveStateTechnology = "待审核";
+
+                        #region 写入日志，重新上传评分标准(技术)文件
+                        var logTwo = new Models.Log();
+                        logTwo.LogType = "综合评标法审批";
+                        logTwo.LogDataID = comprehensiveID;
+                        logTwo.InputDateTime = DateTime.Now;
+                        logTwo.InputPersonID = userInfo.UserID;
+                        logTwo.InputPersonName = userInfo.UserName;
+                        logTwo.LogContent = "重新上传评分标准(技术)文件";
+                        logTwo.Col1 = newNameTwo;//记录上传存储的文件名
+                        logTwo.Col2 = showNameTwo;//记录上传显示的文件名
+                        logTwo.Col3 = "评分标准(技术)";//审批文件类型
+                        db.Log.Add(logTwo);
+                        #endregion
+                        break;
+                    case "评分标准(商务)":
+                        var newNameThird = "";
+                        var showNameThird = "";
+                        //文件上传
+                        if (fileThirdReLoad != null)
+                        {
+                            var fileExt = Path.GetExtension(fileThirdReLoad.FileName).ToLower();
+                            var fileName = Path.GetFileNameWithoutExtension(fileThirdReLoad.FileName).ToLower();
+                            newNameThird = fileName + Guid.NewGuid() + fileExt;
+                            var filePath = Request.MapPath("~/FileUpload");
+                            var fullName = Path.Combine(filePath, newNameThird);
+                            fileThirdReLoad.SaveAs(fullName);
+                            comprehensiveInfo.BusinessScoreStandardFile = newNameThird;
+                            comprehensiveInfo.BusinessScoreStandardFileShow = fileName + fileExt;
+                            showNameThird = fileName + fileExt;
+                        }
+
+                        //如果是一级审批回退，将所有【一级】审批人员的审批状态变为【待审核】
+                        if (comprehensiveInfo.ApproveStateBusiness == "一级审批回退")
+                        {
+                            var firstList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "评分标准(商务)" & w.ApproveLevel == "一级")
+                                .ToList();
+                            foreach (var item in firstList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                        }
+
+                        //如果是二级审批回退，将所有【一级】和【二级】审批人员的审批状态变为【待审核】
+                        if (comprehensiveInfo.ApproveStateBusiness == "二级审批回退")
+                        {
+                            var firstList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "评分标准(商务)" & w.ApproveLevel == "一级")
+                                .ToList();
+                            foreach (var item in firstList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                            var secondList = db.FileComprehensiveChild
+                                .Where(w => w.FileComprehensiveID == comprehensiveID & w.ApproveType == "评分标准(商务)" & w.ApproveLevel == "二级")
+                                .ToList();
+                            foreach (var item in secondList)
+                            {
+                                item.ApproveState = "待审批";
+                                item.ApproveBackReason = null;
+                                item.ApproveDateTime = null;
+                            }
+                        }
+
+                        //将技术规格书审批状态变为“待审核”
+                        comprehensiveInfo.ApproveStateTechnology = "待审核";
+
+                        #region 写入日志，重新上传评分标准(技术)文件
+                        var logThird = new Models.Log();
+                        logThird.LogType = "综合评标法审批";
+                        logThird.LogDataID = comprehensiveID;
+                        logThird.InputDateTime = DateTime.Now;
+                        logThird.InputPersonID = userInfo.UserID;
+                        logThird.InputPersonName = userInfo.UserName;
+                        logThird.LogContent = "重新上传评分标准(商务)文件";
+                        logThird.Col1 = newNameThird;//记录上传存储的文件名
+                        logThird.Col2 = showNameThird;//记录上传显示的文件名
+                        logThird.Col3 = "评分标准(商务)";//审批文件类型
+                        db.Log.Add(logThird);
+                        #endregion
+                        break;
+                }
+                db.SaveChanges();
+                return "ok";
             }
             catch (Exception ex)
             {
