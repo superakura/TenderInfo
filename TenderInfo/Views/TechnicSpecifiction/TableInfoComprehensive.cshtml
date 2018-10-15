@@ -34,7 +34,11 @@
                 {
                     title: '合并技术规格书文件',
                     formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-
+                        var link = "";
+                        if (row.TechnicSpecificationFileMerge !== null) {
+                            link = "<a href='/FileUpload/" + row.TechnicSpecificationFileMerge + "' title='文件下载'>" + row.TechnicSpecificationFileMergeShow + "</a>";
+                        }
+                        return link;
                     }
                 },
                 {

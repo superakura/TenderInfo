@@ -1350,6 +1350,26 @@ namespace TenderInfo.Controllers
                         if (fileSuccessCount == 3)
                         {
                             //执行文件合并操作
+                            var filePath = Request.MapPath("~/FileUpload");
+                            var filePathTemplate = Request.MapPath("~/Template");
+                            List<string> fileList = new List<string>();
+                            fileList.Add(Path.Combine(filePath, fileComprehensive.TechnicSpecificationFile));
+                            fileList.Add(Path.Combine(filePath, fileComprehensive.TechnologyScoreStandardFile));
+                            fileList.Add(Path.Combine(filePath, fileComprehensive.BusinessScoreStandardFile));
+                            #region word合并
+                            //var outFile = Path.Combine(filePath, "综合评标法--"+fileComprehensive.ProjectName + Guid.NewGuid() + ".doc");
+                            //var wordClass = new App_Code.WordClass();
+                            //wordClass.InsertMerge(Path.Combine(filePathTemplate, "ComprehensiveFile.doc"), fileList, outFile);
+                            #endregion
+                            var fileName = "综合评标法--" + fileComprehensive.ProjectName + Guid.NewGuid() + ".pdf";
+                            var outFile = Path.Combine(filePath,fileName );
+
+                            //App_Code.Commen.MergePdfFilesBySpire(fileList, outFile);
+                            App_Code.Commen.MergePdfFilesByiTextSharp(fileList, outFile);
+
+                            fileComprehensive.TechnicSpecificationFileMerge = fileName;
+                            fileComprehensive.TechnicSpecificationFileMergeShow = "综合评标法--" + fileComprehensive.ProjectName + ".pdf";
+                            db.SaveChanges();
                         }
                         #endregion
                         return "ok";
