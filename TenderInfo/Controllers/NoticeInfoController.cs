@@ -102,21 +102,15 @@ namespace TenderInfo.Controllers
         [HttpPost]
         public JsonResult GetList()
         {
-            var postList =
-   JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
-            var curPage = 0;
-            int.TryParse(postList["curPage"].ToString(), out curPage);
-            var pageSize = 0;
-            int.TryParse(postList["pageSize"].ToString(), out pageSize);
+            var limit = Convert.ToInt32(Request.Form["limit"]);
+            var offset = Convert.ToInt32(Request.Form["offset"]);
+
             var result = from n in db.NoticeInfo
                          join u in db.UserInfo on n.InsertPersonID equals u.UserID
                          orderby n.InsertDate descending
                          select new { n.NoticeTitle, n.NoticeID, n.InsertDate, u.UserName, n.ContentCount };
 
-            Dictionary<string, object> infoList = new Dictionary<string, object>();
-            infoList.Add("count", result.Count());
-            infoList.Add("infoList", result.Take(pageSize * curPage).Skip(pageSize * (curPage - 1)).ToList());
-            return Json(infoList);
+            return Json(new { total = result.Count(), rows = result.Skip(offset).Take(limit).ToList() });
         }
 
         [HttpPost]

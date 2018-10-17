@@ -57,21 +57,16 @@ namespace TenderInfo.Controllers
         [HttpPost]
         public JsonResult GetList()
         {
-            var postList =
-              JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
-            var curPage = Convert.ToInt32(postList["curPage"].ToString());
-            var pageSize = Convert.ToInt32(postList["pageSize"].ToString());
-            var name = postList["name"].ToString();
+            var limit = Convert.ToInt32(Request.Form["limit"]);
+            var offset = Convert.ToInt32(Request.Form["offset"]);
+            var roleName = Request.Form["roleNameSearch"];
             var result = db.RoleInfo.OrderBy(o => o.RoleName).AsQueryable();
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(roleName))
             {
-                result = result.Where(w => w.RoleName.Contains(name));
+                result = result.Where(w => w.RoleName.Contains(roleName));
             }
-            Dictionary<string, object> infoList = new Dictionary<string, object>();
-            infoList.Add("count", result.Count());
-            infoList.Add("infoList", result.Take(pageSize * curPage).Skip(pageSize * (curPage - 1)).ToList());
-            return Json(infoList);
+            return Json(new { total = result.Count(), rows = result.Skip(offset).Take(limit).ToList() });
         }
 
         [HttpPost]

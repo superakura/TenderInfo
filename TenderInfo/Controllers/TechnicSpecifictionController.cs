@@ -1005,7 +1005,7 @@ namespace TenderInfo.Controllers
                 int.TryParse(Request.Form["limit"], out limit);
                 var offset = 0;
                 int.TryParse(Request.Form["offset"], out offset);
-                var fileName = Request.Form["tbxFileNameSearch"];//文件名称
+                var projectName = Request.Form["tbxProjectNameSearch"];//项目名称
 
                 var inputPersonFatherDeptID = 0;//提报部门
                 int.TryParse(Request.Form["ddlApproveDeptSearch"], out inputPersonFatherDeptID);
@@ -1014,21 +1014,22 @@ namespace TenderInfo.Controllers
 
                 var result = from m in db.FileComprehensive
                              select m;
+
                 if (User.IsInRole("技术规格书提报"))
                 {
                     result = result.Where(w => w.InputPersonID == userInfo.UserID);
                 }
-                //if (User.IsInRole("技术规格书审批"))
-                //{
-                //    var approvePersonIDList = db.FileComprehensiveChild
-                //        .Where(w => w.ApprovePersonID == userInfo.UserID)
-                //        .Select(s => s.FileMinPriceID)
-                //        .ToList();
-                //    result = result.Where(w => approvePersonIDList.Contains(w.FileMinPriceID));
-                //}
-                if (!string.IsNullOrEmpty(fileName))
+                if (User.IsInRole("技术规格书审批"))
                 {
-                    result = result.Where(w => w.TechnicSpecificationFileShow.Contains(fileName));
+                    var approvePersonIDList = db.FileComprehensiveChild
+                        .Where(w => w.ApprovePersonID == userInfo.UserID)
+                        .Select(s => s.FileComprehensiveID)
+                        .ToList();
+                    result = result.Where(w => approvePersonIDList.Contains(w.FileComprehensiveID));
+                }
+                if (!string.IsNullOrEmpty(projectName))
+                {
+                    result = result.Where(w => w.ProjectName.Contains(projectName));
                 }
 
                 if (inputPersonFatherDeptID != 0)
@@ -1369,6 +1370,7 @@ namespace TenderInfo.Controllers
 
                             fileComprehensive.TechnicSpecificationFileMerge = fileName;
                             fileComprehensive.TechnicSpecificationFileMergeShow = "综合评标法--" + fileComprehensive.ProjectName + ".pdf";
+                            fileComprehensive.ApproveSuccessState = "审批完成";
                             db.SaveChanges();
                         }
                         #endregion

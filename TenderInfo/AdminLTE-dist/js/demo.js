@@ -184,7 +184,7 @@ $(function () {
   // Layout options
   $demoSettings.append(
     '<h4 class="control-sidebar-heading">'
-    + 'Layout Options'
+      + 'Layout options'
     + '</h4>'
     // Fixed layout
     + '<div class="form-group">'
@@ -337,7 +337,7 @@ $(function () {
             + '<p class="text-center no-margin" style="font-size: 12px">Yellow Light</p>')
   $skinsList.append($skinYellowLight)
 
-  $demoSettings.append('<h4 class="control-sidebar-heading">Skins</h4>')
+  $demoSettings.append('<h4 class="control-sidebar-heading">sinks</h4>')
   $demoSettings.append($skinsList)
 
   $tabPane.append($demoSettings)

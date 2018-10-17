@@ -24,6 +24,12 @@ namespace TenderInfo.Models
         public string ProjectName { get; set; }
 
         /// <summary>
+        /// 审批是否全部完成
+        /// </summary>
+        [StringLength(50)]
+        public string ApproveSuccessState { get; set; }
+
+        /// <summary>
         /// 合并后的技术规格书文件名
         /// </summary>
         [StringLength(200)]

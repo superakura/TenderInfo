@@ -6,37 +6,82 @@
 
 <h2>系统主页</h2>
 
-<ul>
-    <li>
-        <h3>
-            A、招标进度
-            1、报表导出
-        </h3>
-    </li>
-    <li>
-        <h3>
-            B、招标台账
-            1、报表导出
-            2、浏览器兼容性测试
-            3、数据对齐
-        </h3>
-    </li>
-    <li>
-        <h3>
-            C、技术规格书审批
-            1、技术规格书回退后，重新上传
-            2、技术规格书查询
-            3、数据同步
-            4、文件合并
-        </h3>
-    </li>
-    <li>
-        <h3>
-            D、其他
-            1、帮助文档
-            2、招标系统主页
-            3、系统权限划分
-            4、招标会议室预订整合
-        </h3>
-    </li>
-</ul>
+<div class="row">
+    <div class="col-md-8">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">公告信息</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="table-responsive">
+                    <ul class="list-unstyled text-primary" id="noticeList"></ul>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-warning">
+            <div class="box-header with-border">
+                <h3 class="box-title">问题及意见反馈</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="table-responsive">
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-danger">
+            <div class="box-header with-border">
+                <h3 class="box-title">操作文档</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="table-responsive">
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+</div>
+<script>
+        $(function () {
+            GetNoticeInfo();
+            function GetNoticeInfo() {
+                $.post("/NoticeInfo/GetNoticeListForLogin", "", function (result) {
+                    var list = "";
+                    for (var i = 0; i < result.length; i++) {
+                        list += "<li><h3><a href='/NoticeInfo/NoticeShow?id=" + result[i]["NoticeID"] + "' target='_blank'>" + (i + 1) + "、" + result[i]["NoticeTitle"] + "</a></h3></li>";
+                    }
+                    $("#noticeList").empty().append(list);
+                });
+            }
+        });
+</script>
