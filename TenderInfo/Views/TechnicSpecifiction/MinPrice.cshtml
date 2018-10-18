@@ -21,8 +21,8 @@
                 <div class="nav-tabs-custom">
                     <div class="container-fluid">
                         <form id="UploadForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxFirstList" name="tbxFirstList" class="" />
-                            <input id="tbxSecondList" name="tbxSecondList" class="" />
+                            <input id="tbxFirstList" name="tbxFirstList" class="hidden" />
+                            <input id="tbxSecondList" name="tbxSecondList" class="hidden" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -191,7 +191,7 @@
                 <div class="nav-tabs-custom">
                     <div class="container-fluid">
                         <form id="ReloadForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxMinPriceIDReLoad" name="tbxMinPriceIDReLoad" class="" />
+                            <input id="tbxMinPriceIDReLoad" name="tbxMinPriceIDReLoad" class="hidden" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -271,7 +271,7 @@
         </div>
     </div>
 </div>
-<div id="userRole">@ViewBag.userRole</div>
+<div id="userRole" class="hidden">@ViewBag.userRole</div>
 <script>
     $(function () {
         //加载部门信息

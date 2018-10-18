@@ -6,7 +6,7 @@
         var ApproveEvents = {
             'click .approve': function (e, value, row, index) {
                 var id = row.FileComprehensiveID;
-                console.log(id);
+                //console.log(id);
                 window.location.href = "/TechnicSpecifiction/ApproveComprehensive?id=" + id + "&projectName=" + escape(row.ProjectName);
             }
         };

@@ -22,12 +22,12 @@
                 <div class="nav-tabs-custom">
                     <div class="container-fluid">
                         <form id="AddForm" class="form-inline" method="post" enctype="multipart/form-data">
-                            <input id="tbxFirstListOne" name="tbxFirstListOne" class="" />
-                            <input id="tbxSecondListOne" name="tbxSecondListOne" class="" />
-                            <input id="tbxFirstListTwo" name="tbxFirstListTwo" class="" />
-                            <input id="tbxSecondListTwo" name="tbxSecondListTwo" class="" />
-                            <input id="tbxFirstListThird" name="tbxFirstListThird" class="" />
-                            <input id="tbxSecondListThird" name="tbxSecondListThird" class="" />
+                            <input id="tbxFirstListOne" name="tbxFirstListOne" class="hidden" />
+                            <input id="tbxSecondListOne" name="tbxSecondListOne" class="hidden" />
+                            <input id="tbxFirstListTwo" name="tbxFirstListTwo" class="hidden" />
+                            <input id="tbxSecondListTwo" name="tbxSecondListTwo" class="hidden" />
+                            <input id="tbxFirstListThird" name="tbxFirstListThird" class="hidden" />
+                            <input id="tbxSecondListThird" name="tbxSecondListThird" class="hidden" />
                             <div class="form-group">
                                 <label for="tbxProjectName">项目名称<span class="text-danger">(必填)</span></label>
                                 <input id="tbxProjectName" name="tbxProjectName" type="text" class="form-control" />
@@ -177,7 +177,7 @@
         </div>
     </div>
 </div>
-<div id="userRole">@ViewBag.userRole</div>
+<div id="userRole" class="hidden">@ViewBag.userRole</div>
 <script>
     $(function () {
         //加载部门信息

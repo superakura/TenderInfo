@@ -74,31 +74,43 @@
         $("#RoleID").text(getUrlParam("id"));
 
         function GetAuthorityListAll() {
-            $.post("/AuthorityInfo/GetListAll", "", function (result) {
-                $("#tableList").html("");
-                $.each(result, function (index, val) {
-                    var temp = "<tr><td><input id='" + val["AuthorityID"] + "' value='" + val["AuthorityID"] + "' name='checkname' type='checkbox' /></td>";
-                    temp += "<td>" + val["AuthorityID"] + "</td><td>" + val["AuthorityName"] + "</td>";
-                    temp += "<td>" + val["AuthorityType"] + "</td>";
-                    temp += "<td>" + val["AuthorityDescribe"] + "</td>";
-                    temp += "<td>" + val["ConflictCode"] + "</td>";
-                    temp += "</tr>";
-                    $("#tableList").append(temp);
-                });
+            $.ajax({
+                url: "/AuthorityInfo/GetListAll",
+                type: "post",
+                data: "",
+                async: false,
+                success: function (result) {
+                    $("#tableList").html("");
+                    $.each(result, function (index, val) {
+                        var temp = "<tr><td><input id='" + val["AuthorityID"] + "' value='" + val["AuthorityID"] + "' name='checkname' type='checkbox' /></td>";
+                        temp += "<td>" + val["AuthorityID"] + "</td><td>" + val["AuthorityName"] + "</td>";
+                        temp += "<td>" + val["AuthorityType"] + "</td>";
+                        temp += "<td>" + val["AuthorityDescribe"] + "</td>";
+                        temp += "<td>" + val["ConflictCode"] + "</td>";
+                        temp += "</tr>";
+                        $("#tableList").append(temp);
+                    });
+                }
             });
         }
         function GetAuthoritySingle() {
             var id = getUrlParam("id");
             var args = { "id": id };
-            $.post("/RoleInfo/GetOne", encodeURIComponent(JSON.stringify(args)), function (result) {
-                var roleInfo = result["roleInfo"];
-                var roleAuthority = result["roleAuthority"];
-                $("#tbxRoleName").val(roleInfo["RoleName"]);
-                $("#tbxRoleDesc").val(roleInfo["RoleDescribe"]);
+            $.ajax({
+                url: "/RoleInfo/GetOne",
+                type: "post",
+                data: encodeURIComponent(JSON.stringify(args)),
+                async: false,
+                success: function (result) {
+                    var roleInfo = result["roleInfo"];
+                    var roleAuthority = result["roleAuthority"];
+                    $("#tbxRoleName").val(roleInfo["RoleName"]);
+                    $("#tbxRoleDesc").val(roleInfo["RoleDescribe"]);
 
-                $.each(roleAuthority, function (index, val) {
-                    $("input[id=" + val["AuthorityID"] + "]:checkbox").attr("checked", "checked");
-                });
+                    $.each(roleAuthority, function (index, val) {
+                        $("input[id=" + val["AuthorityID"] + "]:checkbox").attr("checked", "checked");
+                    });
+                }
             });
         }
         if ($("#RoleID").text() != "") {

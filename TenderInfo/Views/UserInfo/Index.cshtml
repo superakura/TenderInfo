@@ -366,16 +366,32 @@
 
         //获取用户添加/修改表单中用户所拥有权限的信息
         function getRoleList() {
-            $.post("/RoleInfo/GetListForUser", function (result) {
-                var temp = "";
-                $.each(result, function (index, val) {
-                    temp += "<tr><td><input name='cbxRole' id='" + val["RoleID"] + "' type='checkbox' value='" + val["RoleID"] + "' /></td>";
-                    temp += "<td>" + val["RoleName"] + "</td>";
-                    temp += "<td>" + val["RoleDescribe"] + "</td>";
-                    temp += "</tr>";
-                });
-                $("#roleTableList").empty().append(temp);
+            $.ajax({
+                url: "/RoleInfo/GetListForUser",
+                type: "post",
+                data: "",
+                async: false,
+                success: function (result) {
+                    var temp = "";
+                    $.each(result, function (index, val) {
+                        temp += "<tr><td><input name='cbxRole' id='" + val["RoleID"] + "' type='checkbox' value='" + val["RoleID"] + "' /></td>";
+                        temp += "<td>" + val["RoleName"] + "</td>";
+                        temp += "<td>" + val["RoleDescribe"] + "</td>";
+                        temp += "</tr>";
+                    });
+                    $("#roleTableList").empty().append(temp);
+                }
             });
+            //$.post("/RoleInfo/GetListForUser", function (result) {
+            //    var temp = "";
+            //    $.each(result, function (index, val) {
+            //        temp += "<tr><td><input name='cbxRole' id='" + val["RoleID"] + "' type='checkbox' value='" + val["RoleID"] + "' /></td>";
+            //        temp += "<td>" + val["RoleName"] + "</td>";
+            //        temp += "<td>" + val["RoleDescribe"] + "</td>";
+            //        temp += "</tr>";
+            //    });
+            //    $("#roleTableList").empty().append(temp);
+            //});
         }
 
         //搜索按钮

@@ -173,7 +173,7 @@
                 <div class="container-fluid">
                     <div class="form-horizontal" id="PanelEditTenderDate">
                         <form id="EditTenderDateForm" method="post" enctype="multipart/form-data">
-                            <input id="EditTenderDateInfoID" name="EditTenderDateInfoID" class="" type="text" />
+                            <input id="EditTenderDateInfoID" name="EditTenderDateInfoID" class="hidden" type="text" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="callout callout-info">
@@ -363,7 +363,7 @@
         </div>
     </div>
 </div>
-<span id="userRole">@ViewBag.PageRole</span>
+<span id="userRole" class="hidden">@ViewBag.PageRole</span>
 
 <script>
     $(function () {
