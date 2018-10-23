@@ -152,6 +152,7 @@
                         toastr.error("登录超时，请重新登录！", "提示");
                         setTimeout(function () {
                             window.location.href = "/Home/Login";
+                            //window.location.href = "/Home/LoginAD";
                         }, 1500);
                     }
                 }
@@ -175,6 +176,15 @@
                 d.setTime(d.getTime() + (exMinute * 60 * 1000));
                 var expires = "expires=" + d.toUTCString();
                 document.cookie = cname + "=" + cvalue + "; " + expires;
+            }
+
+            //删除cookies
+            function delCookie(name) {
+                var exp = new Date();
+                exp.setTime(exp.getTime() - 1);
+                var cval = getCookie(name);
+                if (cval != null)
+                    document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
             }
 
             //toastr提示控件设置
@@ -253,6 +263,10 @@
                             return;
                         }
                         else {
+                            //document.execCommand('ClearAuthenticationCache');
+                            //document.clear();
+                            //document.location.href = "http://10.126.10.39:8090";
+
                             window.location.href = "/Home/LoginOut";
                         }
                     });

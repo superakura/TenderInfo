@@ -72,6 +72,24 @@ namespace TenderInfo.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// 转跳到技术规格书查询
+        /// </summary>
+        /// <returns></returns>
+        public RedirectResult SearchRedirect()
+        {
+            return Redirect("http://10.126.10.64:8020/");
+        }
+
+        /// <summary>
+        /// 技术规格书查询视图
+        /// </summary>
+        /// <returns></returns>
+        public ViewResult Search()
+        {
+            return View();
+        }
         #endregion
 
         #region MinPrice--最低价评标法审批

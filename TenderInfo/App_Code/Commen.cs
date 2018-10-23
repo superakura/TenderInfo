@@ -18,6 +18,22 @@ namespace TenderInfo.App_Code
             return userInfo;
         }
 
+        /// <summary>
+        /// 获取已登录AD用户名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetADUserName()
+        {
+            string domainAndName = System.Web.HttpContext.Current.Request.ServerVariables["LOGON_USER"].ToString();
+            string[] infoes = domainAndName.Split(new char[1] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string userDomainName = "";
+            if (infoes.Length > 1)
+            {
+                userDomainName = infoes[1];
+            }
+            return userDomainName;
+        }
+
         public static System.Data.DataTable ReadExcel(String strFileName)
         {
             Workbook book = new Workbook();

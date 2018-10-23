@@ -15,7 +15,12 @@ namespace TenderInfo.Controllers
     {
         private Models.DB db = new Models.DB();
 
-        //考勤系统验证函数，员工编号、考勤系统密码
+        /// <summary>
+        /// 考勤系统验证函数，员工编号、考勤系统密码
+        /// </summary>
+        /// <param name="userNum"></param>
+        /// <param name="pwd"></param>
+        /// <returns>yes</returns>
         private string KaoqinCheck(string userNum, string pwd)
         {
             string strConnection = "user id=KqLogin;password=rjkf3877;initial catalog = GM_MT; Server = 10.126.10.54";
@@ -72,7 +77,9 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //加载登录页面
+        /// <summary>
+        /// 加载登录页面
+        /// </summary>
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -80,7 +87,13 @@ namespace TenderInfo.Controllers
             return View();
         }
 
-        //用户登录、加载用户权限、加载菜单、转跳
+        /// <summary>
+        /// 用户登录、加载用户权限、加载菜单、转跳
+        /// </summary>
+        /// <param name="userNum"></param>
+        /// <param name="pwd"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
         public ActionResult Login(string userNum, string pwd, string returnUrl)
@@ -137,14 +150,99 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //注销
+        /// <summary>
+        /// ad认证登录
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public RedirectResult LoginAD()
+        {
+            string domainAndName = HttpContext.Request.ServerVariables["LOGON_USER"].ToString();
+            string[] infoes = domainAndName.Split(new char[1] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string userDomainName = "";
+            if (infoes.Length > 1)
+            {
+                userDomainName = infoes[1];
+            }
+
+            //判断员工编号是否为系统用户、判断用户是否删除
+            var userInfo = db.UserInfo.Where(w => w.UserNum == userDomainName & w.UserState == 0).FirstOrDefault();
+            if (userInfo == null)
+            {
+                ModelState.AddModelError("", "您还不是此系统用户，如有疑问请联系管理员，电话5613877！");
+                return Redirect("http://10.126.10.39:8090?user=" + domainAndName);
+            }
+            //将用户的全部信息存入session，便于在其他页面调用
+            System.Web.HttpContext.Current.Session["user"] = userInfo;
+
+            //通过考勤数据库验证员工编号、考勤密码
+            var result = "yes";
+            //result = KaoqinCheck(userNum, pwd);//系统测试时，注释。正式运行时，取消注释。
+
+            if (result == "yes")
+            {
+                #region 加载、设置用户权限
+                var userRoles = from u in db.UserRole
+                                join r in db.RoleAuthority on u.RoleID equals r.RoleID
+                                join a in db.AuthorityInfo on r.AuthorityID equals a.AuthorityID
+                                where u.UserID == userInfo.UserID
+                                select a.AuthorityName;
+
+                var roles = userRoles.Distinct().ToArray();
+                var userAuthorityString = "";
+                foreach (var item in roles)
+                {
+                    userAuthorityString += item + ",";
+                }
+                userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
+
+                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1, userDomainName, DateTime.Now, DateTime.Now.AddMinutes(20), false, userAuthorityString);//写入用户角色
+                string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
+                System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+                System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
+                #endregion
+
+                #region 设置用户姓名的cookie
+                var cUserName = System.Web.HttpContext.Current.Server.UrlEncode(userInfo.UserName);
+                System.Web.HttpCookie userNameCookie = new System.Web.HttpCookie("cUserName", cUserName);
+                System.Web.HttpContext.Current.Response.Cookies.Add(userNameCookie);
+                #endregion
+
+                //return Redirect(returnUrl ?? Url.Action("Index", "Home"));
+                return Redirect(Url.Action("Index", "Home"));
+            }
+            else
+            {
+                ModelState.AddModelError("", "用户名或密码错误！");
+                return Redirect("http://10.126.10.39:8090");
+            }
+        }
+
+        /// <summary>
+        /// webform登录方式注销
+        /// </summary>
         public ActionResult LoginOut()
         {
+            WindowsTokenRoleProvider w = new WindowsTokenRoleProvider();
+            WindowsAuthenticationModule wa = new WindowsAuthenticationModule();
+            
             FormsAuthentication.SignOut();
             return Redirect("/Home/Login");
         }
 
-        //获取菜单
+        /// <summary>
+        /// 招标会议室预订view
+        /// </summary>
+        /// <returns></returns>
+        public ViewResult MeetingRoomPlan()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 获取菜单
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetMenu()
         {
@@ -186,7 +284,9 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //系统主页
+        /// <summary>
+        /// 系统主页
+        /// </summary>
         public ViewResult Index()
         {
             return View();
@@ -201,5 +301,16 @@ namespace TenderInfo.Controllers
         {
             return Json(db.UserInfo.Select(s=>new { s.UserNum,s.UserName}).ToList());
         }
+
+        /// <summary>
+        /// 转跳到招标会议室预订系统
+        /// </summary>
+        /// <returns></returns>
+        public RedirectResult GoTo1096()
+        {
+            var userDomainName = App_Code.Commen.GetADUserName();
+            return Redirect("http://10.126.10.96:9001/start.aspx?userName=" + userDomainName);
+        }
+
     }
 }
