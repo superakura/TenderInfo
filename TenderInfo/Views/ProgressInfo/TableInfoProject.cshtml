@@ -140,39 +140,9 @@
         });
     };
     $(function () {
-        var operateEvents = {
-            'click .editProgress': function (e, value, row, index) {
-                $("#EditProgressModal").modal("show");
-
-                $("#tbxProgressIDEdit").val(row.ProgressInfoID);
-                $("#tbxProgressTypeEdit").val($("#typeSearch").text());
-
-                $("#tbxProjectNameEdit").val(row.ProjectName);
-                $("#ddlProgressTypeChildEdit").val(row.ProgressTypeChild);
-                $("#tbxInvestPriceEdit").val(row.InvestPrice);
-                $("#tbxProjectResponsiblePersonEdit").text(row.ProjectResponsiblePersonName);
-                $("#tbxContractResponsiblePersonEdit").val(row.ContractResponsiblePerson);
-
-                $("#tbxContractDeptContactDateEdit").val(row.ContractDeptContactDate);
-                $("#tbxProjectExplainEdit").val(row.ProjectExplain);
-                
-                $("#tbxProgramAcceptDateEdit").val(row.ProgramAcceptDate == null ? "" : getJsonDateShort(row.ProgramAcceptDate));
-                $("#tbxTenderFileSaleStartDateEdit").val(row.TenderFileSaleStartDate == null ? "" : getJsonDateShort(row.TenderFileSaleStartDate));
-                $("#tbxTenderFileSaleEndDateEdit").val(row.TenderFileSaleEndDate == null ? "" : getJsonDateShort(row.TenderFileSaleEndDate));
-                $("#tbxTenderStartDateEdit").val(row.TenderStartDate == null ? "" : getJsonDateShort(row.TenderStartDate));
-                $("#tbxTenderSuccessFileDateEdit").val(row.TenderSuccessFileDate == null ? "" : getJsonDateShort(row.TenderSuccessFileDate));
-
-                $("#tbxOtherExplainEdit").val(row.OtherExplain);
-                $("#tbxRemarkEdit").val(row.Remark);
-
-                if ($("#userRole").text().trim() != "招标管理") {
-                    $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
-                }
-            }
-        };
 
         function loadColumns() {
-            var tempArray = [
+            var tempArray1 = [
                 [
                     {
                         title: '序号',
@@ -358,7 +328,184 @@
                     }
                 ]
             ];
-            return tempArray;
+            var tempArray2 = [
+                [
+                    {
+                        title: '序号',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        width: 45,
+                        formatter: function (value, row, index) {
+                            return index + 1;
+                        }
+                    },
+                    {
+                        field: 'ProgressTypeChild',
+                        title: '类型',
+                        rowspan: 2,
+                        colspan: 1,
+                        //width: 45,
+                        width: 100,
+                        //height: 81,
+                        switchable: false,
+                        valign: "middle",
+                        visible: true
+                    },
+                    {
+                        field: 'ProjectName',
+                        title: '拟招标项目名称',
+                        rowspan: 2,
+                        colspan: 1,
+                        width: 185,
+                        valign: "middle",
+                        visible: true,
+                        formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                            var html = '<button type="button" onclick="editModel(' + row.ProgressInfoID + ')" class="btn btn-link">' + row.ProjectName + '</button >';
+                            return html;
+                        }
+                    },
+                    {
+                        field: 'IsOver',
+                        title: '是否已完成',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        visible: false
+                    },
+                    {
+                        field: 'ProgressState',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '进度'
+                    },
+                    {
+                        field: 'InvestPrice',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '投资金额（万元）'
+                    },
+                    {
+                        field: 'ProjectResponsiblePersonName',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '招标项目负责人'
+                    },
+                    {
+                        field: 'ContractResponsiblePerson',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '合同签订部门项目责任人'
+                    },
+                    {
+                        title: '项目前期对接进度',
+                        colspan: 3,
+                        rowspan: 1,
+                        align: "center"
+                    },
+                    {
+                        title: '项目实施进度',
+                        colspan: 5,
+                        rowspan: 1,
+                        align: "center"
+                    },
+                    {
+                        field: 'OtherExplain',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        visible: false,
+                        title: '其他需说明情况'
+                    },
+                    {
+                        field: 'Remark',
+                        rowspan: 2,
+                        colspan: 1,
+                        valign: "middle",
+                        title: '备注',
+                        visible: false
+                    }
+                ],
+                [
+                    {
+                        field: 'ContractDeptContactDate',
+                        valign: "middle",
+                        title: '接到合同签订部门（电话或邮件）时间'
+                    },
+                    {
+                        field: 'ProjectExplain',
+                        valign: "middle",
+                        title: '项目对接需说明情况'
+                    },
+                    {
+                        field: 'TenderProgramAuditDate',
+                        valign: "middle",
+                        title: '招标方案联审时间',
+                        formatter: function (value, row, index) {
+                            return getJsonDateShort(row.TenderProgramAuditDate);
+                        }
+                    },
+                    {
+                        field: 'ProgramAcceptDate',
+                        valign: "middle",
+                        title: '招标方案接收时间',
+                        formatter: function (value, row, index) {
+                            return getJsonDateShort(row.ProgramAcceptDate);
+                        }
+                    },
+                    {
+                        field: 'TenderFileSaleStartDate',
+                        valign: "middle",
+                        title: '发售招标文件开始日期',
+                        formatter: function (value, row, index) {
+                            return getJsonDateTimeMinute(row.TenderFileSaleStartDate);
+                        }
+                    },
+                    {
+                        field: 'TenderFileSaleEndDate',
+                        valign: "middle",
+                        title: '发售招标文件截止日期',
+                        formatter: function (value, row, index) {
+                            return getJsonDateTimeMinute(row.TenderFileSaleEndDate);
+                        }
+                    },
+                    {
+                        field: 'TenderStartDate',
+                        valign: "middle",
+                        title: '开标日期',
+                        formatter: function (value, row, index) {
+                            return getJsonDateTimeMinute(row.TenderStartDate);
+                        }
+                    },
+                    {
+                        field: 'TenderSuccessFileDate',
+                        valign: "middle",
+                        title: '中标通知书发出时间',
+                        formatter: function (value, row, index) {
+                            if (value == null) {
+                                return "";
+                            }
+                            else {
+                                var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                                var date = new Date(milliseconds);
+                                var month = (date.getMonth() + 1);
+                                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+                            }
+                        }
+                    }
+                ]
+            ];
+            if ($("#userRole").text().trim() === "招标管理") {
+                return tempArray1;
+            }
+            else {
+                return tempArray2;
+            }
+
         };
 
         var columns = loadColumns();

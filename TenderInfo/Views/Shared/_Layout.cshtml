@@ -49,7 +49,7 @@
                 </a>
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
-                        <li><span class="navbar-text" style="color:white" id="lblUserName"></span></li>
+                        <li><p class="navbar-text" style="color:white" id="lblUserName"></p></li>
                         <li><a href="#" id="btnLogOut"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
                         <!-- Control Sidebar Toggle Button -->
                         <li>
@@ -118,13 +118,6 @@
                 }
             }
 
-            //            /**
-            //* 获取指定的URL参数值
-            //* URL:http://www.quwan.com/index?name=tyler
-            //* 参数：paramName URL参数
-            //* 调用方法:getParam("name")
-            //* 返回值:tyler
-            //*/
             function getParam(paramName) {
                 paramValue = "", isFound = !1;
                 if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
@@ -152,7 +145,7 @@
                         toastr.error("登录超时，请重新登录！", "提示");
                         setTimeout(function () {
                             window.location.href = "/Home/Login";
-                            //window.location.href = "/Home/LoginAD";
+                            //window.location.href = "/Home/LoginFormAD";
                         }, 1500);
                     }
                 }
@@ -263,10 +256,6 @@
                             return;
                         }
                         else {
-                            //document.execCommand('ClearAuthenticationCache');
-                            //document.clear();
-                            //document.location.href = "http://10.126.10.39:8090";
-
                             window.location.href = "/Home/LoginOut";
                         }
                     });

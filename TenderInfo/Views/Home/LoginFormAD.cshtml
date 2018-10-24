@@ -1,0 +1,33 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>招标管理平台--登录</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/signin.css" rel="stylesheet" />
+    <!--[if lt IE 9]>
+        <script src="/Scripts/html5shiv.js"></script>
+        <script src="/Scripts/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="container">
+        <form class="form-signin" action="/Home/LoginFormAD" method="post" role="form">
+            <h2 class="form-signin-heading">招标管理平台</h2>
+            <label for="inputEmail">用户名(不填PTR)</label>
+            <input type="email" id="inputEmail" class="form-control" placeholder="不写PTR\,直接输入用户名" required="" autofocus="">
+            <label for="inputPassword">密码</label>
+            <input type="password" id="inputPassword" class="form-control" placeholder="AD密码" required="">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+            @Html.ValidationSummary()
+        </form>
+    </div>
+</body>
+</html>

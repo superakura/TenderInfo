@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "招标管理台账--"+ViewBag.type;
 }
 <style>
     td {
@@ -391,8 +392,8 @@
         <div class="container-fluid">
             <div class="form-horizontal">
                 <form id="EditAccountForm" method="post" enctype="multipart/form-data">
-                    <input id="tbxAccountIDEdit" name="tbxAccountIDEdit" type="text" value="@ViewBag.id" />
-                    <input id="tbxAccountTypeEdit" name="tbxAccountTypeEdit" type="text" value="@ViewBag.type" />
+                    <input id="tbxAccountIDEdit" name="tbxAccountIDEdit" type="text" class="hidden" value="@ViewBag.id" />
+                    <input id="tbxAccountTypeEdit" name="tbxAccountTypeEdit" type="text" class="hidden" value="@ViewBag.type" />
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">

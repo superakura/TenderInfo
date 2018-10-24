@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.DirectoryServices;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -78,6 +79,35 @@ namespace TenderInfo.Controllers
         }
 
         /// <summary>
+        /// ptr,登录认证，成功返回yes，错误返回no
+        /// </summary>
+        /// <param name="userNum"></param>
+        /// <param name="pwd"></param>
+        /// <returns>yes</returns>
+        private string CheckAD(string userNum,string pwd)
+        {
+            string domainAndUsername = @"ptr\" + userNum;
+            DirectoryEntry entry = new DirectoryEntry("LDAP://ptr.petrochina", domainAndUsername, pwd);
+            try
+            {
+                object obj = entry.NativeObject;
+                DirectorySearcher search = new DirectorySearcher(entry);
+                search.Filter = "(SAMAccountName=" + userNum + ")";
+                search.PropertiesToLoad.Add("cn");
+                SearchResult result = search.FindOne();
+                if (null == result)
+                {
+                    return "no";
+                }
+                return "yes";
+            }
+            catch
+            {
+                return "no";
+            }
+        }
+
+        /// <summary>
         /// 加载登录页面
         /// </summary>
         [AllowAnonymous]
@@ -94,8 +124,7 @@ namespace TenderInfo.Controllers
         /// <param name="pwd"></param>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
+        [AllowAnonymous][HttpPost]
         public ActionResult Login(string userNum, string pwd, string returnUrl)
         {
             //判断员工编号是否为系统用户、判断用户是否删除
@@ -151,6 +180,79 @@ namespace TenderInfo.Controllers
         }
 
         /// <summary>
+        /// 加载AD WebForm登录页面
+        /// </summary>
+        [AllowAnonymous]
+        public ActionResult LoginFormAD(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        /// <summary>
+        /// 用户登录、加载用户权限、加载菜单、转跳
+        /// </summary>
+        /// <param name="userNum"></param>
+        /// <param name="pwd"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [AllowAnonymous][HttpPost]
+        public ActionResult LoginFormAD(string userNum, string pwd, string returnUrl)
+        {
+            //判断员工编号是否为系统用户、判断用户是否删除
+            var userInfo = db.UserInfo.Where(w => w.UserNum == userNum & w.UserState == 0).FirstOrDefault();
+            if (userInfo == null)
+            {
+                ModelState.AddModelError("", "您还不是此系统用户，如有疑问请联系管理员，电话5615713！");
+                return View();
+            }
+            //将用户的全部信息存入session，便于在其他页面调用
+            System.Web.HttpContext.Current.Session["user"] = userInfo;
+
+            //通过考勤数据库验证员工编号、考勤密码
+            var result = "yes";
+            result = CheckAD(userNum, pwd);//系统测试时，注释。正式运行时，取消注释。
+
+            if (result == "yes")
+            {
+                #region 加载、设置用户权限
+                var userRoles = from u in db.UserRole
+                                join r in db.RoleAuthority on u.RoleID equals r.RoleID
+                                join a in db.AuthorityInfo on r.AuthorityID equals a.AuthorityID
+                                where u.UserID == userInfo.UserID
+                                select a.AuthorityName;
+
+                var roles = userRoles.Distinct().ToArray();
+                var userAuthorityString = "";
+                foreach (var item in roles)
+                {
+                    userAuthorityString += item + ",";
+                }
+                userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
+
+                //写入用户角色
+                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1, userNum, DateTime.Now, DateTime.Now.AddMinutes(20), false, userAuthorityString);
+                string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
+                System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+                System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
+                #endregion
+
+                #region 设置用户姓名的cookie
+                var cUserName = System.Web.HttpContext.Current.Server.UrlEncode(userInfo.UserName);
+                System.Web.HttpCookie userNameCookie = new System.Web.HttpCookie("cUserName", cUserName);
+                System.Web.HttpContext.Current.Response.Cookies.Add(userNameCookie);
+                #endregion
+
+                return Redirect(returnUrl ?? Url.Action("Index", "Home"));
+            }
+            else
+            {
+                ModelState.AddModelError("", "用户名或密码错误！");
+                return View();
+            }
+        }
+
+        /// <summary>
         /// ad认证登录
         /// </summary>
         /// <returns></returns>
@@ -176,58 +278,45 @@ namespace TenderInfo.Controllers
             System.Web.HttpContext.Current.Session["user"] = userInfo;
 
             //通过考勤数据库验证员工编号、考勤密码
-            var result = "yes";
-            //result = KaoqinCheck(userNum, pwd);//系统测试时，注释。正式运行时，取消注释。
+            #region 加载、设置用户权限
+            var userRoles = from u in db.UserRole
+                            join r in db.RoleAuthority on u.RoleID equals r.RoleID
+                            join a in db.AuthorityInfo on r.AuthorityID equals a.AuthorityID
+                            where u.UserID == userInfo.UserID
+                            select a.AuthorityName;
 
-            if (result == "yes")
+            var roles = userRoles.Distinct().ToArray();
+            var userAuthorityString = "";
+            foreach (var item in roles)
             {
-                #region 加载、设置用户权限
-                var userRoles = from u in db.UserRole
-                                join r in db.RoleAuthority on u.RoleID equals r.RoleID
-                                join a in db.AuthorityInfo on r.AuthorityID equals a.AuthorityID
-                                where u.UserID == userInfo.UserID
-                                select a.AuthorityName;
-
-                var roles = userRoles.Distinct().ToArray();
-                var userAuthorityString = "";
-                foreach (var item in roles)
-                {
-                    userAuthorityString += item + ",";
-                }
-                userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
-
-                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1, userDomainName, DateTime.Now, DateTime.Now.AddMinutes(20), false, userAuthorityString);//写入用户角色
-                string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
-                System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-                System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
-                #endregion
-
-                #region 设置用户姓名的cookie
-                var cUserName = System.Web.HttpContext.Current.Server.UrlEncode(userInfo.UserName);
-                System.Web.HttpCookie userNameCookie = new System.Web.HttpCookie("cUserName", cUserName);
-                System.Web.HttpContext.Current.Response.Cookies.Add(userNameCookie);
-                #endregion
-
-                //return Redirect(returnUrl ?? Url.Action("Index", "Home"));
-                return Redirect(Url.Action("Index", "Home"));
+                userAuthorityString += item + ",";
             }
-            else
-            {
-                ModelState.AddModelError("", "用户名或密码错误！");
-                return Redirect("http://10.126.10.39:8090");
-            }
+            userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
+
+            FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1, userDomainName, DateTime.Now, DateTime.Now.AddMinutes(20), false, userAuthorityString);//写入用户角色
+            string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
+            System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+            System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
+            #endregion
+
+            #region 设置用户姓名的cookie
+            var cUserName = System.Web.HttpContext.Current.Server.UrlEncode(userInfo.UserName);
+            System.Web.HttpCookie userNameCookie = new System.Web.HttpCookie("cUserName", cUserName);
+            System.Web.HttpContext.Current.Response.Cookies.Add(userNameCookie);
+            #endregion
+
+            //return Redirect(returnUrl ?? Url.Action("Index", "Home"));
+            return Redirect(Url.Action("Index", "Home"));
         }
 
         /// <summary>
-        /// webform登录方式注销
+        /// form登录方式注销，Login，LoginFormAD两种方式切换
         /// </summary>
         public ActionResult LoginOut()
         {
-            WindowsTokenRoleProvider w = new WindowsTokenRoleProvider();
-            WindowsAuthenticationModule wa = new WindowsAuthenticationModule();
-            
             FormsAuthentication.SignOut();
-            return Redirect("/Home/Login");
+            //return Redirect("/Home/Login");
+            return Redirect("/Home/LoginFormAD");
         }
 
         /// <summary>
@@ -292,11 +381,19 @@ namespace TenderInfo.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 浏览器版本错误提升页面
+        /// </summary>
+        /// <returns></returns>
         public ViewResult ErrorIE()
         {
             return View();
         }
 
+        /// <summary>
+        /// 获取测试用户列表页面
+        /// </summary>
+        /// <returns></returns>
         public JsonResult GetTestUserList()
         {
             return Json(db.UserInfo.Select(s=>new { s.UserNum,s.UserName}).ToList());
