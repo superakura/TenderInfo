@@ -372,7 +372,7 @@
         //加载项目负责人列表
         GetProjectResponsiblePersonList("search");
         function GetProjectResponsiblePersonList(type) {
-            $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
+            $.post("/SampleDelegation/GetSampleResponsiblePersonList", "", function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";

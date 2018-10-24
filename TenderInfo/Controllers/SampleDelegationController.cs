@@ -128,7 +128,7 @@ namespace TenderInfo.Controllers
                                  s.SampleNum,
                                  s.SampleTechnicalRequirement,
                                  s.StartTenderDate,
-                                 FirstCodingFileName =s.CheckResultAllError=="全否"?s.FirstCodingFileName: isShow == 0 ? s.FirstCodingFileName : s.StartTenderDate <= DateTime.Now ? s.FirstCodingFileName : "",
+                                 FirstCodingFileName = s.CheckResultAllError == "全否" ? s.FirstCodingFileName : isShow == 0 ? s.FirstCodingFileName : s.StartTenderDate <= DateTime.Now ? s.FirstCodingFileName : "",
                                  s.FirstCodingInputDate,
                                  s.InputPerson,
                                  s.InputPersonName,
@@ -189,7 +189,7 @@ namespace TenderInfo.Controllers
                     viewRow.sampleDelegation = item;
                     if (User.IsInRole("样品检测业务员查看"))
                     {
-                        if (item.CheckResultAllError=="全否")
+                        if (item.CheckResultAllError == "全否")
                         {
                             viewRow.checkReportFile = checkFile;
                         }
@@ -247,7 +247,58 @@ namespace TenderInfo.Controllers
                        join ur in db.UserRole on u.UserID equals ur.UserID
                        join r in db.RoleInfo on ur.RoleID equals r.RoleID
                        join ra in db.RoleAuthority on r.RoleID equals ra.RoleID
+                       //where ra.AuthorityID == 48//样品检测业务员查看
+                       where ra.AuthorityID == 50//招标管理
+                       select new { u.UserID, u.UserName, u.UserNum };
+
+            var user = App_Code.Commen.GetUserFromSession();
+            if (User.IsInRole("新建招标台账"))
+            {
+                return Json(list);
+            }
+            if (User.IsInRole("招标管理"))
+            {
+                list = list.Where(w => w.UserID == user.UserID);
+            }
+            return Json(list);
+        }
+
+        /// <summary>
+        /// 获取招标进度业务员列表
+        /// </summary>
+        /// <returns>json</returns>
+        [HttpPost]
+        public JsonResult GetProgressResponsiblePersonList()
+        {
+            var list = from u in db.UserInfo
+                       join ur in db.UserRole on u.UserID equals ur.UserID
+                       join r in db.RoleInfo on ur.RoleID equals r.RoleID
+                       join ra in db.RoleAuthority on r.RoleID equals ra.RoleID
+                       //where ra.AuthorityID == 48//样品检测业务员查看
+                       where ra.AuthorityID == 50//招标管理
+                       select new { u.UserID, u.UserName, u.UserNum };
+
+            var user = App_Code.Commen.GetUserFromSession();
+            if (User.IsInRole("招标管理"))
+            {
+                list = list.Where(w => w.UserID == user.UserID);
+            }
+            return Json(list);
+        }
+
+        /// <summary>
+        /// 获取样品检测业务员列表
+        /// </summary>
+        /// <returns>json</returns>
+        [HttpPost]
+        public JsonResult GetSampleResponsiblePersonList()
+        {
+            var list = from u in db.UserInfo
+                       join ur in db.UserRole on u.UserID equals ur.UserID
+                       join r in db.RoleInfo on ur.RoleID equals r.RoleID
+                       join ra in db.RoleAuthority on r.RoleID equals ra.RoleID
                        where ra.AuthorityID == 48//样品检测业务员查看
+                       //where ra.AuthorityID == 50//招标管理
                        select new { u.UserID, u.UserName, u.UserNum };
 
             var user = App_Code.Commen.GetUserFromSession();

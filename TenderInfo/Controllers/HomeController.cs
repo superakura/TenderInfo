@@ -270,7 +270,7 @@ namespace TenderInfo.Controllers
                     list.Add(item.MenuOrder);
                     list.Add(item.MenuName);
 
-                    var child = menu.Where(w => w.MenuFatherID == item.AuthorityID).ToList();
+                    var child = menu.Where(w => w.MenuFatherID == item.AuthorityID).OrderBy(o => o.MenuOrder).ToList();
                     list.Add(child);
 
                     menuDic.Add(item.AuthorityName, list);

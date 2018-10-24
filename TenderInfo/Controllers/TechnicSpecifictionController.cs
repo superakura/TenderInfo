@@ -25,6 +25,14 @@ namespace TenderInfo.Controllers
             {
                 ViewBag.userRole = "技术规格书提报";
             }
+            if (User.IsInRole("技术规格书上传"))
+            {
+                ViewBag.userRole = "技术规格书上传";
+            }
+            if (User.IsInRole("技术规格书审批"))
+            {
+                ViewBag.userRole = "技术规格书审批";
+            }
             return View();
         }
 

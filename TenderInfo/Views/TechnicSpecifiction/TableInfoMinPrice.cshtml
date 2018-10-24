@@ -101,8 +101,7 @@
         var logInfoEvents = {
             'click .logInfo': function (e, value, row, index) {
                 $('#logModal').modal('show');
-                $.post("/TechnicSpecifiction/GetComprehensiveFileListByID", { "id": row.FileMinPriceID }, function (result) {
-                    console.log(result);
+                $.post("/TechnicSpecifiction/GetMinPriceLog", { "id": row.FileMinPriceID }, function (result) {
                     var list = "";
                     $.each(result, function (indexInArray, val) {
                         list += "<tr>";
@@ -159,21 +158,27 @@
                 {
                     title: '技术规格书文件',
                     formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        if (row.ApproveLevel === "一级") {
-                            if (row.ApproveState === "一级审批完成") {
-                                return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                        if ($("#userRole").text() === "技术规格书上传") {
+
+                            if (row.ApproveLevel === "一级") {
+                                if (row.ApproveState === "一级审批完成") {
+                                    return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                                }
+                                else {
+                                    return row.TechnicSpecificationFileShow;
+                                }
                             }
-                            else {
-                                return row.TechnicSpecificationFileShow;
+                            if (row.ApproveLevel === "二级") {
+                                if (row.ApproveState === "二级审批完成") {
+                                    return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
+                                }
+                                else {
+                                    return row.TechnicSpecificationFileShow;
+                                }
                             }
                         }
-                        if (row.ApproveLevel === "二级") {
-                            if (row.ApproveState === "二级审批完成") {
-                                return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
-                            }
-                            else {
-                                return row.TechnicSpecificationFileShow;
-                            }
+                        else {
+                            return "<a target='_blank' href='/FileUpload/" + row.TechnicSpecificationFile + "'>" + row.TechnicSpecificationFileShow + "</a>";
                         }
                     }
                 },

@@ -83,7 +83,7 @@
         //加载项目负责人列表
         GetProjectResponsiblePersonList();
         function GetProjectResponsiblePersonList() {
-            $.post("/SampleDelegation/GetProjectResponsiblePersonList", "", function (result) {
+            $.post("/SampleDelegation/GetProgressResponsiblePersonList", "", function (result) {
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
@@ -132,7 +132,7 @@
         //重置按钮
         $("#btnReset").click(function () {
             $("#ddlProgressTypeChildSearch,#tbxProjectNameSearch,#ddlProjectResponsiblePersonSearch,#tbxContractResponsiblePersonSearch,#tbxTenderSuccessFileDateBeginSearch,#tbxTenderSuccessFileDateEndSearch").val("");
-            $("#ddlIsOverSearch").val("未完成");
+            $("#ddlIsOverSearch,#ddlProgressStateSearch").val("");
             $("#bsTable").bootstrapTable('refresh');
         });
     });

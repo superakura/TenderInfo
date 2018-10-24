@@ -187,8 +187,8 @@ namespace TenderInfo.Controllers
    JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(Request.Form.ToString()));
 
                 var progressID = 0;
-                int.TryParse(postList["progressID"].ToString(),out progressID);
-                return db.Account.Where(w=>w.ProgressID== progressID).FirstOrDefault().ProjectName;
+                int.TryParse(postList["progressID"].ToString(), out progressID);
+                return db.Account.Where(w => w.ProgressID == progressID).FirstOrDefault().ProjectName;
             }
             catch (Exception ex)
             {
@@ -233,11 +233,6 @@ namespace TenderInfo.Controllers
                              where a.ProjectType == accountType
                              select a;
 
-                if (User.IsInRole("招标管理"))
-                {
-                    result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
-                }
-
                 if (projectName.Trim() != string.Empty)
                 {
                     result = result.Where(w => w.ProjectName.Contains(projectName));
@@ -280,6 +275,13 @@ namespace TenderInfo.Controllers
                     var priceStart = Convert.ToDecimal(planInvestPriceStart);
                     var priceEnd = Convert.ToDecimal(planInvestPriceEnd);
                     result = result.Where(w => w.PlanInvestPrice >= priceStart && w.PlanInvestPrice <= priceEnd);
+                }
+                if (User.IsInRole("招标管理"))
+                {
+                    if (!User.IsInRole("新建招标台账"))
+                    {
+                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                    }
                 }
 
                 var accountList = result.OrderBy(o => o.AccountID).Skip(offset).Take(limit).ToList();
