@@ -551,7 +551,7 @@
                                     <option value="三次失败转谈判">三次失败转谈判</option>
                                     <option value="四次成功">四次成功</option>
                                     <option value="四次失败">四次失败</option>
-                                    <option value="四次失败">四次失败</option>
+                                    <option value="四次失败转谈判">四次失败转谈判</option>
                                     <option value="终止">终止</option>
                                 </select>
                             </div>
@@ -1427,29 +1427,36 @@
         });
 
         $("#btnSubmit").click(function () {
-            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                if (!e) {
-                    return;
-                }
-                else {
-                    $("#EditAccountForm").ajaxSubmit({
-                        url: "/Account/Update",
-                        type: "post",
-                        success: function (result) {
-                            if (result === "ok") {
-                                toastr.success("操作成功！", "提示");
-                                //window.location.href = "/Account/Material";
-                                window.history.back(-1);
+            var usingDeptEditVal = $("#ddlUsingDeptEdit").val();
+            var projectResponsibleDeptEditVal = $("#ddlProjectResponsibleDeptEdit").val();
+
+            if (usingDeptEditVal === null|| projectResponsibleDeptEditVal === null) {
+                toastr.error("使用单位、项目主责部门必须填写！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#EditAccountForm").ajaxSubmit({
+                            url: "/Account/Update",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    toastr.success("操作成功！", "提示");
+                                    //window.location.href = "/Account/Material";
+                                    window.history.back(-1);
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
                             }
-                        },
-                        error: function (error) {
-                            console.log(error);
-                            toastr.error(error, "提示");
-                            return;
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
         });
 
         $("#btnReturn").click(function () {

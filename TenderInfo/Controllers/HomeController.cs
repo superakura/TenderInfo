@@ -315,8 +315,8 @@ namespace TenderInfo.Controllers
         public ActionResult LoginOut()
         {
             FormsAuthentication.SignOut();
-            //return Redirect("/Home/Login");
-            return Redirect("/Home/LoginFormAD");
+            return Redirect("/Home/Login");
+            //return Redirect("/Home/LoginFormAD");
         }
 
         /// <summary>

@@ -88,7 +88,6 @@
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<option value='" + valueOfElement.UserID + "'>" + valueOfElement.UserName + "</option>";
                 });
-                console.log(list);
                 $("#ddlProjectResponsiblePersonSearch").append(list);
             });
         }
