@@ -17,18 +17,19 @@
         //根据当前行的id获取当前的行数据
         var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
         var optionBT = $("#bsTable").bootstrapTable('getOptions');
-        //console.log(optionBT.pageNumber);
-        //console.log(optionBT.pageSize);
-        var params = { "limit": optionBT.pageSize, "offset": optionBT.pageNumber };
-        console.log(queryParams(params));
-        var jsonStr = queryParams(params);
-        jsonStr.projectType = encodeURI(jsonStr.projectType);
-        //console.log(typeof queryParams(params));
-        var search = encodeURI(JSON.stringify(jsonStr));
-        //var search = JSON.stringify(queryParams(params));
-        console.log(search);
-        console.log(JSON.parse(decodeURI(search)));
-        //window.location.href = "/Account/EditAccountMaterial?id=" + row.account.AccountID + "&search=" + search;
+
+        var offSet = optionBT.pageSize;
+        var limit = optionBT.pageNumber;
+        var projectName = $("#tbxProjectNameSearch").val();
+        var tenderInfo = $("#ddlTenderInfoSearch").val();
+        var accountType = $("#accountType").text();
+
+        window.location.href = "/Account/EditAccountMaterial?id=" +row.account.AccountID +
+            "&offSet=" + offSet +
+            "&limit=" + limit +
+            "&type=" + accountType+
+            "&tenderInfo=" + escape(tenderInfo)+
+            "&projectName=" + escape(projectName);
     };
     $(function () {
         var columns = [

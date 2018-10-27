@@ -1,12 +1,15 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = "招标管理台账--"+ViewBag.type;
+    ViewBag.Title = "招标管理台账--" + ViewBag.type;
 }
 <style>
     td {
         text-align: center;
     }
 </style>
+<span id="userRoleEdit" class="hidden">
+    @ViewBag.editRole
+</span>
 <div class="modal fade" id="FirstModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -590,7 +593,7 @@
                                     <table class="table table-bordered table-condensed table-hover">
                                         <thead>
                                             <tr>
-                                                <th colspan="6" class="text-center"></th>
+                                                <th colspan="6" class="text-center">评标委员会</th>
                                             </tr>
                                             <tr>
                                                 <th class="text-center">操作</th>
@@ -762,8 +765,13 @@
             var list = "";
             $.each(result, function (indexInArray, valueOfElement) {
                 list += "<tr>";
-                list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                if ($("#userRoleEdit").text().trim() !== "yes") {
+                    list += "<td></td>";
+                }
+                else {
+                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                }
                 list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
                 list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
                 list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
@@ -824,6 +832,13 @@
         GetThirdTable();
         GetFourTable();
         GetFiveTable();
+
+        SetBtnState();
+        function SetBtnState() {
+            if ($("#userRoleEdit").text().trim() !== "yes") {
+                $("#btnSubmit,#btnFirstImport,#btnFirstRemove,#btnFirstAdd,#btnSecondAdd,#btnThirdAdd,#btnFourAdd,#btnFiveAdd").hide();
+            }
+        }
 
         $("#btnFirstAdd").click(function () {
             ClearInfo();
@@ -1102,8 +1117,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["EvaluationPersonName"] + "</td>";
                     list += "<td>" + valueOfElement["EvaluationPersonDeptName"] + "</td>";
                     list += "<td>" + valueOfElement["IsEvaluationDirector"] + "</td>";
@@ -1121,8 +1141,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["TenderFileAuditPersonName"] + "</td>";
                     list += "<td>" + valueOfElement["TenderFileAuditPersonDeptName"] + "</td>";
                     list += "<td>" + valueOfElement["TenderFileAuditCost"] + "</td>";
@@ -1138,8 +1163,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnFourEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFourDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnFourEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFourDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["ClarifyLaunchPerson"] + "</td>";
                     list += "<td>" + getJsonDateShort(valueOfElement["ClarifyLaunchDate"]) + "</td>";
                     list += "<td>" + valueOfElement["ClarifyReason"] + "</td>";
@@ -1160,8 +1190,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnFiveEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFiveDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnFiveEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFiveDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["DissentLaunchPerson"] + "</td>";
                     list += "<td>" + valueOfElement["DissentLaunchPersonPhone"] + "</td>";
                     list += "<td>" + getJsonDateShort(valueOfElement["DissentLaunchDate"]) + "</td>";
@@ -1363,11 +1398,10 @@
         });
 
         $("#btnSubmit").click(function () {
-            var usingDeptEditVal = $("#ddlUsingDeptEdit").val();
             var projectResponsibleDeptEditVal = $("#ddlProjectResponsibleDeptEdit").val();
 
-            if (usingDeptEditVal === null || projectResponsibleDeptEditVal === null) {
-                toastr.error("使用单位、项目主责部门必须填写！", "提示");
+            if (projectResponsibleDeptEditVal === null) {
+                toastr.error("项目主责部门必须填写！", "提示");
             }
             else {
                 Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {

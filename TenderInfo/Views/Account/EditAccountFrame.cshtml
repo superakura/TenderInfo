@@ -7,6 +7,9 @@
         text-align: center;
     }
 </style>
+<span id="userRoleEdit" class="hidden">
+    @ViewBag.editRole
+</span>
 <div class="modal fade" id="FirstModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -87,8 +90,8 @@
                 <div class="container-fluid">
                     <div class="form-horizontal">
                         <form id="SecondForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxAccountSecondID" name="tbxAccountSecondID" type="text"  class="hidden" />
-                            <input id="tbxAccountChildSecondID" name="tbxAccountChildSecondID" type="text"  class="hidden" />
+                            <input id="tbxAccountSecondID" name="tbxAccountSecondID" type="text" class="hidden" />
+                            <input id="tbxAccountChildSecondID" name="tbxAccountChildSecondID" type="text" class="hidden" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -156,8 +159,8 @@
                 <div class="container-fluid">
                     <div class="form-horizontal">
                         <form id="ThirdForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxAccountThirdID" name="tbxAccountThirdID" type="text"  class="hidden" />
-                            <input id="tbxAccountChildThirdID" name="tbxAccountChildThirdID" type="text"  class="hidden" />
+                            <input id="tbxAccountThirdID" name="tbxAccountThirdID" type="text" class="hidden" />
+                            <input id="tbxAccountChildThirdID" name="tbxAccountChildThirdID" type="text" class="hidden" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -206,8 +209,8 @@
                 <div class="container-fluid">
                     <div class="form-horizontal">
                         <form id="FourForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxAccountFourID" name="tbxAccountFourID" type="text"  class="hidden" />
-                            <input id="tbxAccountChildFourID" name="tbxAccountChildFourID" type="text"  class="hidden" />
+                            <input id="tbxAccountFourID" name="tbxAccountFourID" type="text" class="hidden" />
+                            <input id="tbxAccountChildFourID" name="tbxAccountChildFourID" type="text" class="hidden" />
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -304,8 +307,8 @@
                 <div class="container-fluid">
                     <div class="form-horizontal">
                         <form id="FiveForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxAccountFiveID" name="tbxAccountFiveID" type="text"  class="hidden" />
-                            <input id="tbxAccountChildFiveID" name="tbxAccountChildFiveID" type="text"  class="hidden" />
+                            <input id="tbxAccountFiveID" name="tbxAccountFiveID" type="text" class="hidden" />
+                            <input id="tbxAccountChildFiveID" name="tbxAccountChildFiveID" type="text" class="hidden" />
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -408,8 +411,8 @@
                 <div class="container-fluid">
                     <div class="form-horizontal">
                         <form id="SixForm" method="post" enctype="multipart/form-data">
-                            <input id="tbxAccountSixID" name="tbxAccountSixID" type="text"  class="hidden" />
-                            <input id="tbxAccountChildSixID" name="tbxAccountChildSixID" type="text"  class="hidden" />
+                            <input id="tbxAccountSixID" name="tbxAccountSixID" type="text" class="hidden" />
+                            <input id="tbxAccountChildSixID" name="tbxAccountChildSixID" type="text" class="hidden" />
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -846,7 +849,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -873,8 +876,13 @@
             var list = "";
             $.each(result, function (indexInArray, valueOfElement) {
                 list += "<tr>";
-                list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                if ($("#userRoleEdit").text().trim() !== "yes") {
+                    list += "<td></td>";
+                }
+                else {
+                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                }
                 list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
                 list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
                 list += "<td>" + valueOfElement["ProductManufacturer"] + "</td>";
@@ -940,6 +948,13 @@
         GetFourTable();
         GetFiveTable();
         GetSixTable();
+
+        SetBtnState();
+        function SetBtnState() {
+            if ($("#userRoleEdit").text().trim() !== "yes") {
+                $("#btnSubmit,#btnFirstImport,#btnFirstRemove,#btnFirstAdd,#btnSecondAdd,#btnThirdAdd,#btnFourAdd,#btnFiveAdd,#btnSixAdd").hide();
+            }
+        }
 
         $("#btnFirstAdd").click(function () {
             ClearInfo();
@@ -1252,8 +1267,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["EvaluationPersonName"] + "</td>";
                     list += "<td>" + valueOfElement["EvaluationPersonDeptName"] + "</td>";
                     list += "<td>" + valueOfElement["IsEvaluationDirector"] + "</td>";
@@ -1271,8 +1291,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnThirdEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnThirdDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["TenderFileAuditPersonName"] + "</td>";
                     list += "<td>" + valueOfElement["TenderFileAuditPersonDeptName"] + "</td>";
                     list += "<td>" + valueOfElement["TenderFileAuditCost"] + "</td>";
@@ -1288,8 +1313,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnFourEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFourDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnFourEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFourDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["ClarifyLaunchPerson"] + "</td>";
                     list += "<td>" + getJsonDateShort(valueOfElement["ClarifyLaunchDate"]) + "</td>";
                     list += "<td>" + valueOfElement["ClarifyReason"] + "</td>";
@@ -1310,8 +1340,13 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnFiveEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFiveDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnFiveEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFiveDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["DissentLaunchPerson"] + "</td>";
                     list += "<td>" + valueOfElement["DissentLaunchPersonPhone"] + "</td>";
                     list += "<td>" + getJsonDateShort(valueOfElement["DissentLaunchDate"]) + "</td>";
@@ -1333,7 +1368,12 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    list += "<td><a href='javascript:void(0)' class='btnSixDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnSixDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
                     list += "<td>" + valueOfElement["FrameFile"] + "</td>";
                     list += "</tr>";
                 });

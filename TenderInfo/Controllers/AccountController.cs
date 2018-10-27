@@ -39,6 +39,20 @@ namespace TenderInfo.Controllers
         {
             ViewBag.id = id;
             ViewBag.type = type;
+
+            var accountID = 0;
+            int.TryParse(id, out accountID);
+            var userInfo = App_Code.Commen.GetUserFromSession();
+            var accountInfo = db.Account.Find(accountID);
+            if (userInfo.UserID == accountInfo.ProjectResponsiblePersonID)
+            {
+                ViewBag.editRole = "yes";
+            }
+            else
+            {
+                ViewBag.editRole = "no";
+            }
+
             return View();
         }
 
@@ -46,6 +60,20 @@ namespace TenderInfo.Controllers
         {
             ViewBag.id = id;
             ViewBag.type = type;
+
+            var accountID = 0;
+            int.TryParse(id, out accountID);
+            var userInfo = App_Code.Commen.GetUserFromSession();
+            var accountInfo = db.Account.Find(accountID);
+            if (userInfo.UserID == accountInfo.ProjectResponsiblePersonID)
+            {
+                ViewBag.editRole = "yes";
+            }
+            else
+            {
+                ViewBag.editRole = "no";
+            }
+
             return View();
         }
 
@@ -53,6 +81,20 @@ namespace TenderInfo.Controllers
         {
             ViewBag.id = id;
             ViewBag.type = type;
+
+            var accountID = 0;
+            int.TryParse(id, out accountID);
+            var userInfo = App_Code.Commen.GetUserFromSession();
+            var accountInfo = db.Account.Find(accountID);
+            if (userInfo.UserID == accountInfo.ProjectResponsiblePersonID)
+            {
+                ViewBag.editRole = "yes";
+            }
+            else
+            {
+                ViewBag.editRole = "no";
+            }
+
             return View();
         }
         #endregion
@@ -284,7 +326,7 @@ namespace TenderInfo.Controllers
                     }
                 }
 
-                var accountList = result.OrderBy(o => o.AccountID).Skip(offset).Take(limit).ToList();
+                var accountList = result.OrderByDescending(o => o.AccountID).Skip(offset).Take(limit).ToList();
 
                 List<Models.ViewAccout> list = new List<Models.ViewAccout>();
                 foreach (var item in accountList)

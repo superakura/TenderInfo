@@ -442,34 +442,37 @@
 
         //一级审批回退提交按钮
         $("#btnFirstApproveBack").click(function () {
-            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                if (!e) {
-                    return;
-                }
-                else {
-                    $("#tbxFirstType").val("back");
-                    $("#firstApproveForm").ajaxSubmit({
-                        url: "/TechnicSpecifiction/FirstApprove",
-                        type: "post",
-                        success: function (result) {
-                            if (result === "ok") {
-                                $("#firstModal").modal("hide");
-                                toastr.success("操作成功！", "提示");
-                                $("#bsTable").bootstrapTable('refresh');
+            if ($("#tbxFirstBackReason").text() === "") {
+                toastr.error("回退原因必须填写！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#tbxFirstType").val("back");
+                        $("#firstApproveForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/FirstApprove",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#firstModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                                else {
+                                    toastr.error(result, "提示");
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
                             }
-                            else {
-                                toastr.error(result, "提示");
-                                console.log(result);
-                            }
-                        },
-                        error: function (error) {
-                            console.log(error);
-                            toastr.error(error, "提示");
-                            return;
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
         });
 
         //二级审批同意提交按钮
@@ -491,11 +494,9 @@
                             }
                             else {
                                 toastr.error(result, "提示");
-                                console.log(result);
                             }
                         },
                         error: function (error) {
-                            console.log(error);
                             toastr.error(error, "提示");
                             return;
                         }
@@ -506,34 +507,37 @@
 
         //二级审批回退提交按钮
         $("#btnSecondApproveBack").click(function () {
-            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                if (!e) {
-                    return;
-                }
-                else {
-                    $("#tbxSecondType").val("back");
-                    $("#secondApproveForm").ajaxSubmit({
-                        url: "/TechnicSpecifiction/SecondApprove",
-                        type: "post",
-                        success: function (result) {
-                            if (result === "ok") {
-                                $("#secondModal").modal("hide");
-                                toastr.success("操作成功！", "提示");
-                                $("#bsTable").bootstrapTable('refresh');
+            if ($("#tbxSecondBackReason").text() === "") {
+                toastr.error("回退原因必须填写！", "提示");
+            }
+            else {
+                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $("#tbxSecondType").val("back");
+                        $("#secondApproveForm").ajaxSubmit({
+                            url: "/TechnicSpecifiction/SecondApprove",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#secondModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                                else {
+                                    toastr.error(result, "提示");
+                                }
+                            },
+                            error: function (error) {
+                                toastr.error(error, "提示");
+                                return;
                             }
-                            else {
-                                toastr.error(result, "提示");
-                                console.log(result);
-                            }
-                        },
-                        error: function (error) {
-                            console.log(error);
-                            toastr.error(error, "提示");
-                            return;
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
         });
 
         //对ReloadForm表单进行前端验证
