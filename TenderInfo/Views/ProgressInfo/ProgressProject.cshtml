@@ -121,6 +121,7 @@
                                         <select id="ddlProgressStateEdit" name="ddlProgressStateEdit" class="form-control">
                                             <option value="对接">对接</option>
                                             <option value="实施">实施</option>
+                                            <option value="终止">终止</option>
                                         </select>
                                     </div>
                                 </div>
@@ -397,7 +398,6 @@
                                 }
                             },
                             error: function (error) {
-                                console.log(error);
                                 toastr.error(error, "提示");
                                 return;
                             }
@@ -426,7 +426,6 @@
                                 }
                             },
                             error: function (error) {
-                                console.log(error);
                                 toastr.error(error, "提示");
                                 return;
                             }

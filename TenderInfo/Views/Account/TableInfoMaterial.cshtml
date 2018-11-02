@@ -5,6 +5,7 @@
     #bsTable th {
         vertical-align: middle;
     }
+
     .bootstrap-table .table > thead > tr > th {
         vertical-align: middle;
     }
@@ -18,20 +19,57 @@
         var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
         var optionBT = $("#bsTable").bootstrapTable('getOptions');
 
-        var offSet = optionBT.pageSize;
-        var limit = optionBT.pageNumber;
-        var projectName = $("#tbxProjectNameSearch").val();
-        var tenderInfo = $("#ddlTenderInfoSearch").val();
-        var accountType = $("#accountType").text();
+        var limit = optionBT.pageSize;//页面大小
+        var offSet = optionBT.pageNumber;//页码
 
-        window.location.href = "/Account/EditAccountMaterial?id=" +row.account.AccountID +
-            "&offSet=" + offSet +
-            "&limit=" + limit +
-            "&type=" + accountType+
-            "&tenderInfo=" + escape(tenderInfo)+
-            "&projectName=" + escape(projectName);
+        var projectName = $("#tbxProjectNameSearch").val();//项目名称
+        var tenderInfo = $("#ddlTenderInfoSearch").val();//招标情况
+        var tenderFileNum = $("#tbxTenderFileNumSearch").val();//项目文件编号
+        var applyPerson = $("#tbxApplyPersonSearch").val();//申请人
+        var projectResponsiblePerson = $("#ddlProjectResponsiblePersonSearch").val();//招标项目负责人ID
+        var tenderSuccessPerson = $("#tbxTenderSuccessPersonSearch").val();//中标人名称
+
+        var planInvestPriceStart = $("#tbxPlanInvestPriceStartSearch").val();//预计投资范围
+        var planInvestPriceEnd = $("#tbxPlanInvestPriceEndSearch").val();
+        var tenderStartDateStart = $("#tbxTenderStartDateStartSearch").val();//开标日期范围
+        var tenderStartDateEnd = $("#tbxTenderStartDateEndSearch").val();
+
+        var accountType = $("#accountType").text();//台账类型，用于显示
+
+        window.location.href = "/Account/EditAccountMaterial?id=" + row.account.AccountID +
+            "&type=" + accountType +//用于显示台账类型
+            "&offSet=" + offSet +//页码
+            "&limit=" + limit +//页面大小
+
+            "&tenderInfo=" + escape(tenderInfo) +//招标情况
+            "&tenderFileNum=" + escape(tenderFileNum) +//项目文件编号
+            "&applyPerson=" + escape(applyPerson) +//申请人
+            "&tenderSuccessPerson=" + escape(tenderSuccessPerson) +//中标人名称
+
+            "&projectResponsiblePerson=" + projectResponsiblePerson +//招标项目负责人ID
+
+            "&planInvestPriceStart=" + planInvestPriceStart +//预计投资范围--数字
+            "&planInvestPriceEnd=" + planInvestPriceEnd +
+            "&tenderStartDateStart=" + tenderStartDateStart +//开标日期范围--日期
+            "&tenderStartDateEnd=" + tenderStartDateEnd +
+            "&projectName=" + escape(projectName);//项目名称
     };
+
     $(function () {
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            var q = window.location.pathname.substr(1).match(reg_rewrite);
+            if (r != null) {
+                return unescape(r[2]);
+            } else if (q != null) {
+                return unescape(q[2]);
+            } else {
+                return null;
+            }
+        }
+
         var columns = [
             [
                 {
@@ -52,10 +90,8 @@
                     visible: true,
                     formatter: function (value, row, index) {
                         //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        //var html = '<button type="button" onclick="editModel(' + row.account.AccountID + ')" class="btn btn-link">' + row.account.ProjectName  + '</button >';
-                        //return html;
-                        var html2 = "<a href='/Account/EditAccountMaterial?id=" + row.account.AccountID + "&type=" + row.account.ProjectType+ "'>" + row.account.ProjectName + '</a>';
-                        return html2;
+                        var html = '<button type="button" onclick="editModel(' + row.account.AccountID + ')" class="btn btn-link">' + row.account.ProjectName + '</button >';
+                        return html;
                     }
                 },
                 {
@@ -654,7 +690,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.ClarifyAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyAcceptDate))+ "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyAcceptDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -726,7 +762,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.ClarifyReplyDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyReplyDate))  + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyReplyDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyReplyDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -896,6 +932,7 @@
                 }
             ]
         ];
+
         //初始化BS-Table
         $('#bsTable').bootstrapTable({
             url: '/Account/GetList',         //请求后台的URL（*）
@@ -910,7 +947,7 @@
             queryParams: queryParams,           //传递参数（*）
             sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
             pageNumber: 1,                       //初始化加载第一页，默认第一页
-            pageSize: 10,                       //每页的记录行数（*）
+            pageSize: 5,                       //每页的记录行数（*）
             pageList: [5, 10, 15, 20],        //可供选择的每页的行数（*）
             search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
             strictSearch: true,
@@ -918,7 +955,7 @@
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: false,                //是否启用点击选中行
-            height: 650,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            height: 700,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
             uniqueId: "AccountID",          //每一行的唯一标识，一般为主键列
             showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图
@@ -926,6 +963,19 @@
             paginationPreText: "上一页",
             paginationNextText: "下一页",
             showExport: false,                     //是否显示导出
+            rowStyle: function (row, index) {
+                if (row.account.TenderInfo === "一次失败" || row.account.TenderInfo === "一次失败转谈判" || row.account.TenderInfo === "二次失败" || row.account.TenderInfo === "二次失败转谈判" || row.account.TenderInfo === "三次失败" || row.account.TenderInfo === "三次失败转谈判" || row.account.TenderInfo === "四次失败" || row.account.TenderInfo === "四次失败转谈判") {
+                    return { classes: "warning" };
+                }
+                else {
+                    if (row.account.TenderInfo === "终止") {
+                        return { classes: "danger" };
+                    }
+                    else {
+                        return { classes:""}
+                    }
+                }
+            },
             fixedColumns: true,
             fixedNumber: 3,
             columns: columns
@@ -933,5 +983,46 @@
             .on('all.bs.table', function (e, name, args) {
                 $('[data-toggle="tooltip"]').tooltip();
             });
+
+        //如果是返回页面，重新设置返回的参数
+        if (getQueryString("offSet") !== null) {
+            var tenderInfo = unescape(getQueryString("tenderInfo"));//招标情况
+            var projectName = unescape(getQueryString("projectName"));//项目名称
+            var applyPerson = unescape(getQueryString("applyPerson"));//申请人
+            var tenderFileNum = unescape(getQueryString("tenderFileNum"));//项目文件编号
+            var tenderSuccessPerson = unescape(getQueryString("tenderSuccessPerson"));//中标人名称
+
+            var projectResponsiblePerson = getQueryString("projectResponsiblePerson");//招标项目负责人ID
+            var planInvestPriceStart = getQueryString("planInvestPriceStart");//预计投资范围--数字
+            var planInvestPriceEnd = getQueryString("planInvestPriceEnd");
+            var tenderStartDateStart = getQueryString("tenderStartDateStart");//开标日期范围--日期
+            var tenderStartDateEnd = getQueryString("tenderStartDateEnd");
+
+            var offSet = getQueryString("offSet");//页码
+            var limit = getQueryString("limit");//页面大小
+
+            $("#tbxProjectNameSearch").val(projectName);//项目名称
+            $("#ddlTenderInfoSearch").val(tenderInfo);//招标情况
+            $("#tbxApplyPersonSearch").val(applyPerson);//申请人
+            $("#tbxTenderFileNumSearch").val(tenderFileNum);//项目文件编号
+            $("#tbxTenderSuccessPersonSearch").val(tenderSuccessPerson);//中标人名称
+
+            $("#ddlProjectResponsiblePersonSearch").val(projectResponsiblePerson);//招标项目负责人ID
+            $("#tbxPlanInvestPriceStartSearch").val(planInvestPriceStart);//预计投资范围--数字
+            $("#tbxPlanInvestPriceEndSearch").val(planInvestPriceEnd);
+            $("#tbxTenderStartDateStartSearch").val(tenderStartDateStart);//开标日期范围--日期
+            $("#tbxTenderStartDateEndSearch").val(tenderStartDateEnd);
+
+            //设置页面为返回参数，重新刷新页面
+            $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: offSet, pageSize: limit });
+            $("#bsTable").bootstrapTable('refresh');
+        }
+
+        ////测试参数传递成功
+        //var optionBT = $("#bsTable").bootstrapTable('getOptions');
+        //var limit1 = optionBT.pageSize;
+        //var offSet1 = optionBT.pageNumber;
+        //console.log(optionBT);
+        //console.log(offSet1 +" "+ limit1);
     });
 </script>

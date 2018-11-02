@@ -123,7 +123,7 @@
         //根据当前行的id获取当前的行数据
         var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
         var progressID = row.ProgressInfoID;
-        var args = { "progressID": progressID};
+        var args = { "progressID": progressID };
         var accountName = "";
         $.post("/Account/GetAccountNameByProgressID", encodeURIComponent(JSON.stringify(args)), function (result) {
             accountName = result;
@@ -132,7 +132,7 @@
                     return;
                 }
                 else {
-                    $.post("/Account/DelSynchroByProgressID", { "progressID": progressID}, function (result) {
+                    $.post("/Account/DelSynchroByProgressID", { "progressID": progressID }, function (result) {
                         if (result === "ok") {
                             toastr.success("操作成功！", "提示");
                             $("#bsTable").bootstrapTable('refresh');
@@ -595,10 +595,15 @@
             showExport: false,                     //是否显示导出
             rowStyle: function (row, index) {
                 if (row.ProgressState === "对接") {
-                    return { classes: "success" };
+                    return { classes: "warning" };
                 }
                 else {
-                    return { classes: "active" };
+                    if (row.ProgressState === "终止") {
+                        return { classes: "danger" };
+                    }
+                    else {
+                        return { classes: "success" };
+                    }
                 }
             },
             columns: columns,

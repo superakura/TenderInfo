@@ -63,81 +63,6 @@
     </div>
 </div>
 <script>
-    function getQueryString(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-        var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
-        var r = window.location.search.substr(1).match(reg);
-        var q = window.location.pathname.substr(1).match(reg_rewrite);
-        if (r != null) {
-            return unescape(r[2]);
-        } else if (q != null) {
-            return unescape(q[2]);
-        } else {
-            return null;
-        }
-    }
-
-    //var queryParams = null;
-    //if (getQueryString("offSet") !== null) {
-    //    var tenderInfo = unescape(getQueryString("tenderInfo"));
-    //    var projectName = unescape(getQueryString("projectName"));
-    //    var offSet = getQueryString("offSet");
-    //    var limit = getQueryString("limit");
-
-    //    $("#tbxProjectNameSearch").val(projectName);
-    //    $("#ddlTenderInfoSearch").val(tenderInfo);
-    //    console.log(offSet + limit);
-
-    //    $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: offSet, pageSize: limit });
-
-    //    var optionBT = $("#bsTable").bootstrapTable('getOptions');
-
-    //    var offSet1 = optionBT.pageSize;
-    //    var limit1 = optionBT.pageNumber;
-    //    console.log(offSet1 + limit1);
-    //    queryParams = function (params) {
-    //        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-    //            limit: params.limit,   //页面大小
-    //            offset: params.offset,  //页码
-
-    //            projectName: $("#tbxProjectNameSearch").val(),//项目名称
-    //            tenderFileNum: $("#tbxTenderFileNumSearch").val(),//项目文件编号
-    //            projectResponsiblePersonID: $("#ddlProjectResponsiblePersonSearch").val(),//招标项目负责人ID
-    //            tenderInfo: $("#ddlTenderInfoSearch").val(),//招标情况
-    //            applyPerson: $("#tbxApplyPersonSearch").val(),//申请人
-    //            tenderSuccessPerson: $("#tbxTenderSuccessPersonSearch").val(),//中标人名称
-    //            tenderStartDateStart: $("#tbxTenderStartDateStartSearch").val(),//开标日期范围开始
-    //            tenderStartDateEnd: $("#tbxTenderStartDateEndSearch").val(),//开标日期范围结束
-    //            planInvestPriceStart: $("#tbxPlanInvestPriceStartSearch").val(),//预计投资范围开始
-    //            planInvestPriceEnd: $("#tbxPlanInvestPriceEndSearch").val(),//预计投资范围结束
-    //            projectType: $("#accountType").text()//项目类型
-    //        };
-    //        return temp;
-    //    };
-    //    //$("#bsTable").bootstrapTable('refresh');
-    //}
-    //else {
-    //    queryParams = function (params) {
-    //        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-    //            limit: params.limit,   //页面大小
-    //            offset: params.offset,  //页码
-
-    //            projectName: $("#tbxProjectNameSearch").val(),//项目名称
-    //            tenderFileNum: $("#tbxTenderFileNumSearch").val(),//项目文件编号
-    //            projectResponsiblePersonID: $("#ddlProjectResponsiblePersonSearch").val(),//招标项目负责人ID
-    //            tenderInfo: $("#ddlTenderInfoSearch").val(),//招标情况
-    //            applyPerson: $("#tbxApplyPersonSearch").val(),//申请人
-    //            tenderSuccessPerson: $("#tbxTenderSuccessPersonSearch").val(),//中标人名称
-    //            tenderStartDateStart: $("#tbxTenderStartDateStartSearch").val(),//开标日期范围开始
-    //            tenderStartDateEnd: $("#tbxTenderStartDateEndSearch").val(),//开标日期范围结束
-    //            planInvestPriceStart: $("#tbxPlanInvestPriceStartSearch").val(),//预计投资范围开始
-    //            planInvestPriceEnd: $("#tbxPlanInvestPriceEndSearch").val(),//预计投资范围结束
-    //            projectType: $("#accountType").text()//项目类型
-    //        };
-    //        return temp;
-    //    };
-    //}
-
     var queryParams = function (params) {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
@@ -198,6 +123,9 @@
         $("#btnReset").click(function () {
             $(".searchInfo input").val("");
             $(".searchInfo select").val("");
+
+            //重置为第一页
+            $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: 1, pageSize: 5 });
             $("#bsTable").bootstrapTable('refresh');
         });
     });

@@ -1610,8 +1610,7 @@
                             success: function (result) {
                                 if (result === "ok") {
                                     toastr.success("操作成功！", "提示");
-                                    //window.location.href = "/Account/Frame";
-                                    window.history.back(-1);
+                                    BackView();
                                 }
                             },
                             error: function (error) {
@@ -1625,8 +1624,41 @@
         });
 
         $("#btnReturn").click(function () {
-            window.history.back(-1);
+            BackView();
         });
+
+        function BackView() {
+            var tenderInfo = unescape(getQueryString("tenderInfo"));//招标情况
+            var projectName = unescape(getQueryString("projectName"));//项目名称
+            var tenderFileNum = unescape(getQueryString("tenderFileNum"));//项目文件编号
+            var applyPerson = unescape(getQueryString("applyPerson"));//申请人
+            var tenderSuccessPerson = unescape(getQueryString("tenderSuccessPerson"));//中标人名称
+
+            var projectResponsiblePerson = getQueryString("projectResponsiblePerson");//招标项目负责人ID
+
+            var planInvestPriceStart = getQueryString("planInvestPriceStart");//预计投资范围--数字
+            var planInvestPriceEnd = getQueryString("planInvestPriceEnd");
+
+            var tenderStartDateStart = getQueryString("tenderStartDateStart");//开标日期范围--日期
+            var tenderStartDateEnd = getQueryString("tenderStartDateEnd");
+
+            var offSet = getQueryString("offSet");//页码
+            var limit = getQueryString("limit");//页面大小
+
+            window.location.href = "/Account/Frame?offSet=" + offSet +
+                "&limit=" + limit +
+                "&projectResponsiblePerson=" + projectResponsiblePerson +
+                "&planInvestPriceStart=" + planInvestPriceStart +
+                "&planInvestPriceEnd=" + planInvestPriceEnd +
+                "&tenderStartDateStart=" + tenderStartDateStart +
+                "&tenderStartDateEnd=" + tenderStartDateEnd +
+
+                "&tenderFileNum=" + escape(tenderFileNum) +
+                "&applyPerson=" + escape(applyPerson) +
+                "&tenderSuccessPerson=" + escape(tenderSuccessPerson) +
+                "&tenderInfo=" + escape(tenderInfo) +
+                "&projectName=" + escape(projectName);
+        }
 
         function GetInfo() {
             var accountID = $("#tbxAccountIDEdit").val();

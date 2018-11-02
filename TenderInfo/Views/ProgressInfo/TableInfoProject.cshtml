@@ -542,10 +542,15 @@
             showExport: false,                     //是否显示导出
             rowStyle: function (row, index) {
                 if (row.ProgressState === "对接") {
-                    return { classes: "success" };
+                    return { classes: "warning" };
                 }
                 else {
-                    return { classes: "active" };
+                    if (row.ProgressState === "终止") {
+                        return { classes: "danger" };
+                    }
+                    else {
+                        return { classes: "success" };
+                    }
                 }
             },
             fixedColumns: true,
