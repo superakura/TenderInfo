@@ -5,9 +5,22 @@
     $(function () {
         var ApproveEvents = {
             'click .approve': function (e, value, row, index) {
-                var id = row.FileComprehensiveID;
-                //console.log(id);
-                window.location.href = "/TechnicSpecifiction/ApproveComprehensive?id=" + id + "&projectName=" + escape(row.ProjectName);
+                //根据当前行的id获取当前的行数据
+                var row = $("#bsTable").bootstrapTable('getRowByUniqueId', row.FileComprehensiveID);
+                var optionBT = $("#bsTable").bootstrapTable('getOptions');
+
+                var limit = optionBT.pageSize;//页面大小
+                var offSet = optionBT.pageNumber;//页码
+
+                var projectName = $("#tbxProjectNameSearch").val();//项目名称
+                var approveDept = $("#ddlApproveDeptSearch").val();//提交部门
+
+                window.location.href = "/TechnicSpecifiction/ApproveComprehensive?id=" + row.FileComprehensiveID+
+                    "&projectNameSearch=" + escape(projectName) +//项目名称搜索
+                    "&projectName=" + escape(row.ProjectName) +//项目名称
+                    "&approveDept=" + approveDept +//提交部门
+                    "&offSet=" + offSet +//页码
+                    "&limit=" + limit//页面大小;
             }
         };
         function loadColumns() {
@@ -142,5 +155,21 @@
             .on('all.bs.table', function (e, name, args) {
                 $('[data-toggle="tooltip"]').tooltip();
             });
+
+        //如果是返回页面，重新设置返回的参数
+        if (getQueryString("offSet") !== null) {
+            var projectNameSearch = unescape(getQueryString("projectNameSearch"));//项目名称
+            var approveDept = getQueryString("approveDept");//提交部门ID
+
+            var offSet = getQueryString("offSet");//页码
+            var limit = getQueryString("limit");//页面大小
+
+            $("#tbxProjectNameSearch").val(projectNameSearch);//项目名称
+            $("#ddlApproveDeptSearch").val(approveDept);//提交部门ID
+
+            //设置页面为返回参数，重新刷新页面
+            $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: offSet, pageSize: limit });
+            $("#bsTable").bootstrapTable('refresh');
+        }
     });
 </script>

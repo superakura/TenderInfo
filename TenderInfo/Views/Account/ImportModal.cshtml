@@ -42,8 +42,54 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="EvaluationModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">批量导入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="EvaluationForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxEvaluationID" name="tbxEvaluationID" type="text" class="hidden" />
+                            <input id="tbxEvaluationType" name="tbxEvaluationType" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <h4><a id="linkTemplateEvaluation">导入模板下载</a></h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxImportFile">
+                                            选择上传文件
+                                        </label>
+                                        <input id="tbxEvaluationFile" name="tbxEvaluationFile" class="form-control" type="file" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnEvaluationSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $(function () {
+        //投标人信息批量导入删除
         $(".InfoImport").click(function () {
             $("#tbxImportFile").val("");
             $("#tbxImportID").val($("#tbxAccountIDEdit").val());
@@ -104,6 +150,61 @@
                         },
                         error: function (error) {
                             console.log(error);
+                            toastr.error(error, "提示");
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+        //评标委员会批量导入删除
+        $(".EvaluationImport").click(function () {
+            $("#tbxEvaluationFile").val("");
+            $("#tbxEvaluationID").val($("#tbxAccountIDEdit").val());
+
+            $("#linkTemplateEvaluation").attr("href", "/Template/EvaluationFile.xls");
+            $('#EvaluationModal').modal('show');
+        });
+
+        $(".EvaluationRemove").click(function () {
+            var id = $("#tbxAccountIDEdit").val();
+            Ewin.confirm({ message: "确认要清空吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "accountID": id };
+                    $.post("/Account/RemoveEvaluation", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetSecondTable();
+                        }
+                        else {
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $("#btnEvaluationSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $("#EvaluationForm").ajaxSubmit({
+                        url: "/Account/UploadImportEvaluation",
+                        type: "post",
+                        success: function (result) {
+                            if (result === "ok") {
+                                GetSecondTable();
+                                $("#EvaluationModal").modal("hide");
+                                toastr.success("操作成功！", "提示");
+                            }
+                        },
+                        error: function (error) {
                             toastr.error(error, "提示");
                             return;
                         }

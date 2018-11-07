@@ -26,9 +26,7 @@
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
-            tbxFileNameSearch: $("#tbxFileNameSearch").val(),
-            ddlApproveLevelSearch: $("#ddlApproveLevelSearch").val(),
-            ddlApproveStateSearch: $("#ddlApproveStateSearch").val(),
+            tbxProjectNameSearch: $("#tbxProjectNameSearch").val(),
             ddlApproveDeptSearch: $("#ddlApproveDeptSearch").val()
         };
         return temp;
@@ -52,7 +50,10 @@
 
         //重置按钮
         $("#btnReset").click(function () {
-            $("#tbxFileNameSearch,#ddlApproveLevelSearch,#ddlApproveStateSearch,#ddlApproveDeptSearch").val("");
+            $("#tbxProjectNameSearch,#ddlApproveDeptSearch").val("");
+
+            //重置为第一页
+            $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: 1, pageSize: 10 });
             $("#bsTable").bootstrapTable('refresh');
         });
     });

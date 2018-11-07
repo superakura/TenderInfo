@@ -1169,6 +1169,11 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 批量上传投标人信息
+        /// </summary>
+        /// <param name="tbxImportFile"></param>
+        /// <returns></returns>
         [HttpPost]
         public string UploadImportFirst(HttpPostedFileBase tbxImportFile)
         {
@@ -1279,6 +1284,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 清空投标人信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string RemoveFirst()
         {
@@ -1288,6 +1297,97 @@ namespace TenderInfo.Controllers
                 int.TryParse(Request.Form["accountID"], out accountID);
 
                 var list = db.AccountChild.Where(w => w.TableType == "first" && w.AccountID == accountID).ToList();
+                db.AccountChild.RemoveRange(list);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 批量上传评标委员会信息
+        /// </summary>
+        /// <param name="tbxEvaluationFile"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public string UploadImportEvaluation(HttpPostedFileBase tbxEvaluationFile)
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxEvaluationID"], out accountID);
+
+                //将文件临时上传，写入数据库后删除
+                var fileExt = Path.GetExtension(tbxEvaluationFile.FileName).ToLower();
+                var filePath = Request.MapPath("~/FileUpload");
+                var newName = Guid.NewGuid() + fileExt;
+                var fullName = Path.Combine(filePath, newName);
+                tbxEvaluationFile.SaveAs(fullName);
+
+                //调用excel读取方法，将excel表中的数据读取到dataset
+                var excel = App_Code.Commen.ReadExcel(fullName);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                List<Models.AccountChild> list = new List<Models.AccountChild>();
+
+                for (int i = 0; i < excel.Rows.Count; i++)
+                {
+                    var info = new Models.AccountChild();
+                    info.TableType = "second";
+                    info.AccountID = accountID;
+
+                    info.EvaluationPersonName =
+                        excel.Rows[i]["姓名"].ToString().Trim() == "" ? "-" : excel.Rows[i]["姓名"].ToString();
+
+                    info.EvaluationPersonDeptName = excel.Rows[i]["单位名称"].ToString().Trim() == "" ? "-" : excel.Rows[i]["单位名称"].ToString();
+                    info.EvaluationPersonDeptID = 0;
+
+                    info.IsEvaluationDirector = excel.Rows[i]["是否评标委员会主任"].ToString();
+
+                    decimal evaluationTime = 0;
+                    decimal.TryParse(excel.Rows[i]["评审时间（小时）"].ToString(), out evaluationTime);
+                    info.EvaluationTime = evaluationTime;
+
+                    decimal evaluationPrice = 0;
+                    decimal.TryParse(excel.Rows[i]["评审费"].ToString(), out evaluationPrice);
+                    info.EvaluationCost = evaluationPrice;
+
+                    info.InputDate = DateTime.Now;
+                    info.InputPerson = userInfo.UserID;
+
+                    list.Add(info);
+                }
+                db.AccountChild.AddRange(list);
+                db.SaveChanges();
+
+                if (System.IO.File.Exists(fullName))
+                {
+                    System.IO.File.Delete(fullName);
+                }
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 清空评标委员会信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string RemoveEvaluation()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["accountID"], out accountID);
+
+                var list = db.AccountChild.Where(w => w.TableType == "second" && w.AccountID == accountID).ToList();
                 db.AccountChild.RemoveRange(list);
                 db.SaveChanges();
                 return "ok";

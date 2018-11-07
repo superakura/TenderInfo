@@ -100,7 +100,7 @@
     </div>
 </div>
 
-<h2><span id="projectName"></span><a class="btn bg-black" href="javascript:window.history.back(-1);">返回</a></h2>
+<h2><span id="projectName"></span><a class="btn bg-black" href="javascript:void(0);" id="btnReturn">返回</a></h2>
 @*审批文件信息*@
 <div class="row">
     <div class="col-md-12">
@@ -317,7 +317,7 @@
     </div>
 </div>
 
-<span id="infoID"></span>
+<span id="infoID" class="hidden"></span>
 <script>
     $(function () {
         var id = getParam("id");
@@ -736,6 +736,23 @@
                     }
                 });
             }
+        });
+
+        function BackView() {
+            var projectNameSearch = unescape(getQueryString("projectNameSearch"));//项目名称
+            var approveDept = getQueryString("approveDept");//项目名称
+
+            var offSet = getQueryString("offSet");//页码
+            var limit = getQueryString("limit");//页面大小
+
+            window.location.href = "/TechnicSpecifiction/Comprehensive?offSet=" + offSet +
+                "&limit=" + limit +
+                "&approveDept=" + approveDept +
+                "&projectNameSearch=" + escape(projectNameSearch);
+        }
+
+        $("#btnReturn").click(function () {
+            BackView();
         });
     });
 </script>

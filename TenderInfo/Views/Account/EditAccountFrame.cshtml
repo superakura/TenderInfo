@@ -674,6 +674,8 @@
                         <div class="panel-heading">
                             评标委员会
                             <button id="btnSecondAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                            <button id="btnSecondImport" type="button" class="btn btn-info btn-sm EvaluationImport">批量导入</button>
+                            <button id="btnSecondRemove" type="button" class="btn bg-olive btn-sm EvaluationRemove">清空</button>
                         </div>
                         <div class="panel-body">
                             <div class="row">
@@ -870,6 +872,7 @@
     </div>
 </div>
 <script>
+    //批量导入后，为了能正确返回数据，应放在页面加载之前
     function GetFirstTable() {
         var accountID = $("#tbxAccountIDEdit").val();
         $.post("/Account/GetListEdit", { "accountID": accountID, "type": "first" }, function (result) {
@@ -891,6 +894,29 @@
                 list += "</tr>";
             });
             $("#tableFirst").empty().append(list);
+        });
+    }
+    function GetSecondTable() {
+        var accountID = $("#tbxAccountIDEdit").val();
+        $.post("/Account/GetListEdit", { "accountID": accountID, "type": "second" }, function (result) {
+            var list = "";
+            $.each(result, function (indexInArray, valueOfElement) {
+                list += "<tr>";
+                if ($("#userRoleEdit").text().trim() !== "yes") {
+                    list += "<td></td>";
+                }
+                else {
+                    list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                }
+                list += "<td>" + valueOfElement["EvaluationPersonName"] + "</td>";
+                list += "<td>" + valueOfElement["EvaluationPersonDeptName"] + "</td>";
+                list += "<td>" + valueOfElement["IsEvaluationDirector"] + "</td>";
+                list += "<td>" + valueOfElement["EvaluationTime"] + "</td>";
+                list += "<td>" + valueOfElement["EvaluationCost"] + "</td>";
+                list += "</tr>";
+            });
+            $("#tableSecond").empty().append(list);
         });
     }
 
@@ -1258,32 +1284,6 @@
                 }
             });
         });
-
-
-
-        function GetSecondTable() {
-            var accountID = $("#tbxAccountIDEdit").val();
-            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "second" }, function (result) {
-                var list = "";
-                $.each(result, function (indexInArray, valueOfElement) {
-                    list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
-                        list += "<td></td>";
-                    }
-                    else {
-                        list += "<td><a href='javascript:void(0)' class='btnSecondEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnSecondDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
-                    }
-                    list += "<td>" + valueOfElement["EvaluationPersonName"] + "</td>";
-                    list += "<td>" + valueOfElement["EvaluationPersonDeptName"] + "</td>";
-                    list += "<td>" + valueOfElement["IsEvaluationDirector"] + "</td>";
-                    list += "<td>" + valueOfElement["EvaluationTime"] + "</td>";
-                    list += "<td>" + valueOfElement["EvaluationCost"] + "</td>";
-                    list += "</tr>";
-                });
-                $("#tableSecond").empty().append(list);
-            });
-        }
 
         function GetThirdTable() {
             var accountID = $("#tbxAccountIDEdit").val();
