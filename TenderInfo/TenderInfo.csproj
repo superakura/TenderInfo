@@ -768,8 +768,6 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
-    <Compile Include="Models\AccountProject.cs" />
-    <Compile Include="Models\AccountProjectChild.cs" />
     <Compile Include="Models\AuthorityInfo.cs" />
     <Compile Include="Models\CheckReportFile.cs" />
     <Compile Include="Models\DB.cs" />
@@ -783,12 +781,8 @@
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
     <Compile Include="Models\ProgressInfo.cs" />
-    <Compile Include="Models\ProgressProject.cs" />
     <Compile Include="Models\RoleAuthority.cs" />
     <Compile Include="Models\RoleInfo.cs" />
-    <Compile Include="Models\AccountMaterial.cs" />
-    <Compile Include="Models\AccountMaterialChild.cs" />
-    <Compile Include="Models\ProgressMaterial.cs" />
     <Compile Include="Models\SampleDelegation.cs" />
     <Compile Include="Models\FileMinPrice.cs" />
     <Compile Include="Models\UserDept.cs" />

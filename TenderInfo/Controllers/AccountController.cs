@@ -318,11 +318,26 @@ namespace TenderInfo.Controllers
                     var priceEnd = Convert.ToDecimal(planInvestPriceEnd);
                     result = result.Where(w => w.PlanInvestPrice >= priceStart && w.PlanInvestPrice <= priceEnd);
                 }
-                if (User.IsInRole("招标管理"))
+                //if (User.IsInRole("招标管理"))
+                //{
+                //    if (!User.IsInRole("新建招标台账"))
+                //    {
+                //        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                //    }
+                //}
+
+                if (!User.IsInRole("领导查看"))
                 {
-                    if (!User.IsInRole("新建招标台账"))
+                    if (!User.IsInRole("组长查看"))
                     {
-                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                        if (User.IsInRole("招标管理"))
+                        {
+                            result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                        }
+                    }
+                    else
+                    {
+                        //查看本组的人员，包括自己
                     }
                 }
 

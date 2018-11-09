@@ -37,12 +37,15 @@
                                 <input id="fileTechnicalSpecification" name="fileTechnicalSpecification" type="file" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label for="fileComprehensiveTechnical">评分标准(技术)<span class="text-danger">(必填)</span></label>
+                                <label for="fileComprehensiveTechnical">评分标准(技术)<span class="text-info">(选填)</span></label>
                                 <input id="fileComprehensiveTechnical" name="fileComprehensiveTechnical" type="file" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label for="fileComprehensiveBusiness">评分标准(商务)<span class="text-danger">(必填)</span></label>
+                                <label for="fileComprehensiveBusiness">评分标准(商务)<span class="text-info">(选填)</span></label>
                                 <input id="fileComprehensiveBusiness" name="fileComprehensiveBusiness" type="file" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <span class="text-danger">评分标准(技术)、评分标准(商务)必须填写其中一项</span>
                             </div>
                         </form>
                         <div class="row">
@@ -231,6 +234,7 @@
             //window.location.href = "/TechnicSpecifiction/AddComprehensive";
         });
 
+        //技术规格书添加、删除审批人员
         $("#btnAddFirstPersonOne").click(function () {
             var itemText = $("#approvePersonList").find("option:selected").text();
             var itemVal = $("#approvePersonList").val();
@@ -270,6 +274,7 @@
             $("#tbxSecondListOne").val(list);
         }
 
+        //评分标准（技术）添加、删除审批人员
         $("#btnAddFirstPersonTwo").click(function () {
             var itemText = $("#approvePersonList").find("option:selected").text();
             var itemVal = $("#approvePersonList").val();
@@ -309,6 +314,7 @@
             $("#tbxSecondListTwo").val(list);
         }
 
+        //评分标准（商务）添加、删除人员
         $("#btnAddFirstPersonThird").click(function () {
             var itemText = $("#approvePersonList").find("option:selected").text();
             var itemVal = $("#approvePersonList").val();
@@ -352,17 +358,31 @@
         var validAddForm = $("#AddForm").validate({
             rules: {
                 tbxProjectName: { required: true },
-                fileTechnicalSpecification: { required: true },
-                fileComprehensiveTechnical: { required: true },
-                fileComprehensiveBusiness: { required: true }
+                fileTechnicalSpecification: { required: true }
             }
         });
 
         //提交按钮
         $("#btnSubmit").click(function () {
-            if ($("#tbxFirstListOne").val().trim() === "" || $("#tbxFirstListTwo").val().trim() === "" || $("#tbxFirstListThird").val().trim() === "") {
-                toastr.error("一级审批必须填写！", "提示");
+            if ($("#tbxFirstListOne").val().trim() === "")  {
+                toastr.error("技术规格书一级审批必须填写！", "提示");
                 return;
+            }
+            if ($("#fileComprehensiveTechnical").val() === "" && $("#fileComprehensiveBusiness").val() === "") {
+                toastr.error("评分标准(技术)、评分标准(商务)必须填写其中一项", "提示");
+                return;
+            }
+            if ($("#fileComprehensiveTechnical").val() !== "") {
+                if ($("#tbxFirstListTwo").val().trim() === "") {
+                    toastr.error("评分标准(技术)一级审批必须填写！", "提示");
+                    return;
+                }
+            }
+            if ($("#fileComprehensiveBusiness").val() !== "") {
+                if ($("#tbxFirstListTwo").val().trim() === "") {
+                    toastr.error("评分标准(商务)一级审批必须填写！", "提示");
+                    return;
+                }
             }
             if (validAddForm.form()) {
                 Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
@@ -370,6 +390,12 @@
                         return;
                     }
                     else {
+                        if ($("#fileComprehensiveBusiness").val() === "") {
+                            $("#tbxFirstListThird,#tbxSecondListThird").val("");
+                        }
+                        if ($("#fileComprehensiveTechnical").val() === "") {
+                            $("#tbxFirstListTwo,#tbxSecondListTwo").val("");
+                        }
                         $("#AddForm").ajaxSubmit({
                             url: "/TechnicSpecifiction/InsertComprehensiveFile",
                             type: "post",

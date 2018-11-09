@@ -49,13 +49,24 @@ namespace TenderInfo.Controllers
             var userInfo = App_Code.Commen.GetUserFromSession();
 
             var result = from p in db.ProgressInfo
-                         where p.ProgressType==progressType
+                         where p.ProgressType == progressType
                          select p;
 
-            if (User.IsInRole("招标管理"))
+            if (!User.IsInRole("领导查看"))
             {
-                result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                if (!User.IsInRole("组长查看"))
+                {
+                    if (User.IsInRole("招标管理"))
+                    {
+                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                    }
+                }
+                else
+                {
+                    //查看本组的人员，包括自己
+                }
             }
+
             if (isOver != string.Empty)
             {
                 result = result.Where(w => w.IsOver == isOver);
@@ -157,7 +168,7 @@ namespace TenderInfo.Controllers
                 info.ProjectName = Request.Form["tbxProjectNameEdit"];
                 info.ProgressState = Request.Form["ddlProgressStateEdit"];
                 decimal investPrice = 0;
-                decimal.TryParse( Request.Form["tbxInvestPriceEdit"],out investPrice);
+                decimal.TryParse(Request.Form["tbxInvestPriceEdit"], out investPrice);
                 info.InvestPrice = investPrice;
                 info.ContractResponsiblePerson = Request.Form["tbxContractResponsiblePersonEdit"];
 
@@ -216,7 +227,7 @@ namespace TenderInfo.Controllers
                 info.InputDateTime = DateTime.Now;
                 info.YearInfo = DateTime.Now.Year.ToString();
                 info.IsOver = Request.Form["tbxTenderSuccessFileDateEdit"].Trim() != string.Empty ? "已完成" : "未完成";
-                if (info.IsSynchro== "是")
+                if (info.IsSynchro == "是")
                 {
                     var infoAccount = db.Account.Find(info.AccountID);
                     infoAccount.TenderProgramAuditDate = info.TenderProgramAuditDate;
@@ -250,11 +261,40 @@ namespace TenderInfo.Controllers
                 logInfo.InputDateTime = DateTime.Now;
                 logInfo.InputPersonID = userInfo.UserID;
                 logInfo.InputPersonName = userInfo.UserName;
-                logInfo.LogContent = "删除项目："+progressInfo.ProjectName+"-"+"类型：【"+progressInfo.ProgressType+"】【"+progressInfo.ProgressTypeChild+"】";
+                logInfo.LogContent = "删除项目：" + progressInfo.ProjectName + "-" + "类型：【" + progressInfo.ProgressType + "】【" + progressInfo.ProgressTypeChild + "】";
                 logInfo.LogType = "删除招标进度";
                 db.Log.Add(logInfo);
                 db.SaveChanges();
                 return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 判断是否业务员本人修改，只有招标业务员本人能修改自己的招标进度信息。
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CheckEdit()
+        {
+            try
+            {
+                var id = 0;
+                int.TryParse(Request.Form["id"], out id);
+
+                var info = db.ProgressInfo.Find(id);
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                if (info.ProjectResponsiblePersonID == userInfo.UserID)
+                {
+                    return "ok";
+                }
+                else
+                {
+                    return "error";
+                }
             }
             catch (Exception ex)
             {
