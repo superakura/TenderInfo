@@ -338,6 +338,20 @@ namespace TenderInfo.Controllers
                     else
                     {
                         //查看本组的人员，包括自己
+                        if (User.IsInRole("组长查看"))
+                        {
+                            List<int> personList = new List<int>();
+                            personList.Add(userInfo.UserID);//添加自己
+
+                            //添加组内成员
+                            var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
+                            foreach (var item in memberList)
+                            {
+                                personList.Add(item.MemberUserID);
+                            }
+
+                            result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
+                        }
                     }
                 }
 

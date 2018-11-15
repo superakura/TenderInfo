@@ -597,6 +597,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthorityInfoController.cs" />
     <Compile Include="Controllers\DeptController.cs" />
+    <Compile Include="Controllers\GroupLeaderController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NoticeInfoController.cs" />
     <Compile Include="Controllers\ProgressInfoController.cs" />
@@ -765,6 +766,14 @@
     <Compile Include="Migrations\201810180125589_edit38.Designer.cs">
       <DependentUpon>201810180125589_edit38.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201811140112237_edit39.cs" />
+    <Compile Include="Migrations\201811140112237_edit39.Designer.cs">
+      <DependentUpon>201811140112237_edit39.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811140113398_edit40.cs" />
+    <Compile Include="Migrations\201811140113398_edit40.Designer.cs">
+      <DependentUpon>201811140113398_edit40.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -778,6 +787,7 @@
     <Compile Include="Models\FileComprehensive.cs" />
     <Compile Include="Models\FileComprehensiveChild.cs" />
     <Compile Include="Models\FileMinPriceChild.cs" />
+    <Compile Include="Models\GroupLeader.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
     <Compile Include="Models\ProgressInfo.cs" />
@@ -852,6 +862,7 @@
     <Folder Include="FileUpload\" />
     <Folder Include="Template\" />
     <Folder Include="ueditor\net\upload\file\" />
+    <Folder Include="Views\GroupLeader\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201807140054525_EditDB.resx">
@@ -973,6 +984,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810180125589_edit38.resx">
       <DependentUpon>201810180125589_edit38.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811140112237_edit39.resx">
+      <DependentUpon>201811140112237_edit39.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811140113398_edit40.resx">
+      <DependentUpon>201811140113398_edit40.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

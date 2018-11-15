@@ -26,6 +26,10 @@ namespace TenderInfo.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 获取招标进度列表
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetList()
         {
@@ -63,7 +67,21 @@ namespace TenderInfo.Controllers
                 }
                 else
                 {
-                    //查看本组的人员，包括自己
+                    if (User.IsInRole("组长查看"))
+                    {
+                        //查看本组的人员，包括自己
+                        List<int> personList = new List<int>();
+                        personList.Add(userInfo.UserID);//添加自己
+
+                        //添加组内成员
+                        var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
+                        foreach (var item in memberList)
+                        {
+                            personList.Add(item.MemberUserID);
+                        }
+                       
+                        result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
+                    }
                 }
             }
 
@@ -100,6 +118,10 @@ namespace TenderInfo.Controllers
             return Json(new { total = result.Count(), rows = result.OrderBy(o => o.ProgressInfoID).Skip(offset).Take(limit).ToList() });
         }
 
+        /// <summary>
+        /// 新建招标进度
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string Insert()
         {
@@ -133,6 +155,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 获取一项招标进度信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetOne()
         {
@@ -246,17 +272,32 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 删除招标进度，删除和招标台账的同步关系
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string Del()
         {
             try
             {
+                //删除招标进度信息
                 var id = 0;
                 int.TryParse(Request.Form["id"], out id);
                 var progressInfo = db.ProgressInfo.Find(id);
                 db.ProgressInfo.Remove(progressInfo);
 
+                //将已同步的招标台账中的同步信息删除
+                if (progressInfo.AccountID != null)
+                {
+                    var accountInfo = db.Account.Find(progressInfo.AccountID);
+                    accountInfo.IsSynchro = null;
+                    accountInfo.ProgressID = null;
+                }
+
                 var userInfo = App_Code.Commen.GetUserFromSession();
+
+                //删除招标进度，写入日志信息
                 var logInfo = new Models.Log();
                 logInfo.InputDateTime = DateTime.Now;
                 logInfo.InputPersonID = userInfo.UserID;
@@ -264,6 +305,7 @@ namespace TenderInfo.Controllers
                 logInfo.LogContent = "删除项目：" + progressInfo.ProjectName + "-" + "类型：【" + progressInfo.ProgressType + "】【" + progressInfo.ProgressTypeChild + "】";
                 logInfo.LogType = "删除招标进度";
                 db.Log.Add(logInfo);
+
                 db.SaveChanges();
                 return "ok";
             }

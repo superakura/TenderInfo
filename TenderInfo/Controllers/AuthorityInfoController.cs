@@ -146,10 +146,14 @@ JsonConvert.DeserializeObject<Dictionary<String, Object>>(HttpUtility.UrlDecode(
             return Json(new { total = result.Count(), rows = result.Skip(offset).Take(limit).ToList() });
         }
 
+        /// <summary>
+        /// 获取全部权限信息，按类型、权限名称排序
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetListAll()
         {
-            return Json(db.AuthorityInfo.OrderBy(o => o.AuthorityType).ToList());
+            return Json(db.AuthorityInfo.OrderBy(o => o.AuthorityType).ThenBy(o=>o.AuthorityName).ToList());
         }
 
         [HttpPost]

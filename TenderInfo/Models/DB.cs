@@ -36,6 +36,7 @@ namespace TenderInfo.Models
         public virtual DbSet<AccountChild> AccountChild { get; set; }//招标台账信息子表--（工程、服务）
 
         public virtual DbSet<ProgressInfo> ProgressInfo { get; set; }//招标进度
+        public virtual DbSet<GroupLeader> GroupLeader { get; set; }//招标组长信息表
 
         public virtual DbSet<FileMinPrice> FileMinPrice { get; set; }//最低价评标法，审批表
         public virtual DbSet<FileMinPriceChild> FileMinPriceChild { get; set; }//最低价评标法，审批流程表

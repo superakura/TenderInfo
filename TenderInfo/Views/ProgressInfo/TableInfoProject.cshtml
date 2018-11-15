@@ -30,15 +30,12 @@
         $("#tbxOtherExplainEdit").val(row.OtherExplain);
         $("#tbxRemarkEdit").val(row.Remark);
 
-        //if ($("#userRole").text().trim() != "招标管理") {
-        //    $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
-        //}
         $.post("/ProgressInfo/CheckEdit", { "id": id }, function (result) {
             if (result !== "ok") {
-                $("#btnEditProgressSubmit,#btnDelProgressSubmit").hide();
+                $("#btnEditProgressSubmit,#btnDelProgressSubmit,#btnEditProgressSave").hide();
             }
             else {
-                $("#btnEditProgressSubmit,#btnDelProgressSubmit").show();
+                $("#btnEditProgressSubmit,#btnDelProgressSubmit,#btnEditProgressSave").show();
             }
         });
     };
