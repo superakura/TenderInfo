@@ -387,7 +387,7 @@
         GetFileList();
         function GetFileList() {
             $.post("/TechnicSpecifiction/GetComprehensiveFileListByID", { "id": $("#infoID").text() }, function (result) {
-                console.log(result[0]);
+                //console.log(result[0]);
                 var list = "";
 
                 var reloadOne = "";
@@ -412,9 +412,16 @@
                 }
                 list += "<tr class=" + colorTwo + ">";
                 list += "<td>评分标准(技术)</td>";
-                list += "<td><a target='_blank' href='/FileUpload/" + result[0].TechnologyScoreStandardFile + "'>" + result[0].TechnologyScoreStandardFileShow + "</a></td>";
-                list += "<td>" + result[0].ApproveLevelTechnology + "</td>";
-                list += "<td>" + result[0].ApproveStateTechnology + "</td>";
+                if (result[0].ApproveLevelTechnology === null) {
+                    list += "<td></td>";
+                    list += "<td></td>";
+                    list += "<td></td>";
+                }
+                else {
+                    list += "<td><a target='_blank' href='/FileUpload/" + result[0].TechnologyScoreStandardFile + "'>" + result[0].TechnologyScoreStandardFileShow + "</a></td>";
+                    list += "<td>" + result[0].ApproveLevelTechnology + "</td>";
+                    list += "<td>" + result[0].ApproveStateTechnology + "</td>";
+                }
                 list += reloadTwo;
                 list += "</tr>";
 
@@ -426,9 +433,16 @@
                 }
                 list += "<tr class=" + colorThird + ">";
                 list += "<td>评分标准(商务)</td>";
-                list += "<td><a target='_blank' href='/FileUpload/" + result[0].BusinessScoreStandardFile + "'>" + result[0].BusinessScoreStandardFileShow + "</a></td>";
-                list += "<td>" + result[0].ApproveLevelBusiness + "</td>";
-                list += "<td>" + result[0].ApproveStateBusiness + "</td>";
+                if (result[0].ApproveLevelBusiness === null) {
+                    list += "<td></td>";
+                    list += "<td></td>";
+                    list += "<td></td>";
+                }
+                else {
+                    list += "<td><a target='_blank' href='/FileUpload/" + result[0].BusinessScoreStandardFile + "'>" + result[0].BusinessScoreStandardFileShow + "</a></td>";
+                    list += "<td>" + result[0].ApproveLevelBusiness + "</td>";
+                    list += "<td>" + result[0].ApproveStateBusiness + "</td>";
+                }
                 list += reloadThird;
                 list += "</tr>";
                 $("#fileTable").empty().append(list);
@@ -656,7 +670,8 @@
                                     GetApproveInfo("技术规格书", "二级", "SpecificationSecondTable");
                                 }
                                 else {
-                                    console.log(result);
+                                    //console.log(result);
+                                    toastr.error(result, "提示");
                                 }
                             },
                             error: function (error) {

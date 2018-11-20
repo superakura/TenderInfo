@@ -774,6 +774,10 @@
     <Compile Include="Migrations\201811140113398_edit40.Designer.cs">
       <DependentUpon>201811140113398_edit40.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201811150134593_edit41.cs" />
+    <Compile Include="Migrations\201811150134593_edit41.Designer.cs">
+      <DependentUpon>201811150134593_edit41.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountChild.cs" />
@@ -990,6 +994,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201811140113398_edit40.resx">
       <DependentUpon>201811140113398_edit40.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811150134593_edit41.resx">
+      <DependentUpon>201811150134593_edit41.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

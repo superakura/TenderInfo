@@ -362,7 +362,7 @@
             }
         });
 
-        //提交按钮
+        //提交按钮，技术、商务可选填其中之一，规格书必填
         $("#btnSubmit").click(function () {
             if ($("#tbxFirstListOne").val().trim() === "")  {
                 toastr.error("技术规格书一级审批必须填写！", "提示");
@@ -379,7 +379,7 @@
                 }
             }
             if ($("#fileComprehensiveBusiness").val() !== "") {
-                if ($("#tbxFirstListTwo").val().trim() === "") {
+                if ($("#tbxFirstListThird").val().trim() === "") {
                     toastr.error("评分标准(商务)一级审批必须填写！", "提示");
                     return;
                 }

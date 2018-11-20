@@ -65,14 +65,14 @@
                     field: 'ApproveStateTechnology',
                     title: '评分标准(技术)审批',
                     formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        return row.ApproveLevelTechnology + "【" + row.ApproveStateTechnology+ "】" ;
+                        return row.ApproveLevelTechnology === null ? "" : row.ApproveLevelTechnology + "【" + row.ApproveStateTechnology + "】";
                     }
                 },
                 {
                     field: 'ApproveStateBusiness',
                     title: '评分标准(商务)审批',
                     formatter: function (value, row, index) {//这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        return row.ApproveLevelBusiness + "【" + row.ApproveStateBusiness +  "】" ;
+                        return row.ApproveLevelBusiness === null ? "" : row.ApproveLevelBusiness + "【" + row.ApproveStateBusiness + "】";
                     }
                 },
                 {

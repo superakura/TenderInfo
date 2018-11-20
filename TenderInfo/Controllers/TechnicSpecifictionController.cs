@@ -738,58 +738,65 @@ namespace TenderInfo.Controllers
                 }
                 #endregion
                 #region 获取一、二级审批人员ID列表--评分标准（技术）审批人员
-
-                var firstListTwo = Request.Form["tbxFirstListTwo"].ToString().Substring(0, Request.Form["tbxFirstListTwo"].ToString().Length - 1);
-                var secondListTwo = string.Empty;
-                if (Request.Form["tbxSecondListTwo"] != string.Empty)
-                {
-                    secondListTwo = Request.Form["tbxSecondListTwo"].ToString().Substring(0, Request.Form["tbxSecondListTwo"].ToString().Length - 1);
-                }
-
-                var firstApprovePersonIDStrTwo = firstListTwo.Split('&');
-                var secondApprovePersonIDStrTwo = secondListTwo == "" ? null : secondListTwo.Split('&');
-
+                string[] firstApprovePersonIDStrTwo = null;
+                string[] secondApprovePersonIDStrTwo = null;
                 List<int> firstApprovePersonIDTwo = new List<int>();
                 List<int> secondApprovePersonIDTwo = new List<int>();
 
-                for (int i = 0; i < firstApprovePersonIDStrTwo.Length; i++)
+                if (Request.Form["tbxFirstListTwo"] != string.Empty)
                 {
-                    firstApprovePersonIDTwo.Add(Convert.ToInt32(firstApprovePersonIDStrTwo[i]));
-                }
-
-                if (secondApprovePersonIDStrTwo != null)
-                {
-                    for (int i = 0; i < secondApprovePersonIDStrTwo.Length; i++)
+                    var firstListTwo = Request.Form["tbxFirstListTwo"].ToString().Substring(0, Request.Form["tbxFirstListTwo"].ToString().Length - 1);
+                    var secondListTwo = string.Empty;
+                    if (Request.Form["tbxSecondListTwo"] != string.Empty)
                     {
-                        secondApprovePersonIDTwo.Add(Convert.ToInt32(secondApprovePersonIDStrTwo[i]));
+                        secondListTwo = Request.Form["tbxSecondListTwo"].ToString().Substring(0, Request.Form["tbxSecondListTwo"].ToString().Length - 1);
+                    }
+
+                    firstApprovePersonIDStrTwo = firstListTwo.Split('&');
+                    secondApprovePersonIDStrTwo = secondListTwo == "" ? null : secondListTwo.Split('&');
+
+                    for (int i = 0; i < firstApprovePersonIDStrTwo.Length; i++)
+                    {
+                        firstApprovePersonIDTwo.Add(Convert.ToInt32(firstApprovePersonIDStrTwo[i]));
+                    }
+
+                    if (secondApprovePersonIDStrTwo != null)
+                    {
+                        for (int i = 0; i < secondApprovePersonIDStrTwo.Length; i++)
+                        {
+                            secondApprovePersonIDTwo.Add(Convert.ToInt32(secondApprovePersonIDStrTwo[i]));
+                        }
                     }
                 }
                 #endregion
                 #region 获取一、二级审批人员ID列表--评分标准（商务）审批人员
-
-                var firstListThird = Request.Form["tbxFirstListThird"].ToString().Substring(0, Request.Form["tbxFirstListThird"].ToString().Length - 1);
-                var secondListThird = string.Empty;
-                if (Request.Form["tbxSecondListThird"] != string.Empty)
-                {
-                    secondListThird = Request.Form["tbxSecondListThird"].ToString().Substring(0, Request.Form["tbxSecondListThird"].ToString().Length - 1);
-                }
-
-                var firstApprovePersonIDStrThird = firstListThird.Split('&');
-                var secondApprovePersonIDStrThird = secondListThird == "" ? null : secondListThird.Split('&');
-
+                string[] firstApprovePersonIDStrThird = null;
+                string[] secondApprovePersonIDStrThird = null;
                 List<int> firstApprovePersonIDThird = new List<int>();
                 List<int> secondApprovePersonIDThird = new List<int>();
-
-                for (int i = 0; i < firstApprovePersonIDStrThird.Length; i++)
+                if (Request.Form["tbxFirstListThird"] != string.Empty)
                 {
-                    firstApprovePersonIDThird.Add(Convert.ToInt32(firstApprovePersonIDStrThird[i]));
-                }
-
-                if (secondApprovePersonIDStrThird != null)
-                {
-                    for (int i = 0; i < secondApprovePersonIDStrThird.Length; i++)
+                    var firstListThird = Request.Form["tbxFirstListThird"].ToString().Substring(0, Request.Form["tbxFirstListThird"].ToString().Length - 1);
+                    var secondListThird = string.Empty;
+                    if (Request.Form["tbxSecondListThird"] != string.Empty)
                     {
-                        secondApprovePersonIDThird.Add(Convert.ToInt32(secondApprovePersonIDStrThird[i]));
+                        secondListThird = Request.Form["tbxSecondListThird"].ToString().Substring(0, Request.Form["tbxSecondListThird"].ToString().Length - 1);
+                    }
+
+                    firstApprovePersonIDStrThird = firstListThird.Split('&');
+                    secondApprovePersonIDStrThird = secondListThird == "" ? null : secondListThird.Split('&');
+
+                    for (int i = 0; i < firstApprovePersonIDStrThird.Length; i++)
+                    {
+                        firstApprovePersonIDThird.Add(Convert.ToInt32(firstApprovePersonIDStrThird[i]));
+                    }
+
+                    if (secondApprovePersonIDStrThird != null)
+                    {
+                        for (int i = 0; i < secondApprovePersonIDStrThird.Length; i++)
+                        {
+                            secondApprovePersonIDThird.Add(Convert.ToInt32(secondApprovePersonIDStrThird[i]));
+                        }
                     }
                 }
                 #endregion
@@ -830,7 +837,7 @@ namespace TenderInfo.Controllers
                 //评分标准--商务上传
                 var newNameBusiness = string.Empty;
                 var showNameBusiness = string.Empty;
-                if (fileComprehensiveTechnical != null)
+                if (fileComprehensiveBusiness != null)
                 {
                     var fileExt = Path.GetExtension(fileComprehensiveBusiness.FileName).ToLower();
                     var fileName = Path.GetFileNameWithoutExtension(fileComprehensiveBusiness.FileName).ToLower();
@@ -859,12 +866,18 @@ namespace TenderInfo.Controllers
                 info.ApproveStateSpecification = "待审核";
                 info.ApproveLevelSpecification = secondApprovePersonIDStrOne == null ? "一级" : "二级";
 
-                info.ApproveStateTechnology = "待审核";
-                info.ApproveLevelTechnology = secondApprovePersonIDStrTwo == null ? "一级" : "二级";
+                if (firstApprovePersonIDStrTwo != null)
+                {
+                    info.ApproveStateTechnology = "待审核";
+                    info.ApproveLevelTechnology = secondApprovePersonIDStrTwo == null ? "一级" : "二级";
+                }
+                if (firstApprovePersonIDStrThird != null)
+                {
+                    info.ApproveStateBusiness = "待审核";
+                    info.ApproveLevelBusiness = secondApprovePersonIDStrThird == null ? "一级" : "二级";
+                }
 
-                info.ApproveStateBusiness = "待审核";
-                info.ApproveLevelBusiness = secondApprovePersonIDStrThird == null ? "一级" : "二级";
-
+                //项目名称
                 info.ProjectName = Request.Form["tbxProjectName"].ToString();
 
                 //添加综合评标法审批记录，获取自增ID
@@ -914,86 +927,91 @@ namespace TenderInfo.Controllers
                     list.Add(child);
                 }
 
-                foreach (var item in firstApprovePersonIDTwo)
+                if (firstApprovePersonIDTwo.Count != 0)
                 {
-                    var child = new Models.FileComprehensiveChild();
+                    foreach (var item in firstApprovePersonIDTwo)
+                    {
+                        var child = new Models.FileComprehensiveChild();
 
-                    child.FileComprehensiveID = info.FileComprehensiveID;
-                    child.ApproveType = "评分标准(技术)";
-                    child.ApproveLevel = "一级";
-                    child.ApproveState = "待审批";
-                    child.ApprovePersonID = item;
-                    var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
-                    child.ApprovePersonName = firstUser.UserName;
-                    child.ApprovePersonDeptID = firstUser.UserDeptID;
-                    var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
-                    child.ApprovePersonDeptName = deptInfo.DeptName;
-                    var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
-                    child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
-                    child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
+                        child.FileComprehensiveID = info.FileComprehensiveID;
+                        child.ApproveType = "评分标准(技术)";
+                        child.ApproveLevel = "一级";
+                        child.ApproveState = "待审批";
+                        child.ApprovePersonID = item;
+                        var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
+                        child.ApprovePersonName = firstUser.UserName;
+                        child.ApprovePersonDeptID = firstUser.UserDeptID;
+                        var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
+                        child.ApprovePersonDeptName = deptInfo.DeptName;
+                        var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
+                        child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
+                        child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
 
-                    list.Add(child);
+                        list.Add(child);
+                    }
+                    foreach (var item in secondApprovePersonIDTwo)
+                    {
+                        var child = new Models.FileComprehensiveChild();
+
+                        child.FileComprehensiveID = info.FileComprehensiveID;
+                        child.ApproveType = "评分标准(技术)";
+                        child.ApproveLevel = "二级";
+                        child.ApproveState = "待审批";
+                        child.ApprovePersonID = item;
+                        var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
+                        child.ApprovePersonName = firstUser.UserName;
+                        child.ApprovePersonDeptID = firstUser.UserDeptID;
+                        var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
+                        child.ApprovePersonDeptName = deptInfo.DeptName;
+                        var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
+                        child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
+                        child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
+
+                        list.Add(child);
+                    }
                 }
-                foreach (var item in secondApprovePersonIDTwo)
+                if (firstApprovePersonIDThird.Count != 0)
                 {
-                    var child = new Models.FileComprehensiveChild();
+                    foreach (var item in firstApprovePersonIDThird)
+                    {
+                        var child = new Models.FileComprehensiveChild();
 
-                    child.FileComprehensiveID = info.FileComprehensiveID;
-                    child.ApproveType = "评分标准(技术)";
-                    child.ApproveLevel = "二级";
-                    child.ApproveState = "待审批";
-                    child.ApprovePersonID = item;
-                    var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
-                    child.ApprovePersonName = firstUser.UserName;
-                    child.ApprovePersonDeptID = firstUser.UserDeptID;
-                    var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
-                    child.ApprovePersonDeptName = deptInfo.DeptName;
-                    var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
-                    child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
-                    child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
+                        child.FileComprehensiveID = info.FileComprehensiveID;
+                        child.ApproveType = "评分标准(商务)";
+                        child.ApproveLevel = "一级";
+                        child.ApproveState = "待审批";
+                        child.ApprovePersonID = item;
+                        var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
+                        child.ApprovePersonName = firstUser.UserName;
+                        child.ApprovePersonDeptID = firstUser.UserDeptID;
+                        var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
+                        child.ApprovePersonDeptName = deptInfo.DeptName;
+                        var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
+                        child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
+                        child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
 
-                    list.Add(child);
-                }
+                        list.Add(child);
+                    }
+                    foreach (var item in secondApprovePersonIDThird)
+                    {
+                        var child = new Models.FileComprehensiveChild();
 
-                foreach (var item in firstApprovePersonIDThird)
-                {
-                    var child = new Models.FileComprehensiveChild();
+                        child.FileComprehensiveID = info.FileComprehensiveID;
+                        child.ApproveType = "评分标准(商务)";
+                        child.ApproveLevel = "二级";
+                        child.ApproveState = "待审批";
+                        child.ApprovePersonID = item;
+                        var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
+                        child.ApprovePersonName = firstUser.UserName;
+                        child.ApprovePersonDeptID = firstUser.UserDeptID;
+                        var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
+                        child.ApprovePersonDeptName = deptInfo.DeptName;
+                        var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
+                        child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
+                        child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
 
-                    child.FileComprehensiveID = info.FileComprehensiveID;
-                    child.ApproveType = "评分标准(商务)";
-                    child.ApproveLevel = "一级";
-                    child.ApproveState = "待审批";
-                    child.ApprovePersonID = item;
-                    var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
-                    child.ApprovePersonName = firstUser.UserName;
-                    child.ApprovePersonDeptID = firstUser.UserDeptID;
-                    var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
-                    child.ApprovePersonDeptName = deptInfo.DeptName;
-                    var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
-                    child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
-                    child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
-
-                    list.Add(child);
-                }
-                foreach (var item in secondApprovePersonIDThird)
-                {
-                    var child = new Models.FileComprehensiveChild();
-
-                    child.FileComprehensiveID = info.FileComprehensiveID;
-                    child.ApproveType = "评分标准(商务)";
-                    child.ApproveLevel = "二级";
-                    child.ApproveState = "待审批";
-                    child.ApprovePersonID = item;
-                    var firstUser = db.UserInfo.Where(w => w.UserID == item).FirstOrDefault();
-                    child.ApprovePersonName = firstUser.UserName;
-                    child.ApprovePersonDeptID = firstUser.UserDeptID;
-                    var deptInfo = db.DeptInfo.Where(w => w.DeptID == firstUser.UserDeptID).FirstOrDefault();
-                    child.ApprovePersonDeptName = deptInfo.DeptName;
-                    var deptFatherInfo = db.DeptInfo.Where(w => w.DeptID == deptInfo.DeptFatherID).FirstOrDefault();
-                    child.ApprovePersonFatherDeptName = deptFatherInfo.DeptName;
-                    child.ApprovePersonFatherDeptID = deptInfo.DeptFatherID;
-
-                    list.Add(child);
+                        list.Add(child);
+                    }
                 }
 
                 db.FileComprehensiveChild.AddRange(list);
@@ -1344,6 +1362,7 @@ namespace TenderInfo.Controllers
                                 fileSuccessCount += 1;
                             }
                         }
+
                         //判断评分标准(技术)审批情况
                         if (fileComprehensive.ApproveLevelTechnology == "二级")
                         {
@@ -1374,30 +1393,67 @@ namespace TenderInfo.Controllers
                                 fileSuccessCount += 1;
                             }
                         }
-                        if (fileSuccessCount == 3)
+                        if (fileComprehensive.BusinessScoreStandardFile == null || fileComprehensive.TechnologyScoreStandardFile == null)
                         {
-                            //执行文件合并操作
-                            var filePath = Request.MapPath("~/FileUpload");
-                            var filePathTemplate = Request.MapPath("~/Template");
-                            List<string> fileList = new List<string>();
-                            fileList.Add(Path.Combine(filePath, fileComprehensive.TechnicSpecificationFile));
-                            fileList.Add(Path.Combine(filePath, fileComprehensive.TechnologyScoreStandardFile));
-                            fileList.Add(Path.Combine(filePath, fileComprehensive.BusinessScoreStandardFile));
-                            #region word合并
-                            //var outFile = Path.Combine(filePath, "综合评标法--"+fileComprehensive.ProjectName + Guid.NewGuid() + ".doc");
-                            //var wordClass = new App_Code.WordClass();
-                            //wordClass.InsertMerge(Path.Combine(filePathTemplate, "ComprehensiveFile.doc"), fileList, outFile);
-                            #endregion
-                            var fileName = "综合评标法--" + fileComprehensive.ProjectName + Guid.NewGuid() + ".pdf";
-                            var outFile = Path.Combine(filePath,fileName );
+                            if (fileSuccessCount == 2)
+                            {
+                                //执行文件合并操作
+                                var filePath = Request.MapPath("~/FileUpload");
+                                var filePathTemplate = Request.MapPath("~/Template");
+                                List<string> fileList = new List<string>();
+                                fileList.Add(Path.Combine(filePath, fileComprehensive.TechnicSpecificationFile));
+                                if (fileComprehensive.TechnologyScoreStandardFile != null)
+                                {
+                                    fileList.Add(Path.Combine(filePath, fileComprehensive.TechnologyScoreStandardFile));
+                                }
+                                if (fileComprehensive.BusinessScoreStandardFile != null)
+                                {
+                                    fileList.Add(Path.Combine(filePath, fileComprehensive.BusinessScoreStandardFile));
+                                }
+                                #region word合并
+                                //var outFile = Path.Combine(filePath, "综合评标法--"+fileComprehensive.ProjectName + Guid.NewGuid() + ".doc");
+                                //var wordClass = new App_Code.WordClass();
+                                //wordClass.InsertMerge(Path.Combine(filePathTemplate, "ComprehensiveFile.doc"), fileList, outFile);
+                                #endregion
+                                var fileName = "综合评标法--" + fileComprehensive.ProjectName + Guid.NewGuid() + ".pdf";
+                                var outFile = Path.Combine(filePath, fileName);
 
-                            //App_Code.Commen.MergePdfFilesBySpire(fileList, outFile);
-                            App_Code.Commen.MergePdfFilesByiTextSharp(fileList, outFile);
+                                //App_Code.Commen.MergePdfFilesBySpire(fileList, outFile);
+                                App_Code.Commen.MergePdfFilesByiTextSharp(fileList, outFile);
 
-                            fileComprehensive.TechnicSpecificationFileMerge = fileName;
-                            fileComprehensive.TechnicSpecificationFileMergeShow = "综合评标法--" + fileComprehensive.ProjectName + ".pdf";
-                            fileComprehensive.ApproveSuccessState = "审批完成";
-                            db.SaveChanges();
+                                fileComprehensive.TechnicSpecificationFileMerge = fileName;
+                                fileComprehensive.TechnicSpecificationFileMergeShow = "综合评标法--" + fileComprehensive.ProjectName + ".pdf";
+                                fileComprehensive.ApproveSuccessState = "审批完成";
+                                db.SaveChanges();
+                            }
+                        }
+                        else
+                        {
+                            if (fileSuccessCount == 3)
+                            {
+                                //执行文件合并操作
+                                var filePath = Request.MapPath("~/FileUpload");
+                                var filePathTemplate = Request.MapPath("~/Template");
+                                List<string> fileList = new List<string>();
+                                fileList.Add(Path.Combine(filePath, fileComprehensive.TechnicSpecificationFile));
+                                fileList.Add(Path.Combine(filePath, fileComprehensive.TechnologyScoreStandardFile));
+                                fileList.Add(Path.Combine(filePath, fileComprehensive.BusinessScoreStandardFile));
+                                #region word合并
+                                //var outFile = Path.Combine(filePath, "综合评标法--"+fileComprehensive.ProjectName + Guid.NewGuid() + ".doc");
+                                //var wordClass = new App_Code.WordClass();
+                                //wordClass.InsertMerge(Path.Combine(filePathTemplate, "ComprehensiveFile.doc"), fileList, outFile);
+                                #endregion
+                                var fileName = "综合评标法--" + fileComprehensive.ProjectName + Guid.NewGuid() + ".pdf";
+                                var outFile = Path.Combine(filePath, fileName);
+
+                                //App_Code.Commen.MergePdfFilesBySpire(fileList, outFile);
+                                App_Code.Commen.MergePdfFilesByiTextSharp(fileList, outFile);
+
+                                fileComprehensive.TechnicSpecificationFileMerge = fileName;
+                                fileComprehensive.TechnicSpecificationFileMergeShow = "综合评标法--" + fileComprehensive.ProjectName + ".pdf";
+                                fileComprehensive.ApproveSuccessState = "审批完成";
+                                db.SaveChanges();
+                            }
                         }
                         #endregion
                         return "ok";
@@ -1427,9 +1483,14 @@ namespace TenderInfo.Controllers
         {
             try
             {
+                if (!User.IsInRole("技术规格书提报"))
+                {
+                    return "没有上传权限！";
+                }
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var fileType = string.Empty;
                 var idString = string.Empty;
+
                 if (Request.Form["tbxReLoadOneID"] != null)
                 {
                     fileType = Request.Form["tbxReLoadOneType"];

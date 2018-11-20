@@ -54,27 +54,27 @@ namespace TenderInfo.Models
         public string TechnicSpecificationFileShow { get; set; }
 
         /// <summary>
-        /// 评分标准--技术
+        /// 评分标准（技术）文件名
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string TechnologyScoreStandardFile { get; set; }
 
         /// <summary>
-        /// 评分标准--技术--显示用
+        /// 评分标准（技术）文件名--显示用
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string TechnologyScoreStandardFileShow { get; set; }
 
         /// <summary>
-        /// 评分标准--商务
+        /// 评分标准（商务）文件名
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string BusinessScoreStandardFile { get; set; }
 
         /// <summary>
-        /// 评分标准--商务--显示用
+        /// 评分标准（商务）文件名--显示用
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string BusinessScoreStandardFileShow { get; set; }
 
         /// <summary>
@@ -92,25 +92,25 @@ namespace TenderInfo.Models
         /// <summary>
         /// 审批级别--评分标准--技术
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string ApproveLevelTechnology { get; set; }
 
         /// <summary>
         /// 审批状态--评分标准--技术
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string ApproveStateTechnology { get; set; }
 
         /// <summary>
         /// 审批级别--评分标准--商务
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string ApproveLevelBusiness { get; set; }
 
         /// <summary>
         /// 审批状态--评分标准--商务
         /// </summary>
-        [StringLength(200), Required]
+        [StringLength(200)]
         public string ApproveStateBusiness { get; set; }
 
         /// <summary>
