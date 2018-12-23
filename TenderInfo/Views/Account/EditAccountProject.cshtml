@@ -754,6 +754,12 @@
                         <button type="button" id="btnReturn" class="btn bg-black">
                             <i class="glyphicon glyphicon-share-alt"></i> 返回
                         </button>
+                        @if (User.IsInRole("新建招标台账"))
+                        {
+                            <button type="button" id="btnDel" class="btn btn-danger">
+                                <i class="glyphicon glyphicon-remove"></i> 删除
+                            </button>
+                        }
                     </div>
                 </form>
             </div>
@@ -1443,6 +1449,26 @@
             }
         });
 
+        $("#btnDel").click(function () {
+            Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+
+                    $.post("/Account/Del", { id: $("#tbxAccountIDEdit").val() }, function (result) {
+                        if (result == "ok") {
+                            toastr.success("操作成功！", "提示");
+                            BackView();
+                        }
+                        else {
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
         function BackView(pageInfo) {
             var tenderInfo = unescape(getQueryString("tenderInfo"));//招标情况
             var projectName = unescape(getQueryString("projectName"));//项目名称
@@ -1479,7 +1505,6 @@
         function GetInfo() {
             var accountID = $("#tbxAccountIDEdit").val();
             $.post("/Account/GetOne", { "accountID": accountID }, function (result) {
-                console.log(result.TenderInfo);
                 $("#tbxProjectNameEdit").val(result.ProjectName);
                 $("#tbxTenderFileNumEdit").val(result.TenderFileNum);
                 $("#ddlIsOnlineEdit").val(result.IsOnline);

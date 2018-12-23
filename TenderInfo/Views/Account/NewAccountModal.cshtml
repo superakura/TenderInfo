@@ -46,6 +46,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxPlanInvestPriceEdit">预计投资（万元）<span class="text-danger">(必填)</span></label>
+                                        <input id="tbxPlanInvestPriceEdit" name="tbxPlanInvestPriceEdit" class="form-control input-sm" placeholder="预计投资（万元）" />
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -84,7 +92,7 @@
     $(function () {
 
         function ClearInfo() {
-            $("#tbxTenderFileNum,#tbxProjectName").val("");
+            $("#tbxTenderFileNum,#tbxProjectName,#tbxPlanInvestPriceEdit").val("");
         }
 
         //新增按钮
@@ -99,6 +107,7 @@
         var validNewAccountForm = $("#NewAccountForm").validate({
             rules: {
                 tbxTenderFileNum: { required: true, maxlength: 100 },
+                tbxPlanInvestPriceEdit: { required: true },
                 tbxProjectName: { required: true, maxlength: 100 }
             }
         });

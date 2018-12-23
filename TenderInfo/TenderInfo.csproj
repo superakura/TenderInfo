@@ -766,17 +766,9 @@
     <Compile Include="Migrations\201810180125589_edit38.Designer.cs">
       <DependentUpon>201810180125589_edit38.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201811140112237_edit39.cs" />
-    <Compile Include="Migrations\201811140112237_edit39.Designer.cs">
-      <DependentUpon>201811140112237_edit39.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811140113398_edit40.cs" />
-    <Compile Include="Migrations\201811140113398_edit40.Designer.cs">
-      <DependentUpon>201811140113398_edit40.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201811150134593_edit41.cs" />
-    <Compile Include="Migrations\201811150134593_edit41.Designer.cs">
-      <DependentUpon>201811150134593_edit41.cs</DependentUpon>
+    <Compile Include="Migrations\201812230625156_edit39.cs" />
+    <Compile Include="Migrations\201812230625156_edit39.Designer.cs">
+      <DependentUpon>201812230625156_edit39.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -989,14 +981,8 @@
     <EmbeddedResource Include="Migrations\201810180125589_edit38.resx">
       <DependentUpon>201810180125589_edit38.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811140112237_edit39.resx">
-      <DependentUpon>201811140112237_edit39.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811140113398_edit40.resx">
-      <DependentUpon>201811140113398_edit40.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811150134593_edit41.resx">
-      <DependentUpon>201811150134593_edit41.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201812230625156_edit39.resx">
+      <DependentUpon>201812230625156_edit39.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

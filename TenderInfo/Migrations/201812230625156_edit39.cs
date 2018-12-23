@@ -7,10 +7,12 @@ namespace TenderInfo.Migrations
     {
         public override void Up()
         {
+            AddColumn("dbo.Account", "QualificationExamMethod", c => c.String(maxLength: 50));
         }
         
         public override void Down()
         {
+            DropColumn("dbo.Account", "QualificationExamMethod");
         }
     }
 }

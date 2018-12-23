@@ -10,8 +10,11 @@ namespace TenderInfo.Models
     [Table("Account")]
     public class Account
     {
+        /// <summary>
+        /// 招标台账信息ID
+        /// </summary>
         [Key]
-        public int AccountID { get; set; }//招标台账信息ID
+        public int AccountID { get; set; }
 
         /// <summary>
         /// 项目类型，物资、框架、工程、服务
@@ -32,8 +35,8 @@ namespace TenderInfo.Models
         public string TenderFileNum { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>线上/线下
+        /// 线上/线下
+        /// </summary>
         [StringLength(200)]
         public string IsOnline { get; set; }
 
@@ -255,5 +258,11 @@ namespace TenderInfo.Models
         /// </summary>
         [StringLength(50)]
         public string IsSynchro { get; set; }
+
+        /// <summary>
+        /// 资格审查方式
+        /// </summary>
+        [StringLength(50)]
+        public string QualificationExamMethod { get; set; }
     }
 }

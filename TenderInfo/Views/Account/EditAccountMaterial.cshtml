@@ -50,7 +50,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="tbxQuotedPriceUnitEdit">报价--单价</label>
+                                        <label for="tbxQuotedPriceUnitEdit">报价--单价（元）</label>
                                         <input id="tbxQuotedPriceUnitEdit" name="tbxQuotedPriceUnitEdit" type="text" class="form-control" />
                                     </div>
                                 </div>
@@ -582,7 +582,7 @@
                                                 <th rowspan="2" class="text-center" style="vertical-align:middle">初步评审是否被否决</th>
                                             </tr>
                                             <tr>
-                                                <th class="text-center">单价</th>
+                                                <th class="text-center">单价（元）</th>
                                                 <th class="text-center">总价（万元）</th>
                                             </tr>
                                         </thead>
@@ -608,7 +608,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxTenderRestrictUnitPriceEdit">招标控制价--单价</label>
+                                <label for="tbxTenderRestrictUnitPriceEdit">招标控制价--单价（元）</label>
                                 <input id="tbxTenderRestrictUnitPriceEdit" name="tbxTenderRestrictUnitPriceEdit" class="form-control input-sm" placeholder="招标控制单价" />
                             </div>
                         </div>
@@ -622,7 +622,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxTenderSuccessUnitPriceEdit">中标金额--单价</label>
+                                <label for="tbxTenderSuccessUnitPriceEdit">中标金额--单价（元）</label>
                                 <input id="tbxTenderSuccessUnitPriceEdit" name="tbxTenderSuccessUnitPriceEdit" class="form-control input-sm" placeholder="中标金额--单价" />
                             </div>
                         </div>
@@ -812,6 +812,12 @@
                         <button type="button" id="btnReturn" class="btn bg-black">
                             <i class="glyphicon glyphicon-share-alt"></i> 返回
                         </button>
+                        @if (User.IsInRole("新建招标台账"))
+                        {
+                            <button type="button" id="btnDel" class="btn btn-danger">
+                                <i class="glyphicon glyphicon-remove"></i> 删除
+                            </button>
+                        }
                     </div>
                 </form>
             </div>
@@ -1500,6 +1506,26 @@
             BackView();
         });
 
+        $("#btnDel").click(function () {
+            Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+
+                    $.post("/Account/Del", { id: $("#tbxAccountIDEdit").val() }, function (result) {
+                        if (result == "ok") {
+                            toastr.success("操作成功！", "提示");
+                            BackView();
+                        }
+                        else {
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
         function BackView() {
             var tenderInfo = unescape(getQueryString("tenderInfo"));//招标情况
             var projectName = unescape(getQueryString("projectName"));//项目名称
@@ -1561,6 +1587,7 @@
                 $("#tbxTenderSuccessPersonEdit").val(result.TenderSuccessPerson);
                 $("#tbxPlanInvestPriceEdit").val(result.PlanInvestPrice);
                 $("#tbxTenderRestrictUnitPriceEdit").val(result.TenderRestrictUnitPrice);
+                $("#tbxTenderRestrictSumPriceEdit").val(result.TenderRestrictSumPrice);
 
                 $("#tbxTenderSuccessUnitPriceEdit").val(result.TenderSuccessUnitPrice);
                 $("#tbxTenderSuccessSumPriceEdit").val(result.TenderSuccessSumPrice);

@@ -7,13 +7,13 @@ namespace TenderInfo.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class edit40 : IMigrationMetadata
+    public sealed partial class edit39 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(edit40));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(edit39));
         
         string IMigrationMetadata.Id
         {
-            get { return "201811140113398_edit40"; }
+            get { return "201812230625156_edit39"; }
         }
         
         string IMigrationMetadata.Source

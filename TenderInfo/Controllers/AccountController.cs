@@ -100,7 +100,10 @@ namespace TenderInfo.Controllers
         #endregion
 
         #region 获取二级单位、与招标进度数据同步
-        //获取二级单位，为使用单位、项目主责部门、评标委员会单位提供数据
+        /// <summary>
+        /// 获取二级单位，为使用单位、项目主责部门、评标委员会单位提供数据
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetDeptForSelect()
         {
@@ -115,7 +118,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //获取台账信息，供进度同步信息时，选择要同步到哪个台账
+        /// <summary>
+        /// 获取台账信息，供进度同步信息时，选择要同步到哪个台账
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetAccountListForSelect()
         {
@@ -158,7 +164,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //招标进度模块，同步数据到招标台账
+        /// <summary>
+        /// 招标进度模块，同步数据到招标台账
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string UpdateProgress()
         {
@@ -194,7 +203,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //根据招标进度ID,删除招标进度、招标台账同步关系
+        /// <summary>
+        /// 根据招标进度ID,删除招标进度、招标台账同步关系
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string DelSynchroByProgressID()
         {
@@ -241,7 +253,10 @@ namespace TenderInfo.Controllers
 
         #region Crud
 
-        //获取招标台账列表
+        /// <summary>
+        /// 获取招标台账列表
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetList()
         {
@@ -384,7 +399,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //新建招标台账
+        /// <summary>
+        /// 新建招标台账
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string Insert()
         {
@@ -393,6 +411,8 @@ namespace TenderInfo.Controllers
                 var projectName = Request.Form["tbxProjectName"].ToString();
                 var projectType = Request.Form["tbxProjectType"].ToString();
                 var tenderFileNum = Request.Form["tbxTenderFileNum"].ToString();
+                decimal planInvestPriceEdit = 0;
+                decimal.TryParse(Request.Form["tbxPlanInvestPriceEdit"].ToString(),out planInvestPriceEdit);
                 var isOnline = Request.Form["ddlIsOnline"].ToString();
                 var projectResponsiblePersonID = 0;
                 int.TryParse(Request.Form["ddlProjectResponsiblePerson"].ToString(), out projectResponsiblePersonID);
@@ -407,6 +427,7 @@ namespace TenderInfo.Controllers
                 info.ProjectName = projectName;
                 info.ProjectType = projectType;
                 info.TenderFileNum = tenderFileNum;
+                info.PlanInvestPrice = planInvestPriceEdit;
                 info.IsOnline = isOnline;
                 info.ProjectResponsiblePersonID = projectResponsiblePersonID;
                 info.ProjectResponsiblePersonName = projectResponsiblePersonName;
@@ -420,7 +441,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //更新招标台账内容
+        /// <summary>
+        /// 更新招标台账内容
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string Update()
         {
@@ -533,6 +557,9 @@ namespace TenderInfo.Controllers
                 info.SaveCapital = saveCapital;
                 #endregion
 
+                //资格审查方式
+                info.QualificationExamMethod = Request.Form["ddlQualificationExamMethod"];
+
                 //招标文件联审--联审时间（小时）
                 decimal tenderFileAuditTime = 0;
                 decimal.TryParse(Request.Form["tbxTenderFileAuditTimeEdit"], out tenderFileAuditTime);
@@ -576,7 +603,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //获取一项招标台账信息
+        /// <summary>
+        /// 获取一项招标台账信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetOne()
         {
@@ -591,6 +621,67 @@ namespace TenderInfo.Controllers
             {
                 return Json(ex.Message);
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// 删除招标台账
+        /// </summary>
+        /// <returns>ok</returns>
+        public string Del()
+        {
+            //删除台账信息，删除台账子表详细信息，删除日志台账信息，删除框架文件信息,删除同步招标进度的对应关系
+            try
+            {
+                var id = 0;
+                int.TryParse(Request.Form["id"], out id);
+
+                var infoAccount = db.Account.Find(id);
+                var infoAccountChild = db.AccountChild.Where(w => w.AccountID == id);
+
+                //删除与招标进度的同步关系
+                if (infoAccount.IsSynchro == "是")
+                {
+                    var infoProgress = db.ProgressInfo.Where(w => w.AccountID == id).FirstOrDefault();
+                    infoProgress.IsSynchro = null;
+                    infoProgress.AccountID = null;
+                }
+
+                //删除框架文件信息
+                var fileList = infoAccountChild.Where(w => w.TableType == "Six").ToList();
+                var filePath = Request.MapPath("~/FileUpload");
+                foreach (var item in fileList)
+                {
+                    if (item.FrameFile != null)
+                    {
+                        var file = item.FrameFile;
+                        var fullName = Path.Combine(filePath, file ?? "");
+                        if (System.IO.File.Exists(fullName))
+                        {
+                            System.IO.File.Delete(fullName);
+                        }
+                    }
+                }
+                db.Account.Remove(infoAccount);
+                db.AccountChild.RemoveRange(infoAccountChild);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+
+                //删除招标台账，写入日志信息
+                var logInfo = new Models.Log();
+                logInfo.InputDateTime = DateTime.Now;
+                logInfo.InputPersonID = userInfo.UserID;
+                logInfo.InputPersonName = userInfo.UserName;
+                logInfo.LogContent = "删除项目：" + infoAccount.ProjectName + "-" + "类型：【" + infoAccount.ProjectType + "】";
+                logInfo.LogType = "删除招标台账";
+                db.Log.Add(logInfo);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
             }
         }
         #endregion
@@ -1132,7 +1223,11 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //框架文件上传
+        /// <summary>
+        /// 框架文件上传
+        /// </summary>
+        /// <param name="frameFile"></param>
+        /// <returns></returns>
         [HttpPost]
         public string UploadFrameFile(HttpPostedFileBase frameFile)
         {
@@ -1171,7 +1266,10 @@ namespace TenderInfo.Controllers
             }
         }
 
-        //框架文件删除
+        /// <summary>
+        /// 框架文件删除
+        /// </summary>
+        /// <returns></returns>
         public string DelFrameFile()
         {
             try
