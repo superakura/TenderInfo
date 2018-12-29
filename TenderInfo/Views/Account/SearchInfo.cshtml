@@ -59,6 +59,9 @@
             <button type="button" id="btnReset" class="btn bg-navy">
                 <span class="glyphicon glyphicon-repeat"></span> 重置
             </button>
+            <button type="button" id="btnExcel" class="btn btn-danger">
+                <span class="glyphicon glyphicon-export"></span> 导出
+            </button>
         </div>
     </div>
 </div>
@@ -127,6 +130,24 @@
             //重置为第一页
             $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: 1, pageSize: 5 });
             $("#bsTable").bootstrapTable('refresh');
+        }); 
+
+        //导出按钮
+        $("#btnExcel").click(function () {
+            switch ($("#accountType").text()) {
+                case "物资":
+                    window.location.href = "/Account/AccountToExcel?projectType=物资";
+                    break;
+                case "框架":
+                    window.location.href = "/Account/FrameToExcel?projectType=框架";
+                    break;
+                case "工程":
+                    window.location.href = "/Account/ProjectToExcel?projectType=工程";
+                    break;
+                case "服务":
+                    window.location.href = "/Account/ProjectToExcel?projectType=服务";
+                    break;
+            }
         });
     });
 </script>

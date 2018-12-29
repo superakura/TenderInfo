@@ -353,6 +353,13 @@
                     title: '预计投资（万元）'
                 },
                 {
+                    field: 'account.QualificationExamMethod',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '资格审查方式'
+                },
+                {
                     title: '招标控制价',
                     colspan: 2,
                     rowspan: 1,
@@ -436,6 +443,16 @@
                     colspan: 1,
                     valign: "middle",
                     title: '备注'
+                },
+                {
+                    field: 'account.InsertDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(row.account.InsertDate);
+                    },
+                    title: '台账建立时间'
                 }
             ],
             [

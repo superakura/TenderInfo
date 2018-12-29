@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Aspose.Cells;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity.SqlServer;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -412,7 +415,7 @@ namespace TenderInfo.Controllers
                 var projectType = Request.Form["tbxProjectType"].ToString();
                 var tenderFileNum = Request.Form["tbxTenderFileNum"].ToString();
                 decimal planInvestPriceEdit = 0;
-                decimal.TryParse(Request.Form["tbxPlanInvestPriceEdit"].ToString(),out planInvestPriceEdit);
+                decimal.TryParse(Request.Form["tbxPlanInvestPriceEdit"].ToString(), out planInvestPriceEdit);
                 var isOnline = Request.Form["ddlIsOnline"].ToString();
                 var projectResponsiblePersonID = 0;
                 int.TryParse(Request.Form["ddlProjectResponsiblePerson"].ToString(), out projectResponsiblePersonID);
@@ -476,8 +479,8 @@ namespace TenderInfo.Controllers
                 info.TenderRange = Request.Form["tbxTenderRangeEdit"];
 
                 //物资、框架
-                info.TenderMode = Request.Form["tbxTenderModeEdit"] ?? null;
-                info.BidEvaluation = Request.Form["tbxBidEvaluationEdit"] ?? null;
+                info.TenderMode = Request.Form["ddlTenderModeEdit"] ?? null;
+                info.BidEvaluation = Request.Form["ddlBidEvaluationEdit"] ?? null;
                 info.SupplyPeriod = Request.Form["tbxSupplyPeriodEdit"] ?? null;
                 info.IsHaveCount = Request.Form["ddlIsHaveCountEdit"] ?? null;
 
@@ -592,6 +595,7 @@ namespace TenderInfo.Controllers
                     infoProgress.TenderFileSaleStartDate = info.TenderFileSaleStartDate;
                     infoProgress.TenderFileSaleEndDate = info.TenderFileSaleEndDate;
                     infoProgress.TenderStartDate = info.TenderStartDate;
+                    infoProgress.Remark = info.TenderRemark;
                 }
 
                 db.SaveChanges();
@@ -1523,6 +1527,1484 @@ namespace TenderInfo.Controllers
             {
                 return ex.Message;
             }
+        }
+        #endregion
+
+        #region 导出到Excel
+        /// <summary>
+        /// 导出物资台账到Excel
+        /// </summary>
+        /// <returns></returns>
+        public FileResult AccountToExcel()
+        {
+            #region 获取台账数据
+            var accountType = Request.QueryString["projectType"];//台账类别,物资、框架、工程、服务
+
+            var userInfo = App_Code.Commen.GetUserFromSession();
+            var result = from a in db.Account
+                         where a.ProjectType == accountType
+                         select a;
+
+            if (!User.IsInRole("领导查看"))
+            {
+                if (!User.IsInRole("组长查看"))
+                {
+                    if (User.IsInRole("招标管理"))
+                    {
+                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                    }
+                }
+                else
+                {
+                    //查看本组的人员，包括自己
+                    if (User.IsInRole("组长查看"))
+                    {
+                        List<int> personList = new List<int>();
+                        personList.Add(userInfo.UserID);//添加自己
+
+                        //添加组内成员
+                        var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
+                        foreach (var item in memberList)
+                        {
+                            personList.Add(item.MemberUserID);
+                        }
+
+                        result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
+                    }
+                }
+            }
+
+            var accountList = result.OrderByDescending(o => o.AccountID).ToList();
+            #endregion
+
+            var filename = "台账统计信息" + App_Code.Commen.GetDateTimeString();
+
+            string path = System.IO.Path.Combine(Server.MapPath("/"), "Template/ExportAccountMaterial.xls");
+            Workbook workbook = new Workbook();
+            workbook.Open(path);
+            Cells cells = workbook.Worksheets[0].Cells;
+            Worksheet ws = workbook.Worksheets[0];
+
+            StyleFlag sf = new StyleFlag();
+            sf.HorizontalAlignment = true;
+            sf.VerticalAlignment = true;
+            sf.WrapText = true;
+            sf.Borders = true;
+
+            Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式  
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中 
+            style1.VerticalAlignment = TextAlignmentType.Center;
+            style1.IsTextWrapped = true;//单元格内容自动换行  
+            style1.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin; //应用边界线 左边界线  
+            style1.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin; //应用边界线 右边界线  
+            style1.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin; //应用边界线 上边界线  
+            style1.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin; //应用边界线 下边界线  
+
+            int row = 2;//开始生成表格行数  
+            foreach (var info in accountList)
+            {
+                var startmergepos = row;//开始合并的行位置，默认从row开始。
+                List<int> countList = new List<int>();
+                var childlist = (from c in db.AccountChild
+                                 where c.AccountID == info.AccountID
+                                 select c).ToList();
+                var firstList = childlist.Where(w => w.TableType == "first").ToList();
+                var secondList = childlist.Where(w => w.TableType == "second").ToList();
+                var thirdList = childlist.Where(w => w.TableType == "Third").ToList();
+                var fourList = childlist.Where(w => w.TableType == "Four").ToList();
+                var fiveList = childlist.Where(w => w.TableType == "Five").ToList();
+
+                countList.Add(firstList.Count);
+                countList.Add(secondList.Count);
+                countList.Add(thirdList.Count);
+                countList.Add(fourList.Count);
+                countList.Add(fiveList.Count);
+
+                var firstRow = startmergepos;
+                foreach (var item in firstList)
+                {
+                    cells[firstRow, 18].PutValue(item.TenderFilePlanPayPerson==""?"-": item.TenderFilePlanPayPerson);
+                    cells[firstRow, 18].SetStyle(style1);
+                    cells[firstRow, 19].PutValue(item.TenderPerson);
+                    cells[firstRow, 19].SetStyle(style1);
+                    cells[firstRow, 20].PutValue(item.ProductManufacturer);
+                    cells[firstRow, 20].SetStyle(style1);
+                    cells[firstRow, 21].PutValue(item.QuotedPriceUnit);
+                    cells[firstRow, 21].SetStyle(style1);
+                    cells[firstRow, 22].PutValue(item.QuotedPriceSum);
+                    cells[firstRow, 22].SetStyle(style1);
+                    cells[firstRow, 23].PutValue(item.NegationExplain);
+                    cells[firstRow, 23].SetStyle(style1);
+                    firstRow += 1;
+                }
+
+                var secondRow = startmergepos;
+                foreach (var item in secondList)
+                {
+                    cells[secondRow, 32].PutValue(item.EvaluationPersonName);
+                    cells[secondRow, 32].SetStyle(style1);
+                    cells[secondRow, 33].PutValue(item.EvaluationPersonDeptName);
+                    cells[secondRow, 33].SetStyle(style1);
+                    cells[secondRow, 34].PutValue(item.IsEvaluationDirector);
+                    cells[secondRow, 34].SetStyle(style1);
+                    cells[secondRow, 35].PutValue(item.EvaluationTime);
+                    cells[secondRow, 35].SetStyle(style1);
+                    cells[secondRow, 36].PutValue(item.EvaluationCost);
+                    cells[secondRow, 36].SetStyle(style1);
+                    secondRow += 1;
+                }
+
+                var thirdRow = startmergepos;
+                foreach (var item in thirdList)
+                {
+                    cells[thirdRow, 37].PutValue(item.TenderFileAuditPersonName);
+                    cells[thirdRow, 37].SetStyle(style1);
+                    cells[thirdRow, 38].PutValue(item.TenderFileAuditPersonDeptName);
+                    cells[thirdRow, 38].SetStyle(style1);
+                    cells[thirdRow, 40].PutValue(item.TenderFileAuditCost);
+                    cells[thirdRow, 40].SetStyle(style1);
+                    thirdRow += 1;
+                }
+
+                var fourRow = startmergepos;
+                foreach (var item in fourList)
+                {
+                    cells[fourRow, 42].PutValue(item.ClarifyLaunchPerson);
+                    cells[fourRow, 42].SetStyle(style1);
+                    cells[fourRow, 43].PutValue(item.ClarifyLaunchDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 43].SetStyle(style1);
+                    cells[fourRow, 44].PutValue(item.ClarifyReason);
+                    cells[fourRow, 44].SetStyle(style1);
+                    cells[fourRow, 45].PutValue(item.ClarifyAcceptDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 45].SetStyle(style1);
+                    cells[fourRow, 46].PutValue(item.ClarifyDisposePerson);
+                    cells[fourRow, 46].SetStyle(style1);
+                    cells[fourRow, 47].PutValue(item.IsClarify);
+                    cells[fourRow, 47].SetStyle(style1);
+                    cells[fourRow, 48].PutValue(item.ClarifyDisposeInfo);
+                    cells[fourRow, 48].SetStyle(style1);
+                    cells[fourRow, 49].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 49].SetStyle(style1);
+                    fourRow += 1;
+                }
+
+                var fiveRow = startmergepos;
+                foreach (var item in fiveList)
+                {
+                    cells[fiveRow, 50].PutValue(item.DissentLaunchPerson);
+                    cells[fiveRow, 50].SetStyle(style1);
+                    cells[fiveRow, 51].PutValue(item.DissentLaunchPersonPhone);
+                    cells[fiveRow, 51].SetStyle(style1);
+                    cells[fiveRow, 52].PutValue(item.DissentLaunchDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 52].SetStyle(style1);
+                    cells[fiveRow, 53].PutValue(item.DissentReason);
+                    cells[fiveRow, 53].SetStyle(style1);
+                    cells[fiveRow, 54].PutValue(item.DissentAcceptDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 54].SetStyle(style1);
+                    cells[fiveRow, 55].PutValue(item.DissentAcceptPerson);
+                    cells[fiveRow, 55].SetStyle(style1);
+                    cells[fiveRow, 56].PutValue(item.DissentDisposePerson);
+                    cells[fiveRow, 56].SetStyle(style1);
+                    cells[fiveRow, 57].PutValue(item.DissentDisposeInfo);
+                    cells[fiveRow, 57].SetStyle(style1);
+                    cells[fiveRow, 58].PutValue(item.DissentReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 58].SetStyle(style1);
+                    fiveRow += 1;
+                }
+
+                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
+                var rowsorder = countList.Max()==0?1: countList.Max();
+
+                if (firstList.Count == 0)
+                {
+                    Range range18 = ws.Cells.CreateRange(startmergepos, 18, rowsorder, 1);
+                    range18.ApplyStyle(style1, sf);
+                    range18.Merge();
+
+                    Range range19 = ws.Cells.CreateRange(startmergepos, 19, rowsorder, 1);
+                    range19.ApplyStyle(style1, sf);
+                    range19.Merge();
+
+                    Range range20 = ws.Cells.CreateRange(startmergepos, 20, rowsorder, 1);
+                    range20.ApplyStyle(style1, sf);
+                    range20.Merge();
+
+                    Range range21 = ws.Cells.CreateRange(startmergepos, 21, rowsorder, 1);
+                    range21.ApplyStyle(style1, sf);
+                    range21.Merge();
+
+                    Range range22 = ws.Cells.CreateRange(startmergepos, 22, rowsorder, 1);
+                    range22.ApplyStyle(style1, sf);
+                    range22.Merge();
+
+                    Range range23 = ws.Cells.CreateRange(startmergepos, 23, rowsorder, 1);
+                    range23.ApplyStyle(style1, sf);
+                    range23.Merge();
+                }
+
+                if (secondList.Count==0)
+                {
+                    Range range32 = ws.Cells.CreateRange(startmergepos, 32, rowsorder, 1);
+                    range32.ApplyStyle(style1, sf);
+                    range32.Merge();
+
+                    Range range33 = ws.Cells.CreateRange(startmergepos, 33, rowsorder, 1);
+                    range33.ApplyStyle(style1, sf);
+                    range33.Merge();
+
+                    Range range34 = ws.Cells.CreateRange(startmergepos, 34, rowsorder, 1);
+                    range34.ApplyStyle(style1, sf);
+                    range34.Merge();
+
+                    Range range35 = ws.Cells.CreateRange(startmergepos, 35, rowsorder, 1);
+                    range35.ApplyStyle(style1, sf);
+                    range35.Merge();
+
+                    Range range36 = ws.Cells.CreateRange(startmergepos, 36, rowsorder, 1);
+                    range36.ApplyStyle(style1, sf);
+                    range36.Merge();
+                }
+
+                if (thirdList.Count == 0)
+                {
+                    Range range37 = ws.Cells.CreateRange(startmergepos, 37, rowsorder, 1);
+                    range37.ApplyStyle(style1, sf);
+                    range37.Merge();
+
+                    Range range38 = ws.Cells.CreateRange(startmergepos, 38, rowsorder, 1);
+                    range38.ApplyStyle(style1, sf);
+                    range38.Merge();
+
+                    Range range40 = ws.Cells.CreateRange(startmergepos, 40, rowsorder, 1);
+                    range40.ApplyStyle(style1, sf);
+                    range40.Merge();
+                }
+
+                if (fourList.Count == 0)
+                {
+                    Range range42 = ws.Cells.CreateRange(startmergepos, 42, rowsorder, 1);
+                    range42.ApplyStyle(style1, sf);
+                    range42.Merge();
+
+                    Range range43 = ws.Cells.CreateRange(startmergepos, 43, rowsorder, 1);
+                    range43.ApplyStyle(style1, sf);
+                    range43.Merge();
+
+                    Range range44 = ws.Cells.CreateRange(startmergepos, 44, rowsorder, 1);
+                    range44.ApplyStyle(style1, sf);
+                    range44.Merge();
+
+                    Range range45 = ws.Cells.CreateRange(startmergepos, 45, rowsorder, 1);
+                    range45.ApplyStyle(style1, sf);
+                    range45.Merge();
+
+                    Range range46 = ws.Cells.CreateRange(startmergepos, 46, rowsorder, 1);
+                    range46.ApplyStyle(style1, sf);
+                    range46.Merge();
+
+                    Range range47 = ws.Cells.CreateRange(startmergepos, 47, rowsorder, 1);
+                    range47.ApplyStyle(style1, sf);
+                    range47.Merge();
+
+                    Range range48 = ws.Cells.CreateRange(startmergepos, 48, rowsorder, 1);
+                    range48.ApplyStyle(style1, sf);
+                    range48.Merge();
+
+                    Range range49 = ws.Cells.CreateRange(startmergepos, 49, rowsorder, 1);
+                    range49.ApplyStyle(style1, sf);
+                    range49.Merge();
+                }
+
+                if (fiveList.Count == 0)
+                {
+                    Range range50 = ws.Cells.CreateRange(startmergepos, 50, rowsorder, 1);
+                    range50.ApplyStyle(style1, sf);
+                    range50.Merge();
+
+                    Range range51 = ws.Cells.CreateRange(startmergepos, 51, rowsorder, 1);
+                    range51.ApplyStyle(style1, sf);
+                    range51.Merge();
+
+                    Range range52 = ws.Cells.CreateRange(startmergepos, 52, rowsorder, 1);
+                    range52.ApplyStyle(style1, sf);
+                    range52.Merge();
+
+                    Range range53 = ws.Cells.CreateRange(startmergepos, 53, rowsorder, 1);
+                    range53.ApplyStyle(style1, sf);
+                    range53.Merge();
+
+                    Range range54 = ws.Cells.CreateRange(startmergepos, 54, rowsorder, 1);
+                    range54.ApplyStyle(style1, sf);
+                    range54.Merge();
+
+                    Range range55 = ws.Cells.CreateRange(startmergepos, 55, rowsorder, 1);
+                    range55.ApplyStyle(style1, sf);
+                    range55.Merge();
+
+                    Range range56 = ws.Cells.CreateRange(startmergepos, 56, rowsorder, 1);
+                    range56.ApplyStyle(style1, sf);
+                    range56.Merge();
+
+                    Range range57 = ws.Cells.CreateRange(startmergepos, 57, rowsorder, 1);
+                    range57.ApplyStyle(style1, sf);
+                    range57.Merge();
+
+                    Range range58 = ws.Cells.CreateRange(startmergepos, 58, rowsorder, 1);
+                    range58.ApplyStyle(style1, sf);
+                    range58.Merge();
+                }
+                //序号
+                cells[startmergepos, 0].PutValue(accountList.IndexOf(info)+1);
+                Range range0 = ws.Cells.CreateRange(startmergepos, 0, rowsorder, 1);
+                range0.ApplyStyle(style1, sf);
+                range0.Merge();
+
+                cells[startmergepos, 1].PutValue(info.ProjectName);
+                Range range1 = ws.Cells.CreateRange(startmergepos, 1, rowsorder, 1);
+                range1.ApplyStyle(style1, sf);
+                range1.Merge();
+
+                cells[startmergepos, 2].PutValue(info.TenderFileNum);
+                Range range2 = ws.Cells.CreateRange(startmergepos, 2, rowsorder, 1);
+                range2.ApplyStyle(style1, sf);
+                range2.Merge();
+
+                cells[startmergepos, 3].PutValue(info.IsOnline);
+                Range range3 = ws.Cells.CreateRange(startmergepos, 3, rowsorder, 1);
+                range3.ApplyStyle(style1, sf);
+                range3.Merge();
+
+                cells[startmergepos, 4].PutValue(info.ProjectResponsiblePersonName);
+                Range range4 = ws.Cells.CreateRange(startmergepos, 4, rowsorder, 1);
+                range4.ApplyStyle(style1, sf);
+                range4.Merge();
+
+                cells[startmergepos, 5].PutValue(info.UsingDeptName);
+                Range range5 = ws.Cells.CreateRange(startmergepos, 5, rowsorder, 1);
+                range5.ApplyStyle(style1, sf);
+                range5.Merge();
+
+                cells[startmergepos, 6].PutValue(info.ProjectResponsibleDeptName);
+                Range range6 = ws.Cells.CreateRange(startmergepos, 6, rowsorder, 1);
+                range6.ApplyStyle(style1, sf);
+                range6.Merge();
+
+                cells[startmergepos, 7].PutValue(info.ApplyPerson);
+                Range range7 = ws.Cells.CreateRange(startmergepos, 7, rowsorder, 1);
+                range7.ApplyStyle(style1, sf);
+                range7.Merge();
+
+                cells[startmergepos, 8].PutValue(info.InvestPlanApproveNum);
+                Range range8 = ws.Cells.CreateRange(startmergepos, 8, rowsorder, 1);
+                range8.ApplyStyle(style1, sf);
+                range8.Merge();
+
+                cells[startmergepos, 9].PutValue(info.TenderRange);
+                Range range9 = ws.Cells.CreateRange(startmergepos, 9, rowsorder, 1);
+                range9.ApplyStyle(style1, sf);
+                range9.Merge();
+
+                cells[startmergepos, 10].PutValue(info.TenderMode);
+                Range range10 = ws.Cells.CreateRange(startmergepos, 10, rowsorder, 1);
+                range10.ApplyStyle(style1, sf);
+                range10.Merge();
+
+                cells[startmergepos, 11].PutValue(info.BidEvaluation);
+                Range range11 = ws.Cells.CreateRange(startmergepos, 11, rowsorder, 1);
+                range11.ApplyStyle(style1, sf);
+                range11.Merge();
+
+                cells[startmergepos, 12].PutValue(info.SupplyPeriod);
+                Range range12 = ws.Cells.CreateRange(startmergepos, 12, rowsorder, 1);
+                range12.ApplyStyle(style1, sf);
+                range12.Merge();
+
+                cells[startmergepos, 13].PutValue(info.TenderProgramAuditDate==null?"":info.TenderProgramAuditDate.Value.ToString("yyyy-MM-dd"));
+                Range range13 = ws.Cells.CreateRange(startmergepos, 13, rowsorder, 1);
+                range13.ApplyStyle(style1, sf);
+                range13.Merge();
+
+                cells[startmergepos, 14].PutValue(info.ProgramAcceptDate==null?"":info.ProgramAcceptDate.Value.ToString("yyyy-MM-dd"));
+                Range range14 = ws.Cells.CreateRange(startmergepos, 14, rowsorder, 1);
+                range14.ApplyStyle(style1, sf);
+                range14.Merge();
+
+                cells[startmergepos, 15].PutValue(info.TenderFileSaleStartDate==null?"":info.TenderFileSaleStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range15 = ws.Cells.CreateRange(startmergepos, 15, rowsorder, 1);
+                range15.ApplyStyle(style1, sf);
+                range15.Merge();
+
+                cells[startmergepos, 16].PutValue(info.TenderFileSaleEndDate==null?"":info.TenderFileSaleEndDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range16 = ws.Cells.CreateRange(startmergepos, 16, rowsorder, 1);
+                range16.ApplyStyle(style1, sf);
+                range16.Merge();
+
+                cells[startmergepos, 17].PutValue(info.TenderStartDate==null?"":info.TenderStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range17 = ws.Cells.CreateRange(startmergepos, 17, rowsorder, 1);
+                range17.ApplyStyle(style1, sf);
+                range17.Merge();
+
+                cells[startmergepos, 24].PutValue(info.TenderSuccessPerson);
+                Range range24 = ws.Cells.CreateRange(startmergepos, 24, rowsorder, 1);
+                range24.ApplyStyle(style1, sf);
+                range24.Merge();
+
+                cells[startmergepos, 25].PutValue(info.PlanInvestPrice);
+                Range range25 = ws.Cells.CreateRange(startmergepos, 25, rowsorder, 1);
+                range25.ApplyStyle(style1, sf);
+                range25.Merge();
+
+                cells[startmergepos, 26].PutValue(info.QualificationExamMethod);
+                Range range26 = ws.Cells.CreateRange(startmergepos, 26, rowsorder, 1);
+                range26.ApplyStyle(style1, sf);
+                range26.Merge();
+
+                cells[startmergepos, 27].PutValue(info.TenderRestrictUnitPrice);
+                Range range27 = ws.Cells.CreateRange(startmergepos, 27, rowsorder, 1);
+                range27.ApplyStyle(style1, sf);
+                range27.Merge();
+
+                cells[startmergepos, 28].PutValue(info.TenderRestrictSumPrice);
+                Range range28 = ws.Cells.CreateRange(startmergepos, 28, rowsorder, 1);
+                range28.ApplyStyle(style1, sf);
+                range28.Merge();
+
+                cells[startmergepos, 29].PutValue(info.TenderSuccessUnitPrice);
+                Range range29 = ws.Cells.CreateRange(startmergepos, 29, rowsorder, 1);
+                range29.ApplyStyle(style1, sf);
+                range29.Merge();
+
+                cells[startmergepos, 30].PutValue(info.TenderSuccessSumPrice);
+                Range range30 = ws.Cells.CreateRange(startmergepos, 30, rowsorder, 1);
+                range30.ApplyStyle(style1, sf);
+                range30.Merge();
+
+                cells[startmergepos, 31].PutValue(info.SaveCapital);
+                Range range31 = ws.Cells.CreateRange(startmergepos, 31, rowsorder, 1);
+                range31.ApplyStyle(style1, sf);
+                range31.Merge();
+
+                cells[startmergepos, 39].PutValue(info.TenderFileAuditTime);
+                Range range39 = ws.Cells.CreateRange(startmergepos, 39, rowsorder, 1);
+                range39.ApplyStyle(style1, sf);
+                range39.Merge();
+
+                cells[startmergepos, 41].PutValue(info.TenderFailReason);
+                Range range41 = ws.Cells.CreateRange(startmergepos, 41, rowsorder, 1);
+                range41.ApplyStyle(style1, sf);
+                range41.Merge();
+
+                cells[startmergepos, 59].PutValue(info.ContractNum);
+                Range range59 = ws.Cells.CreateRange(startmergepos, 59, rowsorder, 1);
+                range59.ApplyStyle(style1, sf);
+                range59.Merge();
+
+                cells[startmergepos, 60].PutValue(info.ContractPrice);
+                Range range60 = ws.Cells.CreateRange(startmergepos, 60, rowsorder, 1);
+                range60.ApplyStyle(style1, sf);
+                range60.Merge();
+
+                cells[startmergepos, 61].PutValue(info.RelativePerson);
+                Range range61 = ws.Cells.CreateRange(startmergepos, 61, rowsorder, 1);
+                range61.ApplyStyle(style1, sf);
+                range61.Merge();
+
+                cells[startmergepos, 62].PutValue(info.TenderInfo);
+                Range range62 = ws.Cells.CreateRange(startmergepos, 62, rowsorder, 1);
+                range62.ApplyStyle(style1, sf);
+                range62.Merge();
+
+                cells[startmergepos, 63].PutValue(info.TenderRemark);
+                Range range63 = ws.Cells.CreateRange(startmergepos, 63, rowsorder, 1);
+                range63.ApplyStyle(style1, sf);
+                range63.Merge();
+
+                //这是合并单元格后的行数，一定注意，要加上合并的行数
+                row = startmergepos + rowsorder;
+            }
+
+            string fileToSave = System.IO.Path.Combine(Server.MapPath("/"), "ExcelOutPut/" + filename + ".xls");
+            if (System.IO.File.Exists(fileToSave))
+            {
+                System.IO.File.Delete(fileToSave);
+            }
+            workbook.Save(fileToSave, FileFormatType.Excel97To2003);
+            return File(fileToSave, "application/vnd.ms-excel", filename + ".xls");
+        }
+
+        /// <summary>
+        /// 导出框架台账到Excel
+        /// </summary>
+        /// <returns></returns>
+        public FileResult FrameToExcel()
+        {
+            #region 获取台账数据
+            var accountType = Request.QueryString["projectType"];//台账类别,物资、框架、工程、服务
+
+            var userInfo = App_Code.Commen.GetUserFromSession();
+            var result = from a in db.Account
+                         where a.ProjectType == accountType
+                         select a;
+
+            if (!User.IsInRole("领导查看"))
+            {
+                if (!User.IsInRole("组长查看"))
+                {
+                    if (User.IsInRole("招标管理"))
+                    {
+                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                    }
+                }
+                else
+                {
+                    //查看本组的人员，包括自己
+                    if (User.IsInRole("组长查看"))
+                    {
+                        List<int> personList = new List<int>();
+                        personList.Add(userInfo.UserID);//添加自己
+
+                        //添加组内成员
+                        var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
+                        foreach (var item in memberList)
+                        {
+                            personList.Add(item.MemberUserID);
+                        }
+
+                        result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
+                    }
+                }
+            }
+
+            var accountList = result.OrderByDescending(o => o.AccountID).ToList();
+            #endregion
+
+            var filename = "台账统计信息"+accountType + App_Code.Commen.GetDateTimeString();
+
+            string path = System.IO.Path.Combine(Server.MapPath("/"), "Template/ExportAccountFrame.xls");
+            Workbook workbook = new Workbook();
+            workbook.Open(path);
+            Cells cells = workbook.Worksheets[0].Cells;
+            Worksheet ws = workbook.Worksheets[0];
+
+            #region 表格样式
+
+            StyleFlag sf = new StyleFlag();
+            sf.HorizontalAlignment = true;
+            sf.VerticalAlignment = true;
+            sf.WrapText = true;
+            sf.Borders = true;
+
+            Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式  
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中 
+            style1.VerticalAlignment = TextAlignmentType.Center;
+            style1.IsTextWrapped = true;//单元格内容自动换行  
+            style1.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin; //应用边界线 左边界线  
+            style1.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin; //应用边界线 右边界线  
+            style1.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin; //应用边界线 上边界线  
+            style1.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin; //应用边界线 下边界线  
+            #endregion
+
+            int row = 2;//开始生成表格行数  
+            foreach (var info in accountList)
+            {
+                var startmergepos = row;//开始合并的行位置，默认从row开始。
+                List<int> countList = new List<int>();
+                var childlist = (from c in db.AccountChild
+                                 where c.AccountID == info.AccountID
+                                 select c).ToList();
+
+                #region 生成合并子表
+                var firstList = childlist.Where(w => w.TableType == "first").ToList();
+                var secondList = childlist.Where(w => w.TableType == "second").ToList();
+                var thirdList = childlist.Where(w => w.TableType == "Third").ToList();
+                var fourList = childlist.Where(w => w.TableType == "Four").ToList();
+                var fiveList = childlist.Where(w => w.TableType == "Five").ToList();
+
+                countList.Add(firstList.Count);
+                countList.Add(secondList.Count);
+                countList.Add(thirdList.Count);
+                countList.Add(fourList.Count);
+                countList.Add(fiveList.Count);
+
+                var firstRow = startmergepos;
+                foreach (var item in firstList)
+                {
+                    cells[firstRow, 19].PutValue(item.TenderFilePlanPayPerson);
+                    cells[firstRow, 19].SetStyle(style1);
+                    cells[firstRow, 20].PutValue(item.TenderPerson);
+                    cells[firstRow, 20].SetStyle(style1);
+                    cells[firstRow, 21].PutValue(item.ProductManufacturer);
+                    cells[firstRow, 21].SetStyle(style1);
+                    cells[firstRow, 22].PutValue(item.QuotedPriceSum);
+                    cells[firstRow, 22].SetStyle(style1);
+                    cells[firstRow, 23].PutValue(item.NegationExplain);
+                    cells[firstRow, 23].SetStyle(style1);
+                    firstRow += 1;
+                }
+
+                var secondRow = startmergepos;
+                foreach (var item in secondList)
+                {
+                    cells[secondRow, 32].PutValue(item.EvaluationPersonName);
+                    cells[secondRow, 32].SetStyle(style1);
+                    cells[secondRow, 33].PutValue(item.EvaluationPersonDeptName);
+                    cells[secondRow, 33].SetStyle(style1);
+                    cells[secondRow, 34].PutValue(item.IsEvaluationDirector);
+                    cells[secondRow, 34].SetStyle(style1);
+                    cells[secondRow, 35].PutValue(item.EvaluationTime);
+                    cells[secondRow, 35].SetStyle(style1);
+                    cells[secondRow, 36].PutValue(item.EvaluationCost);
+                    cells[secondRow, 36].SetStyle(style1);
+                    secondRow += 1;
+                }
+
+                var thirdRow = startmergepos;
+                foreach (var item in thirdList)
+                {
+                    cells[thirdRow, 37].PutValue(item.TenderFileAuditPersonName);
+                    cells[thirdRow, 37].SetStyle(style1);
+                    cells[thirdRow, 38].PutValue(item.TenderFileAuditPersonDeptName);
+                    cells[thirdRow, 38].SetStyle(style1);
+                    cells[thirdRow, 40].PutValue(item.TenderFileAuditCost);
+                    cells[thirdRow, 40].SetStyle(style1);
+                    thirdRow += 1;
+                }
+
+                var fourRow = startmergepos;
+                foreach (var item in fourList)
+                {
+                    cells[fourRow, 42].PutValue(item.ClarifyLaunchPerson);
+                    cells[fourRow, 42].SetStyle(style1);
+                    cells[fourRow, 43].PutValue(item.ClarifyLaunchDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 43].SetStyle(style1);
+                    cells[fourRow, 44].PutValue(item.ClarifyReason);
+                    cells[fourRow, 44].SetStyle(style1);
+                    cells[fourRow, 45].PutValue(item.ClarifyAcceptDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 45].SetStyle(style1);
+                    cells[fourRow, 46].PutValue(item.ClarifyDisposePerson);
+                    cells[fourRow, 46].SetStyle(style1);
+                    cells[fourRow, 47].PutValue(item.IsClarify);
+                    cells[fourRow, 47].SetStyle(style1);
+                    cells[fourRow, 48].PutValue(item.ClarifyDisposeInfo);
+                    cells[fourRow, 48].SetStyle(style1);
+                    cells[fourRow, 49].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 49].SetStyle(style1);
+                    fourRow += 1;
+                }
+
+                var fiveRow = startmergepos;
+                foreach (var item in fiveList)
+                {
+                    cells[fiveRow, 50].PutValue(item.DissentLaunchPerson);
+                    cells[fiveRow, 50].SetStyle(style1);
+                    cells[fiveRow, 51].PutValue(item.DissentLaunchPersonPhone);
+                    cells[fiveRow, 51].SetStyle(style1);
+                    cells[fiveRow, 52].PutValue(item.DissentLaunchDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 52].SetStyle(style1);
+                    cells[fiveRow, 53].PutValue(item.DissentReason);
+                    cells[fiveRow, 53].SetStyle(style1);
+                    cells[fiveRow, 54].PutValue(item.DissentAcceptDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 54].SetStyle(style1);
+                    cells[fiveRow, 55].PutValue(item.DissentAcceptPerson);
+                    cells[fiveRow, 55].SetStyle(style1);
+                    cells[fiveRow, 56].PutValue(item.DissentDisposePerson);
+                    cells[fiveRow, 56].SetStyle(style1);
+                    cells[fiveRow, 57].PutValue(item.DissentDisposeInfo);
+                    cells[fiveRow, 57].SetStyle(style1);
+                    cells[fiveRow, 58].PutValue(item.DissentReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 58].SetStyle(style1);
+                    fiveRow += 1;
+                }
+
+                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
+                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+
+                if (firstList.Count == 0)
+                {
+                    Range range19 = ws.Cells.CreateRange(startmergepos, 19, rowsorder, 1);
+                    range19.ApplyStyle(style1, sf);
+                    range19.Merge();
+
+                    Range range20 = ws.Cells.CreateRange(startmergepos, 20, rowsorder, 1);
+                    range20.ApplyStyle(style1, sf);
+                    range20.Merge();
+
+                    Range range21 = ws.Cells.CreateRange(startmergepos, 21, rowsorder, 1);
+                    range21.ApplyStyle(style1, sf);
+                    range21.Merge();
+
+                    Range range22 = ws.Cells.CreateRange(startmergepos, 22, rowsorder, 1);
+                    range22.ApplyStyle(style1, sf);
+                    range22.Merge();
+
+                    Range range23 = ws.Cells.CreateRange(startmergepos, 23, rowsorder, 1);
+                    range23.ApplyStyle(style1, sf);
+                    range23.Merge();
+                }
+
+                if (secondList.Count == 0)
+                {
+                    Range range32 = ws.Cells.CreateRange(startmergepos, 32, rowsorder, 1);
+                    range32.ApplyStyle(style1, sf);
+                    range32.Merge();
+
+                    Range range33 = ws.Cells.CreateRange(startmergepos, 33, rowsorder, 1);
+                    range33.ApplyStyle(style1, sf);
+                    range33.Merge();
+
+                    Range range34 = ws.Cells.CreateRange(startmergepos, 34, rowsorder, 1);
+                    range34.ApplyStyle(style1, sf);
+                    range34.Merge();
+
+                    Range range35 = ws.Cells.CreateRange(startmergepos, 35, rowsorder, 1);
+                    range35.ApplyStyle(style1, sf);
+                    range35.Merge();
+
+                    Range range36 = ws.Cells.CreateRange(startmergepos, 36, rowsorder, 1);
+                    range36.ApplyStyle(style1, sf);
+                    range36.Merge();
+                }
+
+                if (thirdList.Count == 0)
+                {
+                    Range range37 = ws.Cells.CreateRange(startmergepos, 37, rowsorder, 1);
+                    range37.ApplyStyle(style1, sf);
+                    range37.Merge();
+
+                    Range range38 = ws.Cells.CreateRange(startmergepos, 38, rowsorder, 1);
+                    range38.ApplyStyle(style1, sf);
+                    range38.Merge();
+
+                    Range range40 = ws.Cells.CreateRange(startmergepos, 40, rowsorder, 1);
+                    range40.ApplyStyle(style1, sf);
+                    range40.Merge();
+                }
+
+                if (fourList.Count == 0)
+                {
+                    Range range42 = ws.Cells.CreateRange(startmergepos, 42, rowsorder, 1);
+                    range42.ApplyStyle(style1, sf);
+                    range42.Merge();
+
+                    Range range43 = ws.Cells.CreateRange(startmergepos, 43, rowsorder, 1);
+                    range43.ApplyStyle(style1, sf);
+                    range43.Merge();
+
+                    Range range44 = ws.Cells.CreateRange(startmergepos, 44, rowsorder, 1);
+                    range44.ApplyStyle(style1, sf);
+                    range44.Merge();
+
+                    Range range45 = ws.Cells.CreateRange(startmergepos, 45, rowsorder, 1);
+                    range45.ApplyStyle(style1, sf);
+                    range45.Merge();
+
+                    Range range46 = ws.Cells.CreateRange(startmergepos, 46, rowsorder, 1);
+                    range46.ApplyStyle(style1, sf);
+                    range46.Merge();
+
+                    Range range47 = ws.Cells.CreateRange(startmergepos, 47, rowsorder, 1);
+                    range47.ApplyStyle(style1, sf);
+                    range47.Merge();
+
+                    Range range48 = ws.Cells.CreateRange(startmergepos, 48, rowsorder, 1);
+                    range48.ApplyStyle(style1, sf);
+                    range48.Merge();
+
+                    Range range49 = ws.Cells.CreateRange(startmergepos, 49, rowsorder, 1);
+                    range49.ApplyStyle(style1, sf);
+                    range49.Merge();
+                }
+
+                if (fiveList.Count == 0)
+                {
+                    Range range50 = ws.Cells.CreateRange(startmergepos, 50, rowsorder, 1);
+                    range50.ApplyStyle(style1, sf);
+                    range50.Merge();
+
+                    Range range51 = ws.Cells.CreateRange(startmergepos, 51, rowsorder, 1);
+                    range51.ApplyStyle(style1, sf);
+                    range51.Merge();
+
+                    Range range52 = ws.Cells.CreateRange(startmergepos, 52, rowsorder, 1);
+                    range52.ApplyStyle(style1, sf);
+                    range52.Merge();
+
+                    Range range53 = ws.Cells.CreateRange(startmergepos, 53, rowsorder, 1);
+                    range53.ApplyStyle(style1, sf);
+                    range53.Merge();
+
+                    Range range54 = ws.Cells.CreateRange(startmergepos, 54, rowsorder, 1);
+                    range54.ApplyStyle(style1, sf);
+                    range54.Merge();
+
+                    Range range55 = ws.Cells.CreateRange(startmergepos, 55, rowsorder, 1);
+                    range55.ApplyStyle(style1, sf);
+                    range55.Merge();
+
+                    Range range56 = ws.Cells.CreateRange(startmergepos, 56, rowsorder, 1);
+                    range56.ApplyStyle(style1, sf);
+                    range56.Merge();
+
+                    Range range57 = ws.Cells.CreateRange(startmergepos, 57, rowsorder, 1);
+                    range57.ApplyStyle(style1, sf);
+                    range57.Merge();
+
+                    Range range58 = ws.Cells.CreateRange(startmergepos, 58, rowsorder, 1);
+                    range58.ApplyStyle(style1, sf);
+                    range58.Merge();
+                }
+                #endregion
+                //序号
+                cells[startmergepos, 0].PutValue(accountList.IndexOf(info) + 1);
+                Range range0 = ws.Cells.CreateRange(startmergepos, 0, rowsorder, 1);
+                range0.ApplyStyle(style1, sf);
+                range0.Merge();
+
+                cells[startmergepos, 1].PutValue(info.ProjectName);
+                Range range1 = ws.Cells.CreateRange(startmergepos, 1, rowsorder, 1);
+                range1.ApplyStyle(style1, sf);
+                range1.Merge();
+
+                cells[startmergepos, 2].PutValue(info.TenderFileNum);
+                Range range2 = ws.Cells.CreateRange(startmergepos, 2, rowsorder, 1);
+                range2.ApplyStyle(style1, sf);
+                range2.Merge();
+
+                cells[startmergepos, 3].PutValue(info.IsOnline);
+                Range range3 = ws.Cells.CreateRange(startmergepos, 3, rowsorder, 1);
+                range3.ApplyStyle(style1, sf);
+                range3.Merge();
+
+                cells[startmergepos, 4].PutValue(info.ProjectResponsiblePersonName);
+                Range range4 = ws.Cells.CreateRange(startmergepos, 4, rowsorder, 1);
+                range4.ApplyStyle(style1, sf);
+                range4.Merge();
+
+                cells[startmergepos, 5].PutValue(info.UsingDeptName);
+                Range range5 = ws.Cells.CreateRange(startmergepos, 5, rowsorder, 1);
+                range5.ApplyStyle(style1, sf);
+                range5.Merge();
+
+                cells[startmergepos, 6].PutValue(info.ProjectResponsibleDeptName);
+                Range range6 = ws.Cells.CreateRange(startmergepos, 6, rowsorder, 1);
+                range6.ApplyStyle(style1, sf);
+                range6.Merge();
+
+                cells[startmergepos, 7].PutValue(info.ApplyPerson);
+                Range range7 = ws.Cells.CreateRange(startmergepos, 7, rowsorder, 1);
+                range7.ApplyStyle(style1, sf);
+                range7.Merge();
+
+                cells[startmergepos, 8].PutValue(info.InvestPlanApproveNum);
+                Range range8 = ws.Cells.CreateRange(startmergepos, 8, rowsorder, 1);
+                range8.ApplyStyle(style1, sf);
+                range8.Merge();
+
+                cells[startmergepos, 9].PutValue(info.TenderRange);
+                Range range9 = ws.Cells.CreateRange(startmergepos, 9, rowsorder, 1);
+                range9.ApplyStyle(style1, sf);
+                range9.Merge();
+
+                cells[startmergepos, 10].PutValue(info.IsHaveCount);
+                Range range10 = ws.Cells.CreateRange(startmergepos, 10, rowsorder, 1);
+                range10.ApplyStyle(style1, sf);
+                range10.Merge();
+
+                cells[startmergepos, 11].PutValue(info.TenderMode);
+                Range range11 = ws.Cells.CreateRange(startmergepos, 11, rowsorder, 1);
+                range11.ApplyStyle(style1, sf);
+                range11.Merge();
+
+                cells[startmergepos, 12].PutValue(info.BidEvaluation);
+                Range range12 = ws.Cells.CreateRange(startmergepos, 12, rowsorder, 1);
+                range12.ApplyStyle(style1, sf);
+                range12.Merge();
+
+                cells[startmergepos, 13].PutValue(info.SupplyPeriod);
+                Range range13 = ws.Cells.CreateRange(startmergepos, 13, rowsorder, 1);
+                range13.ApplyStyle(style1, sf);
+                range13.Merge();
+
+                cells[startmergepos, 14].PutValue(info.ProgramAcceptDate == null ? "" : info.ProgramAcceptDate.Value.ToString("yyyy-MM-dd"));
+                Range range14 = ws.Cells.CreateRange(startmergepos, 14, rowsorder, 1);
+                range14.ApplyStyle(style1, sf);
+                range14.Merge();
+
+                cells[startmergepos, 15].PutValue(info.TenderProgramAuditDate == null ? "" : info.TenderProgramAuditDate.Value.ToString("yyyy-MM-dd"));
+                Range range15 = ws.Cells.CreateRange(startmergepos, 15, rowsorder, 1);
+                range15.ApplyStyle(style1, sf);
+                range15.Merge();
+
+                cells[startmergepos, 16].PutValue(info.TenderFileSaleStartDate == null ? "" : info.TenderFileSaleStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range16 = ws.Cells.CreateRange(startmergepos, 16, rowsorder, 1);
+                range16.ApplyStyle(style1, sf);
+                range16.Merge();
+
+                cells[startmergepos, 17].PutValue(info.TenderFileSaleEndDate == null ? "" : info.TenderFileSaleEndDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range17 = ws.Cells.CreateRange(startmergepos, 17, rowsorder, 1);
+                range17.ApplyStyle(style1, sf);
+                range17.Merge();
+
+                cells[startmergepos, 18].PutValue(info.TenderStartDate == null ? "" : info.TenderStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range18 = ws.Cells.CreateRange(startmergepos, 18, rowsorder, 1);
+                range18.ApplyStyle(style1, sf);
+                range18.Merge();
+
+                cells[startmergepos, 24].PutValue(info.TenderSuccessPerson);
+                Range range24 = ws.Cells.CreateRange(startmergepos, 24, rowsorder, 1);
+                range24.ApplyStyle(style1, sf);
+                range24.Merge();
+
+                cells[startmergepos, 25].PutValue(info.PlanInvestPrice);
+                Range range25 = ws.Cells.CreateRange(startmergepos, 25, rowsorder, 1);
+                range25.ApplyStyle(style1, sf);
+                range25.Merge();
+
+                cells[startmergepos, 26].PutValue(info.QualificationExamMethod);
+                Range range26 = ws.Cells.CreateRange(startmergepos, 26, rowsorder, 1);
+                range26.ApplyStyle(style1, sf);
+                range26.Merge();
+
+                cells[startmergepos, 27].PutValue(info.TenderRestrictUnitPrice);
+                Range range27 = ws.Cells.CreateRange(startmergepos, 27, rowsorder, 1);
+                range27.ApplyStyle(style1, sf);
+                range27.Merge();
+
+                cells[startmergepos, 28].PutValue(info.TenderRestrictSumPrice);
+                Range range28 = ws.Cells.CreateRange(startmergepos, 28, rowsorder, 1);
+                range28.ApplyStyle(style1, sf);
+                range28.Merge();
+
+                cells[startmergepos, 29].PutValue(info.TenderSuccessUnitPrice);
+                Range range29 = ws.Cells.CreateRange(startmergepos, 29, rowsorder, 1);
+                range29.ApplyStyle(style1, sf);
+                range29.Merge();
+
+                cells[startmergepos, 30].PutValue(info.TenderSuccessSumPrice);
+                Range range30 = ws.Cells.CreateRange(startmergepos, 30, rowsorder, 1);
+                range30.ApplyStyle(style1, sf);
+                range30.Merge();
+
+                cells[startmergepos, 31].PutValue(info.SaveCapital);
+                Range range31 = ws.Cells.CreateRange(startmergepos, 31, rowsorder, 1);
+                range31.ApplyStyle(style1, sf);
+                range31.Merge();
+
+                cells[startmergepos, 39].PutValue(info.TenderFileAuditTime);
+                Range range39 = ws.Cells.CreateRange(startmergepos, 39, rowsorder, 1);
+                range39.ApplyStyle(style1, sf);
+                range39.Merge();
+
+                cells[startmergepos, 41].PutValue(info.TenderFailReason);
+                Range range41 = ws.Cells.CreateRange(startmergepos, 41, rowsorder, 1);
+                range41.ApplyStyle(style1, sf);
+                range41.Merge();
+
+                cells[startmergepos, 59].PutValue(info.ContractNum);
+                Range range59 = ws.Cells.CreateRange(startmergepos, 59, rowsorder, 1);
+                range59.ApplyStyle(style1, sf);
+                range59.Merge();
+
+                cells[startmergepos, 60].PutValue(info.ContractPrice);
+                Range range60 = ws.Cells.CreateRange(startmergepos, 60, rowsorder, 1);
+                range60.ApplyStyle(style1, sf);
+                range60.Merge();
+
+                cells[startmergepos, 61].PutValue(info.RelativePerson);
+                Range range61 = ws.Cells.CreateRange(startmergepos, 61, rowsorder, 1);
+                range61.ApplyStyle(style1, sf);
+                range61.Merge();
+
+                cells[startmergepos, 62].PutValue(info.TenderInfo);
+                Range range62 = ws.Cells.CreateRange(startmergepos, 62, rowsorder, 1);
+                range62.ApplyStyle(style1, sf);
+                range62.Merge();
+
+                cells[startmergepos, 63].PutValue(info.TenderRemark);
+                Range range63 = ws.Cells.CreateRange(startmergepos, 63, rowsorder, 1);
+                range63.ApplyStyle(style1, sf);
+                range63.Merge();
+
+                //这是合并单元格后的行数，一定注意，要加上合并的行数
+                row = startmergepos + rowsorder;
+            }
+
+            string fileToSave = System.IO.Path.Combine(Server.MapPath("/"), "ExcelOutPut/" + filename + ".xls");
+            if (System.IO.File.Exists(fileToSave))
+            {
+                System.IO.File.Delete(fileToSave);
+            }
+            workbook.Save(fileToSave, FileFormatType.Excel97To2003);
+            return File(fileToSave, "application/vnd.ms-excel", filename + ".xls");
+        }
+
+        /// <summary>
+        /// 导出工程、服务台账到Excel
+        /// </summary>
+        /// <returns></returns>
+        public FileResult ProjectToExcel()
+        {
+            #region 获取台账数据
+            var accountType = Request.QueryString["projectType"];//台账类别,物资、框架、工程、服务
+
+            var userInfo = App_Code.Commen.GetUserFromSession();
+            var result = from a in db.Account
+                         where a.ProjectType == accountType
+                         select a;
+
+            if (!User.IsInRole("领导查看"))
+            {
+                if (!User.IsInRole("组长查看"))
+                {
+                    if (User.IsInRole("招标管理"))
+                    {
+                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+                    }
+                }
+                else
+                {
+                    //查看本组的人员，包括自己
+                    if (User.IsInRole("组长查看"))
+                    {
+                        List<int> personList = new List<int>();
+                        personList.Add(userInfo.UserID);//添加自己
+
+                        //添加组内成员
+                        var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
+                        foreach (var item in memberList)
+                        {
+                            personList.Add(item.MemberUserID);
+                        }
+
+                        result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
+                    }
+                }
+            }
+
+            var accountList = result.OrderByDescending(o => o.AccountID).ToList();
+            #endregion
+
+            var filename = "台账统计信息--"+ accountType+ App_Code.Commen.GetDateTimeString();
+
+            string path = System.IO.Path.Combine(Server.MapPath("/"), "Template/ExportAccountProject.xls");
+            Workbook workbook = new Workbook();
+            workbook.Open(path);
+            Cells cells = workbook.Worksheets[0].Cells;
+            Worksheet ws = workbook.Worksheets[0];
+
+            #region 表格样式
+
+            StyleFlag sf = new StyleFlag();
+            sf.HorizontalAlignment = true;
+            sf.VerticalAlignment = true;
+            sf.WrapText = true;
+            sf.Borders = true;
+
+            Style style1 = workbook.Styles[workbook.Styles.Add()];//新增样式  
+            style1.HorizontalAlignment = TextAlignmentType.Center;//文字居中 
+            style1.VerticalAlignment = TextAlignmentType.Center;
+            style1.IsTextWrapped = true;//单元格内容自动换行  
+            style1.Borders[BorderType.LeftBorder].LineStyle = CellBorderType.Thin; //应用边界线 左边界线  
+            style1.Borders[BorderType.RightBorder].LineStyle = CellBorderType.Thin; //应用边界线 右边界线  
+            style1.Borders[BorderType.TopBorder].LineStyle = CellBorderType.Thin; //应用边界线 上边界线  
+            style1.Borders[BorderType.BottomBorder].LineStyle = CellBorderType.Thin; //应用边界线 下边界线  
+            #endregion
+
+            int row = 2;//开始生成表格行数  
+            foreach (var info in accountList)
+            {
+                var startmergepos = row;//开始合并的行位置，默认从row开始。
+                List<int> countList = new List<int>();
+                var childlist = (from c in db.AccountChild
+                                 where c.AccountID == info.AccountID
+                                 select c).ToList();
+
+                #region 生成合并子表
+                var firstList = childlist.Where(w => w.TableType == "first").ToList();
+                var secondList = childlist.Where(w => w.TableType == "second").ToList();
+                var thirdList = childlist.Where(w => w.TableType == "Third").ToList();
+                var fourList = childlist.Where(w => w.TableType == "Four").ToList();
+                var fiveList = childlist.Where(w => w.TableType == "Five").ToList();
+
+                countList.Add(firstList.Count);
+                countList.Add(secondList.Count);
+                countList.Add(thirdList.Count);
+                countList.Add(fourList.Count);
+                countList.Add(fiveList.Count);
+
+                var firstRow = startmergepos;
+                foreach (var item in firstList)
+                {
+                    cells[firstRow, 16].PutValue(item.TenderFilePlanPayPerson);
+                    cells[firstRow, 16].SetStyle(style1);
+                    cells[firstRow, 17].PutValue(item.TenderPerson);
+                    cells[firstRow, 17].SetStyle(style1);
+                    cells[firstRow, 18].PutValue(item.QuotedPriceSum);
+                    cells[firstRow, 18].SetStyle(style1);
+                    firstRow += 1;
+                }
+
+                var secondRow = startmergepos;
+                foreach (var item in secondList)
+                {
+                    cells[secondRow, 25].PutValue(item.EvaluationPersonName);
+                    cells[secondRow, 25].SetStyle(style1);
+                    cells[secondRow, 26].PutValue(item.EvaluationPersonDeptName);
+                    cells[secondRow, 26].SetStyle(style1);
+                    cells[secondRow, 27].PutValue(item.IsEvaluationDirector);
+                    cells[secondRow, 27].SetStyle(style1);
+                    cells[secondRow, 28].PutValue(item.EvaluationTime);
+                    cells[secondRow, 28].SetStyle(style1);
+                    cells[secondRow, 29].PutValue(item.EvaluationCost);
+                    cells[secondRow, 29].SetStyle(style1);
+                    secondRow += 1;
+                }
+
+                var thirdRow = startmergepos;
+                foreach (var item in thirdList)
+                {
+                    cells[thirdRow, 30].PutValue(item.TenderFileAuditPersonName);
+                    cells[thirdRow, 30].SetStyle(style1);
+                    cells[thirdRow, 31].PutValue(item.TenderFileAuditPersonDeptName);
+                    cells[thirdRow, 31].SetStyle(style1);
+                    cells[thirdRow, 33].PutValue(item.TenderFileAuditCost);
+                    cells[thirdRow, 33].SetStyle(style1);
+                    thirdRow += 1;
+                }
+
+                var fourRow = startmergepos;
+                foreach (var item in fourList)
+                {
+                    cells[fourRow, 35].PutValue(item.ClarifyLaunchPerson);
+                    cells[fourRow, 35].SetStyle(style1);
+                    cells[fourRow, 36].PutValue(item.ClarifyLaunchDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 36].SetStyle(style1);
+                    cells[fourRow, 37].PutValue(item.ClarifyReason);
+                    cells[fourRow, 37].SetStyle(style1);
+                    cells[fourRow, 38].PutValue(item.ClarifyAcceptDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 38].SetStyle(style1);
+                    cells[fourRow, 39].PutValue(item.ClarifyDisposePerson);
+                    cells[fourRow, 39].SetStyle(style1);
+                    cells[fourRow, 40].PutValue(item.IsClarify);
+                    cells[fourRow, 40].SetStyle(style1);
+                    cells[fourRow, 41].PutValue(item.ClarifyDisposeInfo);
+                    cells[fourRow, 41].SetStyle(style1);
+                    cells[fourRow, 42].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 42].SetStyle(style1);
+                    fourRow += 1;
+                }
+
+                var fiveRow = startmergepos;
+                foreach (var item in fiveList)
+                {
+                    cells[fiveRow, 43].PutValue(item.DissentLaunchPerson);
+                    cells[fiveRow, 43].SetStyle(style1);
+                    cells[fiveRow, 44].PutValue(item.DissentLaunchPersonPhone);
+                    cells[fiveRow, 44].SetStyle(style1);
+                    cells[fiveRow, 45].PutValue(item.DissentLaunchDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 45].SetStyle(style1);
+                    cells[fiveRow, 46].PutValue(item.DissentReason);
+                    cells[fiveRow, 46].SetStyle(style1);
+                    cells[fiveRow, 47].PutValue(item.DissentAcceptDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 47].SetStyle(style1);
+                    cells[fiveRow, 48].PutValue(item.DissentAcceptPerson);
+                    cells[fiveRow, 48].SetStyle(style1);
+                    cells[fiveRow, 49].PutValue(item.DissentDisposePerson);
+                    cells[fiveRow, 49].SetStyle(style1);
+                    cells[fiveRow, 50].PutValue(item.DissentDisposeInfo);
+                    cells[fiveRow, 50].SetStyle(style1);
+                    cells[fiveRow, 51].PutValue(item.DissentReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fiveRow, 51].SetStyle(style1);
+                    fiveRow += 1;
+                }
+
+                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
+                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+
+                if (firstList.Count == 0)
+                {
+                    Range range16 = ws.Cells.CreateRange(startmergepos, 16, rowsorder, 1);
+                    range16.ApplyStyle(style1, sf);
+                    range16.Merge();
+
+                    Range range17 = ws.Cells.CreateRange(startmergepos, 17, rowsorder, 1);
+                    range17.ApplyStyle(style1, sf);
+                    range17.Merge();
+
+                    Range range18 = ws.Cells.CreateRange(startmergepos, 18, rowsorder, 1);
+                    range18.ApplyStyle(style1, sf);
+                    range18.Merge();
+                }
+
+                if (secondList.Count == 0)
+                {
+                    Range range25 = ws.Cells.CreateRange(startmergepos, 25, rowsorder, 1);
+                    range25.ApplyStyle(style1, sf);
+                    range25.Merge();
+
+                    Range range26 = ws.Cells.CreateRange(startmergepos, 26, rowsorder, 1);
+                    range26.ApplyStyle(style1, sf);
+                    range26.Merge();
+
+                    Range range27 = ws.Cells.CreateRange(startmergepos, 27, rowsorder, 1);
+                    range27.ApplyStyle(style1, sf);
+                    range27.Merge();
+
+                    Range range28 = ws.Cells.CreateRange(startmergepos, 28, rowsorder, 1);
+                    range28.ApplyStyle(style1, sf);
+                    range28.Merge();
+
+                    Range range29 = ws.Cells.CreateRange(startmergepos, 29, rowsorder, 1);
+                    range29.ApplyStyle(style1, sf);
+                    range29.Merge();
+                }
+
+                if (thirdList.Count == 0)
+                {
+                    Range range30 = ws.Cells.CreateRange(startmergepos, 30, rowsorder, 1);
+                    range30.ApplyStyle(style1, sf);
+                    range30.Merge();
+
+                    Range range31 = ws.Cells.CreateRange(startmergepos, 31, rowsorder, 1);
+                    range31.ApplyStyle(style1, sf);
+                    range31.Merge();
+
+                    Range range33 = ws.Cells.CreateRange(startmergepos, 33, rowsorder, 1);
+                    range33.ApplyStyle(style1, sf);
+                    range33.Merge();
+                }
+
+                if (fourList.Count == 0)
+                {
+                    Range range35 = ws.Cells.CreateRange(startmergepos, 35, rowsorder, 1);
+                    range35.ApplyStyle(style1, sf);
+                    range35.Merge();
+
+                    Range range36 = ws.Cells.CreateRange(startmergepos, 36, rowsorder, 1);
+                    range36.ApplyStyle(style1, sf);
+                    range36.Merge();
+
+                    Range range37 = ws.Cells.CreateRange(startmergepos, 37, rowsorder, 1);
+                    range37.ApplyStyle(style1, sf);
+                    range37.Merge();
+
+                    Range range38 = ws.Cells.CreateRange(startmergepos, 38, rowsorder, 1);
+                    range38.ApplyStyle(style1, sf);
+                    range38.Merge();
+
+                    Range range39 = ws.Cells.CreateRange(startmergepos, 39, rowsorder, 1);
+                    range39.ApplyStyle(style1, sf);
+                    range39.Merge();
+
+                    Range range40 = ws.Cells.CreateRange(startmergepos, 40, rowsorder, 1);
+                    range40.ApplyStyle(style1, sf);
+                    range40.Merge();
+
+                    Range range41 = ws.Cells.CreateRange(startmergepos, 41, rowsorder, 1);
+                    range41.ApplyStyle(style1, sf);
+                    range41.Merge();
+
+                    Range range42 = ws.Cells.CreateRange(startmergepos, 42, rowsorder, 1);
+                    range42.ApplyStyle(style1, sf);
+                    range42.Merge();
+                }
+
+                if (fiveList.Count == 0)
+                {
+                    Range range43 = ws.Cells.CreateRange(startmergepos, 43, rowsorder, 1);
+                    range43.ApplyStyle(style1, sf);
+                    range43.Merge();
+
+                    Range range44 = ws.Cells.CreateRange(startmergepos, 44, rowsorder, 1);
+                    range44.ApplyStyle(style1, sf);
+                    range44.Merge();
+
+                    Range range45 = ws.Cells.CreateRange(startmergepos, 45, rowsorder, 1);
+                    range45.ApplyStyle(style1, sf);
+                    range45.Merge();
+
+                    Range range46 = ws.Cells.CreateRange(startmergepos, 46, rowsorder, 1);
+                    range46.ApplyStyle(style1, sf);
+                    range46.Merge();
+
+                    Range range47 = ws.Cells.CreateRange(startmergepos, 47, rowsorder, 1);
+                    range47.ApplyStyle(style1, sf);
+                    range47.Merge();
+
+                    Range range48 = ws.Cells.CreateRange(startmergepos, 48, rowsorder, 1);
+                    range48.ApplyStyle(style1, sf);
+                    range48.Merge();
+
+                    Range range49 = ws.Cells.CreateRange(startmergepos, 49, rowsorder, 1);
+                    range49.ApplyStyle(style1, sf);
+                    range49.Merge();
+
+                    Range range50 = ws.Cells.CreateRange(startmergepos, 50, rowsorder, 1);
+                    range50.ApplyStyle(style1, sf);
+                    range50.Merge();
+
+                    Range range51 = ws.Cells.CreateRange(startmergepos, 51, rowsorder, 1);
+                    range51.ApplyStyle(style1, sf);
+                    range51.Merge();
+                }
+                #endregion
+                //序号
+                cells[startmergepos, 0].PutValue(accountList.IndexOf(info) + 1);
+                Range range0 = ws.Cells.CreateRange(startmergepos, 0, rowsorder, 1);
+                range0.ApplyStyle(style1, sf);
+                range0.Merge();
+
+                cells[startmergepos, 1].PutValue(info.ProjectName);
+                Range range1 = ws.Cells.CreateRange(startmergepos, 1, rowsorder, 1);
+                range1.ApplyStyle(style1, sf);
+                range1.Merge();
+
+                cells[startmergepos, 2].PutValue(info.TenderFileNum);
+                Range range2 = ws.Cells.CreateRange(startmergepos, 2, rowsorder, 1);
+                range2.ApplyStyle(style1, sf);
+                range2.Merge();
+
+                cells[startmergepos, 3].PutValue(info.IsOnline);
+                Range range3 = ws.Cells.CreateRange(startmergepos, 3, rowsorder, 1);
+                range3.ApplyStyle(style1, sf);
+                range3.Merge();
+
+                cells[startmergepos, 4].PutValue(info.ProjectResponsiblePersonName);
+                Range range4 = ws.Cells.CreateRange(startmergepos, 4, rowsorder, 1);
+                range4.ApplyStyle(style1, sf);
+                range4.Merge();
+
+                cells[startmergepos, 5].PutValue(info.ProjectResponsibleDeptName);
+                Range range5 = ws.Cells.CreateRange(startmergepos, 5, rowsorder, 1);
+                range5.ApplyStyle(style1, sf);
+                range5.Merge();
+
+                cells[startmergepos, 6].PutValue(info.ApplyPerson);
+                Range range6 = ws.Cells.CreateRange(startmergepos, 6, rowsorder, 1);
+                range6.ApplyStyle(style1, sf);
+                range6.Merge();
+
+                cells[startmergepos, 7].PutValue(info.InvestPlanApproveNum);
+                Range range7 = ws.Cells.CreateRange(startmergepos, 7, rowsorder, 1);
+                range7.ApplyStyle(style1, sf);
+                range7.Merge();
+
+                cells[startmergepos, 8].PutValue(info.InvestSource);
+                Range range8 = ws.Cells.CreateRange(startmergepos, 8, rowsorder, 1);
+                range8.ApplyStyle(style1, sf);
+                range8.Merge();
+
+                cells[startmergepos, 9].PutValue(info.TenderRange);
+                Range range9 = ws.Cells.CreateRange(startmergepos, 9, rowsorder, 1);
+                range9.ApplyStyle(style1, sf);
+                range9.Merge();
+
+                cells[startmergepos, 10].PutValue(info.ProjectTimeLimit);
+                Range range10 = ws.Cells.CreateRange(startmergepos, 10, rowsorder, 1);
+                range10.ApplyStyle(style1, sf);
+                range10.Merge();
+
+                cells[startmergepos, 11].PutValue(info.ProgramAcceptDate == null ? "" : info.ProgramAcceptDate.Value.ToString("yyyy-MM-dd"));
+                Range range11 = ws.Cells.CreateRange(startmergepos, 11, rowsorder, 1);
+                range11.ApplyStyle(style1, sf);
+                range11.Merge();
+
+                cells[startmergepos, 12].PutValue(info.TenderProgramAuditDate == null ? "" : info.TenderProgramAuditDate.Value.ToString("yyyy-MM-dd"));
+                Range range12 = ws.Cells.CreateRange(startmergepos, 12, rowsorder, 1);
+                range12.ApplyStyle(style1, sf);
+                range12.Merge();
+
+                cells[startmergepos, 13].PutValue(info.TenderFileSaleStartDate == null ? "" : info.TenderFileSaleStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range13 = ws.Cells.CreateRange(startmergepos, 13, rowsorder, 1);
+                range13.ApplyStyle(style1, sf);
+                range13.Merge();
+
+                cells[startmergepos, 14].PutValue(info.TenderFileSaleEndDate == null ? "" : info.TenderFileSaleEndDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range14 = ws.Cells.CreateRange(startmergepos, 14, rowsorder, 1);
+                range14.ApplyStyle(style1, sf);
+                range14.Merge();
+
+                cells[startmergepos, 15].PutValue(info.TenderStartDate == null ? "" : info.TenderStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                Range range15 = ws.Cells.CreateRange(startmergepos, 15, rowsorder, 1);
+                range15.ApplyStyle(style1, sf);
+                range15.Merge();
+
+                cells[startmergepos, 19].PutValue(info.TenderSuccessPerson);
+                Range range19 = ws.Cells.CreateRange(startmergepos, 19, rowsorder, 1);
+                range19.ApplyStyle(style1, sf);
+                range19.Merge();
+
+                cells[startmergepos, 20].PutValue(info.PlanInvestPrice);
+                Range range20 = ws.Cells.CreateRange(startmergepos, 20, rowsorder, 1);
+                range20.ApplyStyle(style1, sf);
+                range20.Merge();
+
+                cells[startmergepos, 21].PutValue(info.QualificationExamMethod);
+                Range range21 = ws.Cells.CreateRange(startmergepos, 21, rowsorder, 1);
+                range21.ApplyStyle(style1, sf);
+                range21.Merge();
+
+                cells[startmergepos, 22].PutValue(info.TenderRestrictSumPrice);
+                Range range22 = ws.Cells.CreateRange(startmergepos, 22, rowsorder, 1);
+                range22.ApplyStyle(style1, sf);
+                range22.Merge();
+
+                cells[startmergepos, 23].PutValue(info.TenderSuccessSumPrice);
+                Range range23 = ws.Cells.CreateRange(startmergepos, 23, rowsorder, 1);
+                range23.ApplyStyle(style1, sf);
+                range23.Merge();
+
+                cells[startmergepos, 24].PutValue(info.SaveCapital);
+                Range range24 = ws.Cells.CreateRange(startmergepos, 24, rowsorder, 1);
+                range24.ApplyStyle(style1, sf);
+                range24.Merge();
+
+                cells[startmergepos, 32].PutValue(info.TenderFileAuditTime);
+                Range range32 = ws.Cells.CreateRange(startmergepos, 32, rowsorder, 1);
+                range32.ApplyStyle(style1, sf);
+                range32.Merge();
+
+                cells[startmergepos, 34].PutValue(info.TenderFailReason);
+                Range range34 = ws.Cells.CreateRange(startmergepos, 34, rowsorder, 1);
+                range34.ApplyStyle(style1, sf);
+                range34.Merge();
+
+                cells[startmergepos, 52].PutValue(info.ContractNum);
+                Range range52 = ws.Cells.CreateRange(startmergepos, 52, rowsorder, 1);
+                range52.ApplyStyle(style1, sf);
+                range52.Merge();
+
+                cells[startmergepos, 53].PutValue(info.ContractPrice);
+                Range range53 = ws.Cells.CreateRange(startmergepos, 53, rowsorder, 1);
+                range53.ApplyStyle(style1, sf);
+                range53.Merge();
+
+                cells[startmergepos, 54].PutValue(info.RelativePerson);
+                Range range54 = ws.Cells.CreateRange(startmergepos, 54, rowsorder, 1);
+                range54.ApplyStyle(style1, sf);
+                range54.Merge();
+
+                cells[startmergepos, 55].PutValue(info.TenderInfo);
+                Range range55 = ws.Cells.CreateRange(startmergepos, 55, rowsorder, 1);
+                range55.ApplyStyle(style1, sf);
+                range55.Merge();
+
+                cells[startmergepos, 56].PutValue(info.TenderRemark);
+                Range range56 = ws.Cells.CreateRange(startmergepos, 56, rowsorder, 1);
+                range56.ApplyStyle(style1, sf);
+                range56.Merge();
+
+                //这是合并单元格后的行数，一定注意，要加上合并的行数
+                row = startmergepos + rowsorder;
+            }
+
+            string fileToSave = System.IO.Path.Combine(Server.MapPath("/"), "ExcelOutPut/" + filename + ".xls");
+            if (System.IO.File.Exists(fileToSave))
+            {
+                System.IO.File.Delete(fileToSave);
+            }
+            workbook.Save(fileToSave, FileFormatType.Excel97To2003);
+            return File(fileToSave, "application/vnd.ms-excel", filename + ".xls");
         }
         #endregion
     }

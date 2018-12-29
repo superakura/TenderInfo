@@ -489,14 +489,20 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxTenderModeEdit">招标方式</label>
-                                <input id="tbxTenderModeEdit" name="tbxTenderModeEdit" class="form-control input-sm" placeholder="招标方式" />
+                                <label for="ddlTenderModeEdit">招标方式</label>
+                                <select id="ddlTenderModeEdit" name="ddlTenderModeEdit" class="form-control input-sm">
+                                    <option value="公开招标">公开招标</option>
+                                    <option value="邀请招标">邀请招标</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxBidEvaluationEdit">评标方法</label>
-                                <input id="tbxBidEvaluationEdit" name="tbxBidEvaluationEdit" class="form-control input-sm" placeholder="评标方法" />
+                                <label for="ddlBidEvaluationEdit">评标方法</label>
+                                <select id="ddlBidEvaluationEdit" name="ddlBidEvaluationEdit" class="form-control input-sm">
+                                    <option value="综合评估法">综合评估法</option>
+                                    <option value="最低价法">最低价法</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -636,6 +642,15 @@
                             <div class="form-group">
                                 <label for="tbxSaveCapitalEdit">与控制价比节约资金（万元）</label>
                                 <input id="tbxSaveCapitalEdit" name="tbxSaveCapitalEdit" class="form-control input-sm" placeholder="与控制价比节约资金（万元）" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="ddlQualificationExamMethod">资格审查方式</label>
+                                <select id="ddlQualificationExamMethod" name="ddlQualificationExamMethod" class="form-control input-sm">
+                                    <option value="资格预审">资格预审</option>
+                                    <option value="资格后审">资格后审</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -1573,8 +1588,8 @@
                 $("#tbxInvestPlanApproveNumEdit").val(result.InvestPlanApproveNum);
 
                 $("#tbxTenderRangeEdit").val(result.TenderRange);
-                $("#tbxTenderModeEdit").val(result.TenderMode);
-                $("#tbxBidEvaluationEdit").val(result.BidEvaluation);
+                $("#ddlTenderModeEdit").val(result.TenderMode);
+                $("#ddlBidEvaluationEdit").val(result.BidEvaluation);
                 $("#tbxSupplyPeriodEdit").val(result.SupplyPeriod);
 
                 $("#tbxTenderProgramAuditDateEdit").val(getJsonDateShort(result.TenderProgramAuditDate));
@@ -1592,6 +1607,7 @@
                 $("#tbxTenderSuccessUnitPriceEdit").val(result.TenderSuccessUnitPrice);
                 $("#tbxTenderSuccessSumPriceEdit").val(result.TenderSuccessSumPrice);
                 $("#tbxSaveCapitalEdit").val(result.SaveCapital);
+                $("#ddlQualificationExamMethod").val(result.QualificationExamMethod);
 
                 $("#tbxTenderFileAuditTimeEdit").val(result.TenderFileAuditTime);
                 $("#tbxTenderFailReasonEdit").val(result.TenderFailReason);

@@ -2,9 +2,10 @@
 <link href="~/Content/bootstrap-table-fixed-columns2.css" rel="stylesheet" />
 <script src="~/Scripts/bootstrap-table-fixed-columns2.js"></script>
 <style>
-    #bsTable th{
-        vertical-align:middle;
+    #bsTable th {
+        vertical-align: middle;
     }
+
     .bootstrap-table .table > thead > tr > th {
         vertical-align: middle;
     }
@@ -229,7 +230,7 @@
                     cellStyle: function (value, row, index) {
                         return {
                             classes: "text-nowrap",
-                            css: { "padding": "0px","vertical-align":"top" }
+                            css: { "padding": "0px", "vertical-align": "top" }
                         };
                     },
                     formatter: function (value, row, index) {
@@ -292,6 +293,13 @@
                     colspan: 1,
                     valign: "middle",
                     title: '预计投资（万元）'
+                },
+                {
+                    field: 'account.QualificationExamMethod',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '资格审查方式'
                 },
                 {
                     field: 'account.TenderRestrictSumPrice',
@@ -379,6 +387,17 @@
                     colspan: 1,
                     valign: "middle",
                     title: '备注'
+                },
+                {
+                    field: 'account.InsertDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(row.account.InsertDate);
+                    },
+                    visible: false,
+                    title: '台账建立时间'
                 }
             ],
             [
@@ -561,7 +580,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.ClarifyLaunchDate===null?"-":getJsonDateShort(valueOfElement.ClarifyLaunchDate)) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyLaunchDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyLaunchDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -597,7 +616,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.ClarifyAcceptDate===null?"-":getJsonDateShort(valueOfElement.ClarifyAcceptDate)) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyAcceptDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -669,7 +688,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.ClarifyReplyDate===null?"-":getJsonDateShort(valueOfElement.ClarifyReplyDate)) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.ClarifyReplyDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyReplyDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -759,7 +778,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.DissentAcceptDate===null?"-":getJsonDateShort(valueOfElement.DissentAcceptDate)) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.DissentAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.DissentAcceptDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -831,7 +850,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + (valueOfElement.DissentReplyDate===null?"-":getJsonDateShort(valueOfElement.DissentReplyDate)) + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.DissentReplyDate === null ? "-" : getJsonDateShort(valueOfElement.DissentReplyDate)) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;

@@ -562,6 +562,15 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
+                                <label for="ddlQualificationExamMethod">资格审查方式</label>
+                                <select id="ddlQualificationExamMethod" name="ddlQualificationExamMethod" class="form-control input-sm">
+                                    <option value="资格预审">资格预审</option>
+                                    <option value="资格后审">资格后审</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
                                 <label for="tbxTenderRestrictSumPriceEdit">招标控制价（万元）</label>
                                 <input id="tbxTenderRestrictSumPriceEdit" name="tbxTenderRestrictSumPriceEdit" class="form-control input-sm" placeholder="招标控制单价" />
                             </div>
@@ -1439,7 +1448,7 @@
                 });
             }
         });
-
+         
         $("#btnReturn").click(function () {
             if ($("#tbxAccountTypeEdit").val() === "工程") {
                 BackView("Project");
@@ -1516,11 +1525,10 @@
 
                 $("#tbxInvestSourceEdit").val(result.InvestSource);
                 $("#tbxProjectTimeLimitEdit").val(result.ProjectTimeLimit);
-
                 $("#tbxTenderRangeEdit").val(result.TenderRange);
-                $("#tbxTenderModeEdit").val(result.TenderMode);
-                $("#tbxBidEvaluationEdit").val(result.BidEvaluation);
-                $("#tbxSupplyPeriodEdit").val(result.SupplyPeriod);
+                //$("#ddlTenderModeEdit").val(result.TenderMode);
+                //$("#ddlBidEvaluationEdit").val(result.BidEvaluation);
+                //$("#tbxSupplyPeriodEdit").val(result.SupplyPeriod);
 
                 $("#tbxTenderProgramAuditDateEdit").val(getJsonDateShort(result.TenderProgramAuditDate));
                 $("#tbxProgramAcceptDateEdit").val(getJsonDateShort(result.ProgramAcceptDate));
@@ -1528,9 +1536,9 @@
                 $("#tbxTenderFileSaleEndDateEdit").val(getJsonDateTimeMinute(result.TenderFileSaleEndDate));
                 $("#tbxTenderStartDateEdit").val(getJsonDateTimeMinute(result.TenderStartDate));
 
-
                 $("#tbxTenderSuccessPersonEdit").val(result.TenderSuccessPerson);
                 $("#tbxPlanInvestPriceEdit").val(result.PlanInvestPrice);
+                $("#ddlQualificationExamMethod").val(result.QualificationExamMethod);
                 $("#tbxTenderRestrictSumPriceEdit").val(result.TenderRestrictSumPrice);
 
                 $("#tbxTenderSuccessSumPriceEdit").val(result.TenderSuccessSumPrice);
