@@ -1,0 +1,11 @@
+﻿@model IEnumerable<TenderInfo.Models.Log>
+@{
+    ViewBag.Title = "LogInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>LogInfo</h2>
+@foreach (var item in Model.ToList())
+{
+    <p>@item.LogContent</p>
+}

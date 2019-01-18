@@ -785,6 +785,7 @@
     <Compile Include="Models\FileMinPriceChild.cs" />
     <Compile Include="Models\GroupLeader.cs" />
     <Compile Include="Models\Log.cs" />
+    <Compile Include="Models\LogView.cs" />
     <Compile Include="Models\NoticeInfo.cs" />
     <Compile Include="Models\ProgressInfo.cs" />
     <Compile Include="Models\RoleAuthority.cs" />
@@ -846,6 +847,7 @@
     <Content Include="Views\Home\MeetingRoomPlan.cshtml" />
     <Content Include="Views\TechnicSpecifiction\Search.cshtml" />
     <Content Include="Views\Home\LoginFormAD.cshtml" />
+    <Content Include="Views\Test\LogInfo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

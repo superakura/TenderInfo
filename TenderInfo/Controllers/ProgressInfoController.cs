@@ -56,34 +56,35 @@ namespace TenderInfo.Controllers
                          where p.ProgressType == progressType
                          select p;
 
-            if (!User.IsInRole("领导查看"))
-            {
-                if (!User.IsInRole("组长查看"))
-                {
-                    if (User.IsInRole("招标管理"))
-                    {
-                        result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
-                    }
-                }
-                else
-                {
-                    if (User.IsInRole("组长查看"))
-                    {
-                        //查看本组的人员，包括自己
-                        List<int> personList = new List<int>();
-                        personList.Add(userInfo.UserID);//添加自己
+            //if (!User.IsInRole("领导查看"))
+            //{
+            //    if (!User.IsInRole("组长查看"))
+            //    {
+            //        if (User.IsInRole("招标管理"))
+            //        {
+            //            result = result.Where(w => w.ProjectResponsiblePersonID == userInfo.UserID);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (User.IsInRole("组长查看"))
+            //        {
+            //            //查看本组的人员，包括自己
+            //            List<int> personList = new List<int>();
+            //            personList.Add(userInfo.UserID);//添加自己
 
-                        //添加组内成员
-                        var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
-                        foreach (var item in memberList)
-                        {
-                            personList.Add(item.MemberUserID);
-                        }
+            //            //添加组内成员
+            //            var memberList = db.GroupLeader.Where(w => w.LeaderUserID == userInfo.UserID).ToList();
+            //            foreach (var item in memberList)
+            //            {
+            //                personList.Add(item.MemberUserID);
+            //            }
                        
-                        result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
-                    }
-                }
-            }
+            //            result = result.Where(w => personList.Contains(w.ProjectResponsiblePersonID));
+            //        }
+            //    }
+            //}
+            //乐园3号楼四单元201 18603695829
 
             if (isOver != string.Empty)
             {

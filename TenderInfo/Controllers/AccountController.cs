@@ -1620,10 +1620,13 @@ namespace TenderInfo.Controllers
                 countList.Add(fourList.Count);
                 countList.Add(fiveList.Count);
 
+                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
+                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+
                 var firstRow = startmergepos;
                 foreach (var item in firstList)
                 {
-                    cells[firstRow, 18].PutValue(item.TenderFilePlanPayPerson==""?"-": item.TenderFilePlanPayPerson);
+                    cells[firstRow, 18].PutValue(item.TenderFilePlanPayPerson);
                     cells[firstRow, 18].SetStyle(style1);
                     cells[firstRow, 19].PutValue(item.TenderPerson);
                     cells[firstRow, 19].SetStyle(style1);
@@ -1636,6 +1639,20 @@ namespace TenderInfo.Controllers
                     cells[firstRow, 23].PutValue(item.NegationExplain);
                     cells[firstRow, 23].SetStyle(style1);
                     firstRow += 1;
+                }
+                //当子表数据小于最大行子表时，补齐子表剩余行的边框
+                if (rowsorder > firstList.Count)
+                {
+                    var reduceCount = startmergepos+firstList.Count;
+                    for (int i = 0; i < rowsorder - firstList.Count; i++)
+                    {
+                        cells[reduceCount+i, 18].SetStyle(style1);
+                        cells[reduceCount+i, 19].SetStyle(style1);
+                        cells[reduceCount+i, 20].SetStyle(style1);
+                        cells[reduceCount+i, 21].SetStyle(style1);
+                        cells[reduceCount+i, 22].SetStyle(style1);
+                        cells[reduceCount+i, 23].SetStyle(style1);
+                    }
                 }
 
                 var secondRow = startmergepos;
@@ -1653,6 +1670,18 @@ namespace TenderInfo.Controllers
                     cells[secondRow, 36].SetStyle(style1);
                     secondRow += 1;
                 }
+                if (rowsorder > secondList.Count)
+                {
+                    var reduceCount = startmergepos+secondList.Count;
+                    for (int i = 0; i <rowsorder-secondList.Count; i++)
+                    {
+                        cells[reduceCount + i, 32].SetStyle(style1);
+                        cells[reduceCount + i, 33].SetStyle(style1);
+                        cells[reduceCount + i, 34].SetStyle(style1);
+                        cells[reduceCount + i, 35].SetStyle(style1);
+                        cells[reduceCount + i, 36].SetStyle(style1);
+                    }
+                }
 
                 var thirdRow = startmergepos;
                 foreach (var item in thirdList)
@@ -1664,6 +1693,16 @@ namespace TenderInfo.Controllers
                     cells[thirdRow, 40].PutValue(item.TenderFileAuditCost);
                     cells[thirdRow, 40].SetStyle(style1);
                     thirdRow += 1;
+                }
+                if (rowsorder > thirdList.Count)
+                {
+                    var reduceCount = startmergepos + thirdList.Count;
+                    for (int i = 0; i < rowsorder - thirdList.Count; i++)
+                    {
+                        cells[reduceCount + i, 37].SetStyle(style1);
+                        cells[reduceCount + i, 38].SetStyle(style1);
+                        cells[reduceCount + i, 40].SetStyle(style1);
+                    }
                 }
 
                 var fourRow = startmergepos;
@@ -1686,6 +1725,21 @@ namespace TenderInfo.Controllers
                     cells[fourRow, 49].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
                     cells[fourRow, 49].SetStyle(style1);
                     fourRow += 1;
+                }
+                if (rowsorder > fourList.Count)
+                {
+                    var reduceCount = startmergepos + fourList.Count;
+                    for (int i = 0; i < rowsorder - fourList.Count; i++)
+                    {
+                        cells[reduceCount + i, 42].SetStyle(style1);
+                        cells[reduceCount + i, 43].SetStyle(style1);
+                        cells[reduceCount + i, 44].SetStyle(style1);
+                        cells[reduceCount + i, 45].SetStyle(style1);
+                        cells[reduceCount + i, 46].SetStyle(style1);
+                        cells[reduceCount + i, 47].SetStyle(style1);
+                        cells[reduceCount + i, 48].SetStyle(style1);
+                        cells[reduceCount + i, 49].SetStyle(style1);
+                    }
                 }
 
                 var fiveRow = startmergepos;
@@ -1711,9 +1765,23 @@ namespace TenderInfo.Controllers
                     cells[fiveRow, 58].SetStyle(style1);
                     fiveRow += 1;
                 }
+                if (rowsorder > fiveList.Count)
+                {
+                    var reduceCount = startmergepos + fiveList.Count;
+                    for (int i = 0; i < rowsorder - fiveList.Count; i++)
+                    {
+                        cells[reduceCount + i, 50].SetStyle(style1);
+                        cells[reduceCount + i, 51].SetStyle(style1);
+                        cells[reduceCount + i, 52].SetStyle(style1);
+                        cells[reduceCount + i, 53].SetStyle(style1);
+                        cells[reduceCount + i, 54].SetStyle(style1);
+                        cells[reduceCount + i, 55].SetStyle(style1);
+                        cells[reduceCount + i, 56].SetStyle(style1);
+                        cells[reduceCount + i, 57].SetStyle(style1);
+                        cells[reduceCount + i, 58].SetStyle(style1);
+                    }
+                }
 
-                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
-                var rowsorder = countList.Max()==0?1: countList.Max();
 
                 if (firstList.Count == 0)
                 {
@@ -1742,7 +1810,7 @@ namespace TenderInfo.Controllers
                     range23.Merge();
                 }
 
-                if (secondList.Count==0)
+                if (secondList.Count == 0)
                 {
                     Range range32 = ws.Cells.CreateRange(startmergepos, 32, rowsorder, 1);
                     range32.ApplyStyle(style1, sf);
@@ -1854,7 +1922,7 @@ namespace TenderInfo.Controllers
                     range58.Merge();
                 }
                 //序号
-                cells[startmergepos, 0].PutValue(accountList.IndexOf(info)+1);
+                cells[startmergepos, 0].PutValue(accountList.IndexOf(info) + 1);
                 Range range0 = ws.Cells.CreateRange(startmergepos, 0, rowsorder, 1);
                 range0.ApplyStyle(style1, sf);
                 range0.Merge();
@@ -1919,27 +1987,27 @@ namespace TenderInfo.Controllers
                 range12.ApplyStyle(style1, sf);
                 range12.Merge();
 
-                cells[startmergepos, 13].PutValue(info.TenderProgramAuditDate==null?"":info.TenderProgramAuditDate.Value.ToString("yyyy-MM-dd"));
+                cells[startmergepos, 13].PutValue(info.TenderProgramAuditDate == null ? "" : info.TenderProgramAuditDate.Value.ToString("yyyy-MM-dd"));
                 Range range13 = ws.Cells.CreateRange(startmergepos, 13, rowsorder, 1);
                 range13.ApplyStyle(style1, sf);
                 range13.Merge();
 
-                cells[startmergepos, 14].PutValue(info.ProgramAcceptDate==null?"":info.ProgramAcceptDate.Value.ToString("yyyy-MM-dd"));
+                cells[startmergepos, 14].PutValue(info.ProgramAcceptDate == null ? "" : info.ProgramAcceptDate.Value.ToString("yyyy-MM-dd"));
                 Range range14 = ws.Cells.CreateRange(startmergepos, 14, rowsorder, 1);
                 range14.ApplyStyle(style1, sf);
                 range14.Merge();
 
-                cells[startmergepos, 15].PutValue(info.TenderFileSaleStartDate==null?"":info.TenderFileSaleStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                cells[startmergepos, 15].PutValue(info.TenderFileSaleStartDate == null ? "" : info.TenderFileSaleStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
                 Range range15 = ws.Cells.CreateRange(startmergepos, 15, rowsorder, 1);
                 range15.ApplyStyle(style1, sf);
                 range15.Merge();
 
-                cells[startmergepos, 16].PutValue(info.TenderFileSaleEndDate==null?"":info.TenderFileSaleEndDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                cells[startmergepos, 16].PutValue(info.TenderFileSaleEndDate == null ? "" : info.TenderFileSaleEndDate.Value.ToString("yyyy-MM-dd hh:mm"));
                 Range range16 = ws.Cells.CreateRange(startmergepos, 16, rowsorder, 1);
                 range16.ApplyStyle(style1, sf);
                 range16.Merge();
 
-                cells[startmergepos, 17].PutValue(info.TenderStartDate==null?"":info.TenderStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
+                cells[startmergepos, 17].PutValue(info.TenderStartDate == null ? "" : info.TenderStartDate.Value.ToString("yyyy-MM-dd hh:mm"));
                 Range range17 = ws.Cells.CreateRange(startmergepos, 17, rowsorder, 1);
                 range17.ApplyStyle(style1, sf);
                 range17.Merge();
@@ -2078,7 +2146,7 @@ namespace TenderInfo.Controllers
             var accountList = result.OrderByDescending(o => o.AccountID).ToList();
             #endregion
 
-            var filename = "台账统计信息"+accountType + App_Code.Commen.GetDateTimeString();
+            var filename = "台账统计信息" + accountType + App_Code.Commen.GetDateTimeString();
 
             string path = System.IO.Path.Combine(Server.MapPath("/"), "Template/ExportAccountFrame.xls");
             Workbook workbook = new Workbook();
@@ -2126,6 +2194,9 @@ namespace TenderInfo.Controllers
                 countList.Add(fourList.Count);
                 countList.Add(fiveList.Count);
 
+                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
+                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+
                 var firstRow = startmergepos;
                 foreach (var item in firstList)
                 {
@@ -2140,6 +2211,19 @@ namespace TenderInfo.Controllers
                     cells[firstRow, 23].PutValue(item.NegationExplain);
                     cells[firstRow, 23].SetStyle(style1);
                     firstRow += 1;
+                }
+                //当子表数据小于最大行子表时，补齐子表剩余行的边框
+                if (rowsorder > firstList.Count)
+                {
+                    var reduceCount = startmergepos + firstList.Count;
+                    for (int i = 0; i < rowsorder - firstList.Count; i++)
+                    {
+                        cells[reduceCount + i, 19].SetStyle(style1);
+                        cells[reduceCount + i, 20].SetStyle(style1);
+                        cells[reduceCount + i, 21].SetStyle(style1);
+                        cells[reduceCount + i, 22].SetStyle(style1);
+                        cells[reduceCount + i, 23].SetStyle(style1);
+                    }
                 }
 
                 var secondRow = startmergepos;
@@ -2157,6 +2241,18 @@ namespace TenderInfo.Controllers
                     cells[secondRow, 36].SetStyle(style1);
                     secondRow += 1;
                 }
+                if (rowsorder > secondList.Count)
+                {
+                    var reduceCount = startmergepos + secondList.Count;
+                    for (int i = 0; i < rowsorder - secondList.Count; i++)
+                    {
+                        cells[reduceCount + i, 32].SetStyle(style1);
+                        cells[reduceCount + i, 33].SetStyle(style1);
+                        cells[reduceCount + i, 34].SetStyle(style1);
+                        cells[reduceCount + i, 35].SetStyle(style1);
+                        cells[reduceCount + i, 36].SetStyle(style1);
+                    }
+                }
 
                 var thirdRow = startmergepos;
                 foreach (var item in thirdList)
@@ -2168,6 +2264,16 @@ namespace TenderInfo.Controllers
                     cells[thirdRow, 40].PutValue(item.TenderFileAuditCost);
                     cells[thirdRow, 40].SetStyle(style1);
                     thirdRow += 1;
+                }
+                if (rowsorder > thirdList.Count)
+                {
+                    var reduceCount = startmergepos + thirdList.Count;
+                    for (int i = 0; i < rowsorder - thirdList.Count; i++)
+                    {
+                        cells[reduceCount + i, 37].SetStyle(style1);
+                        cells[reduceCount + i, 38].SetStyle(style1);
+                        cells[reduceCount + i, 40].SetStyle(style1);
+                    }
                 }
 
                 var fourRow = startmergepos;
@@ -2190,6 +2296,21 @@ namespace TenderInfo.Controllers
                     cells[fourRow, 49].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
                     cells[fourRow, 49].SetStyle(style1);
                     fourRow += 1;
+                }
+                if (rowsorder > fourList.Count)
+                {
+                    var reduceCount = startmergepos + fourList.Count;
+                    for (int i = 0; i < rowsorder - fourList.Count; i++)
+                    {
+                        cells[reduceCount + i, 42].SetStyle(style1);
+                        cells[reduceCount + i, 43].SetStyle(style1);
+                        cells[reduceCount + i, 44].SetStyle(style1);
+                        cells[reduceCount + i, 45].SetStyle(style1);
+                        cells[reduceCount + i, 46].SetStyle(style1);
+                        cells[reduceCount + i, 47].SetStyle(style1);
+                        cells[reduceCount + i, 48].SetStyle(style1);
+                        cells[reduceCount + i, 49].SetStyle(style1);
+                    }
                 }
 
                 var fiveRow = startmergepos;
@@ -2215,9 +2336,22 @@ namespace TenderInfo.Controllers
                     cells[fiveRow, 58].SetStyle(style1);
                     fiveRow += 1;
                 }
-
-                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
-                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+                if (rowsorder > fiveList.Count)
+                {
+                    var reduceCount = startmergepos + fiveList.Count;
+                    for (int i = 0; i < rowsorder - fiveList.Count; i++)
+                    {
+                        cells[reduceCount + i, 50].SetStyle(style1);
+                        cells[reduceCount + i, 51].SetStyle(style1);
+                        cells[reduceCount + i, 52].SetStyle(style1);
+                        cells[reduceCount + i, 53].SetStyle(style1);
+                        cells[reduceCount + i, 54].SetStyle(style1);
+                        cells[reduceCount + i, 55].SetStyle(style1);
+                        cells[reduceCount + i, 56].SetStyle(style1);
+                        cells[reduceCount + i, 57].SetStyle(style1);
+                        cells[reduceCount + i, 58].SetStyle(style1);
+                    }
+                }
 
                 if (firstList.Count == 0)
                 {
@@ -2584,7 +2718,7 @@ namespace TenderInfo.Controllers
             var accountList = result.OrderByDescending(o => o.AccountID).ToList();
             #endregion
 
-            var filename = "台账统计信息--"+ accountType+ App_Code.Commen.GetDateTimeString();
+            var filename = "台账统计信息--" + accountType + App_Code.Commen.GetDateTimeString();
 
             string path = System.IO.Path.Combine(Server.MapPath("/"), "Template/ExportAccountProject.xls");
             Workbook workbook = new Workbook();
@@ -2632,6 +2766,9 @@ namespace TenderInfo.Controllers
                 countList.Add(fourList.Count);
                 countList.Add(fiveList.Count);
 
+                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
+                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+
                 var firstRow = startmergepos;
                 foreach (var item in firstList)
                 {
@@ -2642,6 +2779,17 @@ namespace TenderInfo.Controllers
                     cells[firstRow, 18].PutValue(item.QuotedPriceSum);
                     cells[firstRow, 18].SetStyle(style1);
                     firstRow += 1;
+                }
+                //当子表数据小于最大行子表时，补齐子表剩余行的边框
+                if (rowsorder > firstList.Count)
+                {
+                    var reduceCount = startmergepos + firstList.Count;
+                    for (int i = 0; i < rowsorder - firstList.Count; i++)
+                    {
+                        cells[reduceCount + i, 16].SetStyle(style1);
+                        cells[reduceCount + i, 17].SetStyle(style1);
+                        cells[reduceCount + i, 18].SetStyle(style1);
+                    }
                 }
 
                 var secondRow = startmergepos;
@@ -2659,6 +2807,18 @@ namespace TenderInfo.Controllers
                     cells[secondRow, 29].SetStyle(style1);
                     secondRow += 1;
                 }
+                if (rowsorder > secondList.Count)
+                {
+                    var reduceCount = startmergepos + secondList.Count;
+                    for (int i = 0; i < rowsorder - secondList.Count; i++)
+                    {
+                        cells[reduceCount + i, 25].SetStyle(style1);
+                        cells[reduceCount + i, 26].SetStyle(style1);
+                        cells[reduceCount + i, 27].SetStyle(style1);
+                        cells[reduceCount + i, 28].SetStyle(style1);
+                        cells[reduceCount + i, 29].SetStyle(style1);
+                    }
+                }
 
                 var thirdRow = startmergepos;
                 foreach (var item in thirdList)
@@ -2670,6 +2830,16 @@ namespace TenderInfo.Controllers
                     cells[thirdRow, 33].PutValue(item.TenderFileAuditCost);
                     cells[thirdRow, 33].SetStyle(style1);
                     thirdRow += 1;
+                }
+                if (rowsorder > thirdList.Count)
+                {
+                    var reduceCount = startmergepos + thirdList.Count;
+                    for (int i = 0; i < rowsorder - thirdList.Count; i++)
+                    {
+                        cells[reduceCount + i, 30].SetStyle(style1);
+                        cells[reduceCount + i, 31].SetStyle(style1);
+                        cells[reduceCount + i, 33].SetStyle(style1);
+                    }
                 }
 
                 var fourRow = startmergepos;
@@ -2692,6 +2862,21 @@ namespace TenderInfo.Controllers
                     cells[fourRow, 42].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
                     cells[fourRow, 42].SetStyle(style1);
                     fourRow += 1;
+                }
+                if (rowsorder > fourList.Count)
+                {
+                    var reduceCount = startmergepos + fourList.Count;
+                    for (int i = 0; i < rowsorder - fourList.Count; i++)
+                    {
+                        cells[reduceCount + i, 35].SetStyle(style1);
+                        cells[reduceCount + i, 36].SetStyle(style1);
+                        cells[reduceCount + i, 37].SetStyle(style1);
+                        cells[reduceCount + i, 38].SetStyle(style1);
+                        cells[reduceCount + i, 39].SetStyle(style1);
+                        cells[reduceCount + i, 40].SetStyle(style1);
+                        cells[reduceCount + i, 41].SetStyle(style1);
+                        cells[reduceCount + i, 42].SetStyle(style1);
+                    }
                 }
 
                 var fiveRow = startmergepos;
@@ -2717,9 +2902,22 @@ namespace TenderInfo.Controllers
                     cells[fiveRow, 51].SetStyle(style1);
                     fiveRow += 1;
                 }
-
-                //取子表中行数最多的列,如果子表为空，设置为1，设置为要合并的行数。
-                var rowsorder = countList.Max() == 0 ? 1 : countList.Max();
+                if (rowsorder > fiveList.Count)
+                {
+                    var reduceCount = startmergepos + fiveList.Count;
+                    for (int i = 0; i < rowsorder - fiveList.Count; i++)
+                    {
+                        cells[reduceCount + i, 43].SetStyle(style1);
+                        cells[reduceCount + i, 44].SetStyle(style1);
+                        cells[reduceCount + i, 45].SetStyle(style1);
+                        cells[reduceCount + i, 46].SetStyle(style1);
+                        cells[reduceCount + i, 47].SetStyle(style1);
+                        cells[reduceCount + i, 48].SetStyle(style1);
+                        cells[reduceCount + i, 49].SetStyle(style1);
+                        cells[reduceCount + i, 50].SetStyle(style1);
+                        cells[reduceCount + i, 51].SetStyle(style1);
+                    }
+                }
 
                 if (firstList.Count == 0)
                 {
