@@ -252,8 +252,23 @@ namespace TenderInfo.Controllers
                        select new { u.UserID, u.UserName, u.UserNum };
 
             var user = App_Code.Commen.GetUserFromSession();
-            if (User.IsInRole("新建招标台账"))
+            if (User.IsInRole("新建招标台账")|| User.IsInRole("领导查看"))
             {
+                return Json(list);
+            }
+            if (User.IsInRole("组长查看"))
+            {
+                List<int> personList = new List<int>();
+                personList.Add(user.UserID);//添加自己
+
+                //添加组内成员
+                var memberList = db.GroupLeader.Where(w => w.LeaderUserID == user.UserID).ToList();
+                foreach (var item in memberList)
+                {
+                    personList.Add(item.MemberUserID);
+                }
+
+                list = list.Where(w => personList.Contains(w.UserID));
                 return Json(list);
             }
             if (User.IsInRole("招标管理"))
@@ -279,10 +294,15 @@ namespace TenderInfo.Controllers
                        select new { u.UserID, u.UserName, u.UserNum };
 
             var user = App_Code.Commen.GetUserFromSession();
-            if (User.IsInRole("招标管理"))
-            {
-                list = list.Where(w => w.UserID == user.UserID);
-            }
+            //招标业务员能看到所有招标进度信息，注释限制代码2019-02-13
+            //if (User.IsInRole("领导查看"))
+            //{
+            //    return Json(list);
+            //}
+            //if (User.IsInRole("招标管理"))
+            //{
+            //    list = list.Where(w => w.UserID == user.UserID);
+            //}
             return Json(list);
         }
 

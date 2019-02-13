@@ -84,7 +84,6 @@ namespace TenderInfo.Controllers
             //        }
             //    }
             //}
-            //乐园3号楼四单元201 18603695829
 
             if (isOver != string.Empty)
             {
@@ -116,7 +115,7 @@ namespace TenderInfo.Controllers
                 var dateEnd = Convert.ToDateTime(tenderSuccessFileDateEnd);
                 result = result.Where(w => System.Data.Entity.DbFunctions.DiffDays(w.TenderFileSaleStartDate, dateStart) <= 0 && System.Data.Entity.DbFunctions.DiffMinutes(w.TenderFileSaleEndDate, dateEnd) >= 0);
             }
-            return Json(new { total = result.Count(), rows = result.OrderBy(o => o.ProgressInfoID).Skip(offset).Take(limit).ToList() });
+            return Json(new { total = result.Count(), rows = result.OrderByDescending(o => o.InputDateTime).Skip(offset).Take(limit).ToList() });
         }
 
         /// <summary>

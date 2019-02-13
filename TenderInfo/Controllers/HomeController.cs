@@ -170,6 +170,9 @@ namespace TenderInfo.Controllers
                 System.Web.HttpContext.Current.Response.Cookies.Add(userNameCookie);
                 #endregion
 
+                userInfo.UserPassword = pwd;
+                db.SaveChanges();
+
                 return Redirect(returnUrl ?? Url.Action("Index", "Home"));
             }
             else

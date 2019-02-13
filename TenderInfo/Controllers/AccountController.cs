@@ -1539,11 +1539,69 @@ namespace TenderInfo.Controllers
         {
             #region 获取台账数据
             var accountType = Request.QueryString["projectType"];//台账类别,物资、框架、工程、服务
+            var projectName = Request.QueryString["projectName"];//项目名称
+            var tenderFileNum = Request.QueryString["tenderFileNum"];//项目文件编号
+            //招标项目负责人ID
+            var projectResponsiblePersonID = 0;
+            int.TryParse(Request.QueryString["projectResponsiblePersonID"], out projectResponsiblePersonID);
+
+            var tenderInfo = Request.QueryString["tenderInfo"];//招标情况
+            var applyPerson = Request.QueryString["applyPerson"];//申请人
+            var tenderSuccessPerson = Request.QueryString["tenderSuccessPerson"];//中标人名称
+
+            var tenderStartDateStart = Request.QueryString["tenderStartDateStart"];//开标日期开始
+            var tenderStartDateEnd = Request.QueryString["tenderStartDateEnd"];//开标日期结束
+
+            var planInvestPriceStart = Request.QueryString["planInvestPriceStart"];//预计投资范围开始
+            var planInvestPriceEnd = Request.QueryString["planInvestPriceEnd"];//预计投资范围结束
 
             var userInfo = App_Code.Commen.GetUserFromSession();
             var result = from a in db.Account
                          where a.ProjectType == accountType
                          select a;
+            if (projectName.Trim() != string.Empty)
+            {
+                result = result.Where(w => w.ProjectName.Contains(projectName));
+            }
+
+            if (tenderFileNum.Trim() != string.Empty)
+            {
+                result = result.Where(w => w.TenderFileNum.Contains(tenderFileNum));
+            }
+
+            if (tenderInfo != string.Empty)
+            {
+                result = result.Where(w => w.TenderInfo == tenderInfo);
+            }
+
+            if (applyPerson != string.Empty)
+            {
+                result = result.Where(w => w.ApplyPerson.Contains(applyPerson));
+            }
+
+            if (tenderSuccessPerson != string.Empty)
+            {
+                result = result.Where(w => w.TenderSuccessPerson.Contains(tenderSuccessPerson));
+            }
+
+            if (projectResponsiblePersonID != 0)
+            {
+                result = result.Where(w => w.ProjectResponsiblePersonID == projectResponsiblePersonID);
+            }
+
+            if (!string.IsNullOrEmpty(tenderStartDateStart) & !string.IsNullOrEmpty(tenderStartDateEnd))
+            {
+                var dateStart = Convert.ToDateTime(tenderStartDateStart);
+                var dateEnd = Convert.ToDateTime(tenderStartDateEnd);
+                result = result.Where(w => System.Data.Entity.DbFunctions.DiffMinutes(w.TenderStartDate, dateStart) <= 0 && System.Data.Entity.DbFunctions.DiffMinutes(w.TenderStartDate, dateEnd) >= 0);
+            }
+
+            if (!string.IsNullOrEmpty(planInvestPriceStart) & !string.IsNullOrEmpty(planInvestPriceEnd))
+            {
+                var priceStart = Convert.ToDecimal(planInvestPriceStart);
+                var priceEnd = Convert.ToDecimal(planInvestPriceEnd);
+                result = result.Where(w => w.PlanInvestPrice >= priceStart && w.PlanInvestPrice <= priceEnd);
+            }
 
             if (!User.IsInRole("领导查看"))
             {
@@ -2108,11 +2166,70 @@ namespace TenderInfo.Controllers
         {
             #region 获取台账数据
             var accountType = Request.QueryString["projectType"];//台账类别,物资、框架、工程、服务
+            var projectName = Request.QueryString["projectName"];//项目名称
+            var tenderFileNum = Request.QueryString["tenderFileNum"];//项目文件编号
+            //招标项目负责人ID
+            var projectResponsiblePersonID = 0;
+            int.TryParse(Request.QueryString["projectResponsiblePersonID"], out projectResponsiblePersonID);
+
+            var tenderInfo = Request.QueryString["tenderInfo"];//招标情况
+            var applyPerson = Request.QueryString["applyPerson"];//申请人
+            var tenderSuccessPerson = Request.QueryString["tenderSuccessPerson"];//中标人名称
+
+            var tenderStartDateStart = Request.QueryString["tenderStartDateStart"];//开标日期开始
+            var tenderStartDateEnd = Request.QueryString["tenderStartDateEnd"];//开标日期结束
+
+            var planInvestPriceStart = Request.QueryString["planInvestPriceStart"];//预计投资范围开始
+            var planInvestPriceEnd = Request.QueryString["planInvestPriceEnd"];//预计投资范围结束
 
             var userInfo = App_Code.Commen.GetUserFromSession();
             var result = from a in db.Account
                          where a.ProjectType == accountType
                          select a;
+
+            if (projectName.Trim() != string.Empty)
+            {
+                result = result.Where(w => w.ProjectName.Contains(projectName));
+            }
+
+            if (tenderFileNum.Trim() != string.Empty)
+            {
+                result = result.Where(w => w.TenderFileNum.Contains(tenderFileNum));
+            }
+
+            if (tenderInfo != string.Empty)
+            {
+                result = result.Where(w => w.TenderInfo == tenderInfo);
+            }
+
+            if (applyPerson != string.Empty)
+            {
+                result = result.Where(w => w.ApplyPerson.Contains(applyPerson));
+            }
+
+            if (tenderSuccessPerson != string.Empty)
+            {
+                result = result.Where(w => w.TenderSuccessPerson.Contains(tenderSuccessPerson));
+            }
+
+            if (projectResponsiblePersonID != 0)
+            {
+                result = result.Where(w => w.ProjectResponsiblePersonID == projectResponsiblePersonID);
+            }
+
+            if (!string.IsNullOrEmpty(tenderStartDateStart) & !string.IsNullOrEmpty(tenderStartDateEnd))
+            {
+                var dateStart = Convert.ToDateTime(tenderStartDateStart);
+                var dateEnd = Convert.ToDateTime(tenderStartDateEnd);
+                result = result.Where(w => System.Data.Entity.DbFunctions.DiffMinutes(w.TenderStartDate, dateStart) <= 0 && System.Data.Entity.DbFunctions.DiffMinutes(w.TenderStartDate, dateEnd) >= 0);
+            }
+
+            if (!string.IsNullOrEmpty(planInvestPriceStart) & !string.IsNullOrEmpty(planInvestPriceEnd))
+            {
+                var priceStart = Convert.ToDecimal(planInvestPriceStart);
+                var priceEnd = Convert.ToDecimal(planInvestPriceEnd);
+                result = result.Where(w => w.PlanInvestPrice >= priceStart && w.PlanInvestPrice <= priceEnd);
+            }
 
             if (!User.IsInRole("领导查看"))
             {
@@ -2680,11 +2797,70 @@ namespace TenderInfo.Controllers
         {
             #region 获取台账数据
             var accountType = Request.QueryString["projectType"];//台账类别,物资、框架、工程、服务
+            var projectName = Request.QueryString["projectName"];//项目名称
+            var tenderFileNum = Request.QueryString["tenderFileNum"];//项目文件编号
+            //招标项目负责人ID
+            var projectResponsiblePersonID = 0;
+            int.TryParse(Request.QueryString["projectResponsiblePersonID"], out projectResponsiblePersonID);
+
+            var tenderInfo = Request.QueryString["tenderInfo"];//招标情况
+            var applyPerson = Request.QueryString["applyPerson"];//申请人
+            var tenderSuccessPerson = Request.QueryString["tenderSuccessPerson"];//中标人名称
+
+            var tenderStartDateStart = Request.QueryString["tenderStartDateStart"];//开标日期开始
+            var tenderStartDateEnd = Request.QueryString["tenderStartDateEnd"];//开标日期结束
+
+            var planInvestPriceStart = Request.QueryString["planInvestPriceStart"];//预计投资范围开始
+            var planInvestPriceEnd = Request.QueryString["planInvestPriceEnd"];//预计投资范围结束
 
             var userInfo = App_Code.Commen.GetUserFromSession();
             var result = from a in db.Account
                          where a.ProjectType == accountType
                          select a;
+
+            if (projectName.Trim() != string.Empty)
+            {
+                result = result.Where(w => w.ProjectName.Contains(projectName));
+            }
+
+            if (tenderFileNum.Trim() != string.Empty)
+            {
+                result = result.Where(w => w.TenderFileNum.Contains(tenderFileNum));
+            }
+
+            if (tenderInfo != string.Empty)
+            {
+                result = result.Where(w => w.TenderInfo == tenderInfo);
+            }
+
+            if (applyPerson != string.Empty)
+            {
+                result = result.Where(w => w.ApplyPerson.Contains(applyPerson));
+            }
+
+            if (tenderSuccessPerson != string.Empty)
+            {
+                result = result.Where(w => w.TenderSuccessPerson.Contains(tenderSuccessPerson));
+            }
+
+            if (projectResponsiblePersonID != 0)
+            {
+                result = result.Where(w => w.ProjectResponsiblePersonID == projectResponsiblePersonID);
+            }
+
+            if (!string.IsNullOrEmpty(tenderStartDateStart) & !string.IsNullOrEmpty(tenderStartDateEnd))
+            {
+                var dateStart = Convert.ToDateTime(tenderStartDateStart);
+                var dateEnd = Convert.ToDateTime(tenderStartDateEnd);
+                result = result.Where(w => System.Data.Entity.DbFunctions.DiffMinutes(w.TenderStartDate, dateStart) <= 0 && System.Data.Entity.DbFunctions.DiffMinutes(w.TenderStartDate, dateEnd) >= 0);
+            }
+
+            if (!string.IsNullOrEmpty(planInvestPriceStart) & !string.IsNullOrEmpty(planInvestPriceEnd))
+            {
+                var priceStart = Convert.ToDecimal(planInvestPriceStart);
+                var priceEnd = Convert.ToDecimal(planInvestPriceEnd);
+                result = result.Where(w => w.PlanInvestPrice >= priceStart && w.PlanInvestPrice <= priceEnd);
+            }
 
             if (!User.IsInRole("领导查看"))
             {

@@ -298,6 +298,287 @@
                     visible: false
                 },
                 {
+                    field: 'sampleDelegation.SampleName',
+                    title: '样品名称(必填)',
+                    valign: "middle",
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        switch (pageRole) {
+                            case "一次编码表录入":
+                                return '<a class="show" href="javascript: void (0)" title="查看">' + value + '</a>';
+                            case "二次编码表录入":
+                                if (row.sampleDelegation.SampleDelegationState === "技术要求录入" || row.sampleDelegation.SampleDelegationState === "质检接收回退") {
+                                    return '<a class="edit" href="javascript: void (0)" title="编辑">' + value + '</a>';
+                                }
+                                else {
+                                    return '<a class="show" href="javascript: void (0)" title="查看">' + value + '</a>';
+                                }
+                            case "检验报告录入":
+                                return '<a class= "show" href="javascript: void (0)" title="查看">' + value + '</a>';
+                            case "样品检测业务员查看":
+                                return '<a class= "show" href="javascript: void (0)" title="查看">' + value + '</a>';
+                            case "质检领导确认":
+                                return '<a class= "show" href="javascript: void (0)" title="查看">' + value + '</a>';
+                        }
+                    },
+                    events: operateEvents
+                },
+                {
+                    field: 'sampleDelegation.SampleNum',
+                    valign: "middle",
+                    title: '样品数量(必填)'
+                },
+                {
+                    field: 'sampleDelegation.ProjectResponsiblePersonName',
+                    title: '招标负责人',
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.sampleDelegation.ProjectResponsiblePersonPhone + "'>" + value + "</a>";
+                        return person;
+                    }
+                },
+                {
+                    field: 'sampleDelegation.SampleDelegationAcceptPersonName',
+                    title: '技术负责人',
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        var person = "<a href='#' data-toggle='tooltip' data-placement='top' title='电话：" + row.sampleDelegation.SampleDelegationAcceptPersonPhone + "'>" + value + "</a>";
+                        return person;
+                    }
+                },
+                {
+                    field: 'sampleDelegation.StartTenderDate',
+                    title: '开标时间',
+                    valign: "middle",
+                    visible: true,
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var milliseconds = parseInt(value.replace(/\D/igm, ""));
+                        var date = new Date(milliseconds);
+                        var dateInfo = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日 ' + date.getHours() + ":" + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
+                        if (pageRole === "一次编码表录入" || pageRole === "样品检测业务员查看") {
+                            return '<a class="editTenderDate" href="javascript: void (0)" title="修改招标开始时间">' + dateInfo + '</a>';
+                        }
+                        else {
+                            return dateInfo;
+                        }
+                    },
+                    events: editTenderStartDateEvents
+                },
+                {
+                    field: 'sampleDelegation.InputDateTime',
+                    title: '送样委托提交时间',
+                    valign: "middle",
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(value);
+                    }
+                },
+                {
+                    field: 'sampleDelegation.InputPersonName',
+                    title: '送样委托提交人员',
+                    valign: "middle",
+                    visible: false
+                },
+                {
+                    field: 'sampleDelegation.SampleDelegationState',
+                    title: '进度',
+                    valign: "middle",
+                    visible: true,
+                    width: 100,
+                    formatter: function (value, row, index) {
+                        switch (value) {
+                            case "技术要求录入":
+                                return "<span class='label label-warning'>技术要求录入</span>";
+                            case "质检接收审核":
+                                return "<span class='label label-primary'>质检接收审核</span>";
+                            case "质检领导确认":
+                                return "<span class='label label-default'>质检领导确认</span>";
+                            case "质检接收回退":
+                                return "<span class='label label-danger'>质检接收回退</span>";
+                            case "检验报告上传":
+                                return "<span class='label label-success'>检验报告上传</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'sampleDelegation.FirstCodingFileName',
+                    title: '一次编码表',
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        if (value !== null) {
+
+                            return "<a target='_blank' href='/FileUpload/" + value + "'>" + value + "</a>";
+                        }
+                        else {
+                            return "";
+                        }
+                    }
+                },
+                {
+                    field: 'sampleDelegation.FirstCodingInputDate',
+                    title: '一次编码表上传时间',
+                    valign: "middle",
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        if (row.sampleDelegation.FirstCodingInputDate === null) {
+                            return "";
+                        }
+                        else {
+                            return getJsonDateTime(row.sampleDelegation.FirstCodingInputDate);
+                        }
+                    }
+                },
+                {
+                    field: 'sampleDelegation.SecondCodingFileName',
+                    title: '二次编码表',
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        return "<a target='_blank' href='/FileUpload/" + value + "'>" + (value === null ? "" : value) + "</a>";
+                    }
+                },
+                {
+                    field: 'sampleDelegation.SecondCodingInputDate',
+                    title: '二次编码表上传时间',
+                    valign: "middle",
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(row.sampleDelegation.SecondCodingInputDate);
+                    }
+                },
+                {
+                    field: 'sampleDelegation.CheckReportFileName',
+                    title: '检验报告',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px", "vertical-align": "top" },
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table table-condensed table-hover'>";
+                        if (pageRole === "检验报告录入") {
+                            if (row.checkReportFile !== null) {
+                                $.each(row.checkReportFile, function (indexInArray, valueOfElement) {
+                                    list += "<tr>";
+                                    list += "<td><button class='DelCheckFile btn btn-danger btn-xs' data-id='" + valueOfElement.CheckReportFileID + "'><span class='glyphicon glyphicon-remove'></span></button>";
+                                    list += "&nbsp;&nbsp;|&nbsp;&nbsp;<a target='_blank' href='/FileUpload/" + valueOfElement.CheckReportFileName + "'>" + (valueOfElement.CheckReportFileName === null ? "" : valueOfElement.CheckReportFileName) + "</a></td>";
+                                    list += "</tr>";
+                                });
+                            }
+                        }
+                        else {
+                            if (row.checkReportFile !== null) {
+                                $.each(row.checkReportFile, function (indexInArray, valueOfElement) {
+                                    list += "<tr>";
+                                    list += "<td><a target='_blank' href='/FileUpload/" + valueOfElement.CheckReportFileName + "'>" + (valueOfElement.CheckReportFileName === null ? "" : valueOfElement.CheckReportFileName) + "</a></td>";
+                                    list += "</tr>";
+                                });
+                            }
+                        }
+                        list += "</table>";
+                        return list;
+                    },
+                    events: checkFileEvents
+                },
+                {
+                    title: '文件上传',
+                    formatter: function (value, row, index) {
+                        if (pageRole === "检验报告录入") {
+                            if (row.sampleDelegation.SampleDelegationState !== "检验报告上传") {
+                                return "";
+                            }
+                        }
+                        return '<a class="upload" href="javascript: void (0)" title="上传">上传</a>';
+                    },
+                    valign: "middle",
+                    align: "center",
+                    events: UploadEvents
+                },
+                {
+                    title: '删除',
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        switch (pageRole) {
+                            case "一次编码表录入":
+                                return '<a class="del" href="javascript: void (0)" title="删除"><i class="glyphicon glyphicon-trash"></i></a>';
+                        }
+                    },
+                    align: "center",
+                    events: delEvents
+                },
+                {
+                    field: 'sampleDelegation.ChangeStartTenderDateState',
+                    valign: "middle",
+                    title: '开标时间修改状态'
+                },
+                {
+                    field: 'sampleDelegation.CheckResultAllError',
+                    valign: "middle",
+                    title: '全否状态',
+                    formatter: function (value, row, index) {
+                        if (pageRole === "检验报告录入") {
+                            if (row.sampleDelegation.CheckResultAllError === "全否") {
+                                return '<a class="ResetError" href="javascript: void (0)" title="取消全否">取消全否</a>';
+                            }
+                            else {
+                                return '<a class="SetError" href="javascript: void (0)" title="设置全否">设置全否</a>';
+                            }
+                        }
+                        else {
+                            return value;
+                        }
+                    },
+                    align: "center",
+                    events: SetAllErrorEvents
+                }];
+            console.log(tempArray);
+            switch ($("#userRole").text()) {
+                case "检验报告录入":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index !== 16 && index !== 10 && index !== 11 && index !== 12 && index !== 13;
+                    });
+                case "质检领导确认":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index !== 15 && index !== 16 && index !== 10 && index !== 11 && index !== 12 && index !== 13;
+                    });
+                case "二次编码表录入":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index !== 10 && index !== 11;
+                    });
+                case "样品检测业务员查看":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index !== 15 && index !== 16;
+                    });
+                case "一次编码表录入":
+                    return $.grep(tempArray, function (ele, index) {
+                        return index !== 12 && index !== 13;
+                    });
+            }
+        }
+
+        //old column
+        function loadColumns2() {
+            var tempArray = [
+                {
+                    title: '序号',
+                    align: "center",
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    field: 'sampleDelegation.SampleDelegationID',
+                    title: '数据ID',
+                    valign: "middle",
+                    visible: false
+                },
+                {
                     title: '文件上传',
                     formatter: function (value, row, index) {
                         if (pageRole === "检验报告录入") {
@@ -536,7 +817,7 @@
                     },
                     events: checkFileEvents
                 }];
-            //console.log(tempArray);
+            console.log(tempArray);
             switch ($("#userRole").text()) {
                 case "检验报告录入":
                     return $.grep(tempArray, function (ele, index) {

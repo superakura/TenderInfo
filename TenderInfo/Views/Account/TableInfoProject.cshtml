@@ -449,7 +449,7 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + valueOfElement.IsEvaluationDirector + "</td></tr>";
+                            list += "<tr><td>" + (valueOfElement.IsEvaluationDirector === "" ? "-" : valueOfElement.IsEvaluationDirector) + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
