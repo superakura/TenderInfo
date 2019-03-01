@@ -88,13 +88,12 @@
         <!-- 控制侧边栏 -->
         <aside class="control-sidebar control-sidebar-dark">
             <!-- Create the tabs -->
-            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-            </ul>
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs"></ul>
             <!-- Tab panes -->
             <div class="tab-content">
                 <!-- Home tab content -->
                 <div class="tab-pane" id="control-sidebar-home-tab">
-                    
+
                 </div>
             </div>
         </aside>
@@ -300,6 +299,27 @@
                         $($('a[href*="' + "/" + url[1] + '"]')).parent().addClass('active').siblings().removeClass('active');
                     }
                 });
+
+                function getCookie2(name) {
+                    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+                    if (arr = document.cookie.match(reg))
+                        return unescape(arr[2]);
+                    else
+                        return null;
+                }
+
+                function CheckCookie() {
+                    console.log(getCookie(".ASPXAUTH"));
+                    //console.log(getCookie("ASP.NET_SessionId"));
+                    //if (getCookie(".ASPXAUTH") === "") {
+                    //    toastr.error("登录超时，请重新登录！", "提示");
+                    //    setTimeout(function () {
+                    //        window.location.href = "/Home/Login";
+                    //        //window.location.href = "/Home/LoginFormAD";
+                    //    }, 1500);
+                    //}
+                }
+                setInterval(CheckCookie, 1000);
             });
         </script>
     </div>

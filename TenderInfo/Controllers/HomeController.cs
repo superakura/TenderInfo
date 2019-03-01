@@ -84,7 +84,7 @@ namespace TenderInfo.Controllers
         /// <param name="userNum"></param>
         /// <param name="pwd"></param>
         /// <returns>yes</returns>
-        private string CheckAD(string userNum,string pwd)
+        private string CheckAD(string userNum, string pwd)
         {
             string domainAndUsername = @"ptr\" + userNum;
             DirectoryEntry entry = new DirectoryEntry("LDAP://ptr.petrochina", domainAndUsername, pwd);
@@ -124,7 +124,8 @@ namespace TenderInfo.Controllers
         /// <param name="pwd"></param>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
-        [AllowAnonymous][HttpPost]
+        [AllowAnonymous]
+        [HttpPost]
         public ActionResult Login(string userNum, string pwd, string returnUrl)
         {
             //判断员工编号是否为系统用户、判断用户是否删除
@@ -158,9 +159,21 @@ namespace TenderInfo.Controllers
                 }
                 userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
 
-                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1, userNum, DateTime.Now, DateTime.Now.AddMinutes(20), false, userAuthorityString);//写入用户角色
+                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1,
+                    userNum,
+                    DateTime.Now,
+                    DateTime.Now.AddMinutes(1),
+                    true,
+                    userAuthorityString);//写入用户角色
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
                 System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+                if (authTicket.IsPersistent)
+                {
+                    authCookie.Expires = authTicket.Expiration;
+                }
+                authCookie.HttpOnly = false;
+                //authCookie.Domain = "/";
+
                 System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
                 #endregion
 
@@ -199,7 +212,8 @@ namespace TenderInfo.Controllers
         /// <param name="pwd"></param>
         /// <param name="returnUrl"></param>
         /// <returns></returns>
-        [AllowAnonymous][HttpPost]
+        [AllowAnonymous]
+        [HttpPost]
         public ActionResult LoginFormAD(string userNum, string pwd, string returnUrl)
         {
             //判断员工编号是否为系统用户、判断用户是否删除
@@ -214,7 +228,7 @@ namespace TenderInfo.Controllers
 
             //通过考勤数据库验证员工编号、考勤密码
             var result = "yes";
-            result = CheckAD(userNum, pwd);//系统测试时，注释。正式运行时，取消注释。
+            //result = CheckAD(userNum, pwd);//系统测试时，注释。正式运行时，取消注释。
 
             if (result == "yes")
             {
@@ -234,9 +248,15 @@ namespace TenderInfo.Controllers
                 userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
 
                 //写入用户角色
-                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1, userNum, DateTime.Now, DateTime.Now.AddMinutes(20), false, userAuthorityString);
+                FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1,
+                    userNum,
+                    DateTime.Now,
+                    DateTime.Now.AddMinutes(2),
+                    false,
+                    userAuthorityString);
+
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
-                System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
+                HttpCookie authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
                 System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
                 #endregion
 
@@ -399,7 +419,7 @@ namespace TenderInfo.Controllers
         /// <returns></returns>
         public JsonResult GetTestUserList()
         {
-            return Json(db.UserInfo.Select(s=>new { s.UserNum,s.UserName}).ToList());
+            return Json(db.UserInfo.Select(s => new { s.UserNum, s.UserName }).ToList());
         }
 
         /// <summary>
@@ -412,5 +432,30 @@ namespace TenderInfo.Controllers
             return Redirect("http://10.126.10.96:9001/start.aspx?userName=" + userDomainName);
         }
 
+        /// <summary>
+        /// 判断session是否过期
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CheckSession()
+        {
+            try
+            {
+                var cookie = HttpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+                var ticket = FormsAuthentication.Decrypt(cookie.Value);
+                if (ticket == null)
+                {
+                    return "errorSession";
+                }
+                else
+                {
+                    return System.Web.HttpContext.Current.Session[".ASPXAUTH"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
     }
 }

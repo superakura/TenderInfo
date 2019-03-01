@@ -63,6 +63,7 @@ namespace TenderInfo
                 {
                     Context.User = new System.Security.Principal.GenericPrincipal(Context.User.Identity, roles);
                 }
+                //authCookie.HttpOnly = false;
             }
         }
     }

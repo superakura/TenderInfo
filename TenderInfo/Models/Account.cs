@@ -171,7 +171,8 @@ namespace TenderInfo.Models
         /// <summary>
         /// 招标控制价--总价（万元）【物资、框架】招标控制价（万元）【工程、服务】
         /// </summary>
-        public decimal? TenderRestrictSumPrice { get; set; }
+        [StringLength(200)]
+        public string TenderRestrictSumPrice { get; set; }
 
         /// <summary>
         /// 中标金额--单价
@@ -181,7 +182,8 @@ namespace TenderInfo.Models
         /// <summary>
         /// 【物资、框架】中标金额（万元）--总价【工程、服务】中标金额（万元）
         /// </summary>
-        public decimal? TenderSuccessSumPrice { get; set; }
+        [StringLength(200)]
+        public string TenderSuccessSumPrice { get; set; }
 
         /// <summary>
         /// 【物资、框架】与控制价比节约资金（万元）【工程、服务】节约资金

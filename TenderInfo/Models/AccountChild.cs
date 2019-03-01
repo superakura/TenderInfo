@@ -48,7 +48,8 @@ namespace TenderInfo.Models
         /// <summary>
         /// 【报价（万元）--工程、服务、框架】【总价（万元）--物资】
         /// </summary>
-        public decimal? QuotedPriceSum { get; set; }
+        [StringLength(200)]
+        public string QuotedPriceSum { get; set; }
 
         /// <summary>
         /// 初步评审是否被否决--是/否

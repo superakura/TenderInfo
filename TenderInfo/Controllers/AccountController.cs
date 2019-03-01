@@ -543,17 +543,13 @@ namespace TenderInfo.Controllers
                 decimal.TryParse(Request.Form["tbxTenderRestrictUnitPriceEdit"], out tenderRestrictUnitPrice);
                 info.TenderRestrictUnitPrice = tenderRestrictUnitPrice;
 
-                decimal tenderRestrictSumPrice = 0;
-                decimal.TryParse(Request.Form["tbxTenderRestrictSumPriceEdit"], out tenderRestrictSumPrice);
-                info.TenderRestrictSumPrice = tenderRestrictSumPrice;
+                info.TenderRestrictSumPrice = Request.Form["tbxTenderRestrictSumPriceEdit"];
 
                 decimal tenderSuccessUnitPrice = 0;
                 decimal.TryParse(Request.Form["tbxTenderSuccessUnitPriceEdit"], out tenderSuccessUnitPrice);
                 info.TenderSuccessUnitPrice = tenderSuccessUnitPrice;
 
-                decimal tenderSuccessSumPrice = 0;
-                decimal.TryParse(Request.Form["tbxTenderSuccessSumPriceEdit"], out tenderSuccessSumPrice);
-                info.TenderSuccessSumPrice = tenderSuccessSumPrice;
+                info.TenderSuccessSumPrice = Request.Form["tbxTenderSuccessSumPriceEdit"];
 
                 decimal saveCapital = 0;
                 decimal.TryParse(Request.Form["tbxSaveCapitalEdit"], out saveCapital);
@@ -704,8 +700,7 @@ namespace TenderInfo.Controllers
                 var productManufacturerEdit = Request.Form["tbxProductManufacturerEdit"] ?? "-";
                 decimal quotedPriceUnitEdit = 0;
                 decimal.TryParse(Request.Form["tbxQuotedPriceUnitEdit"], out quotedPriceUnitEdit);
-                decimal quotedPriceSumEdit = 0;
-                decimal.TryParse(Request.Form["tbxQuotedPriceSumEdit"], out quotedPriceSumEdit);
+                var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"];
                 var negationExplain = Request.Form["ddlNegationExplain"] ?? "-";
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
@@ -718,7 +713,7 @@ namespace TenderInfo.Controllers
                 info.TenderPerson = tenderPersonEdit == string.Empty ? "-" : tenderPersonEdit;
                 info.ProductManufacturer = productManufacturerEdit == string.Empty ? "-" : productManufacturerEdit;
                 info.QuotedPriceUnit = quotedPriceUnitEdit;
-                info.QuotedPriceSum = quotedPriceSumEdit;
+                info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
                 info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
 
                 info.InputDate = DateTime.Now;
@@ -746,8 +741,7 @@ namespace TenderInfo.Controllers
                 var productManufacturerEdit = Request.Form["tbxProductManufacturerEdit"] ?? "-";
                 decimal quotedPriceUnitEdit = 0;
                 decimal.TryParse(Request.Form["tbxQuotedPriceUnitEdit"], out quotedPriceUnitEdit);
-                decimal quotedPriceSumEdit = 0;
-                decimal.TryParse(Request.Form["tbxQuotedPriceSumEdit"], out quotedPriceSumEdit);
+                var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"];
                 var negationExplain = Request.Form["ddlNegationExplain"] ?? "-";
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
@@ -757,7 +751,7 @@ namespace TenderInfo.Controllers
                 info.TenderPerson = tenderPersonEdit == string.Empty ? "-" : tenderPersonEdit;
                 info.ProductManufacturer = productManufacturerEdit == string.Empty ? "-" : productManufacturerEdit;
                 info.QuotedPriceUnit = quotedPriceUnitEdit;
-                info.QuotedPriceSum = quotedPriceSumEdit;
+                info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
                 info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
 
                 info.InputDate = DateTime.Now;
@@ -1339,9 +1333,7 @@ namespace TenderInfo.Controllers
                             info.TenderPerson = excel.Rows[i]["投标人"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标人"].ToString();
                             info.ProductManufacturer = null;
                             info.NegationExplain = null;
-                            decimal price = 0;
-                            decimal.TryParse(excel.Rows[i]["报价（万元）"].ToString(), out price);
-                            info.QuotedPriceSum = price;
+                            info.QuotedPriceSum = excel.Rows[i]["报价（万元）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["报价（万元）"].ToString();
                             info.QuotedPriceUnit = 0;
                             info.InputDate = DateTime.Now;
                             info.InputPerson = userInfo.UserID;
@@ -1364,9 +1356,7 @@ namespace TenderInfo.Controllers
                             decimal.TryParse(excel.Rows[i]["报价--单价"].ToString(), out priceOne);
                             info.QuotedPriceUnit = priceOne;
 
-                            decimal priceSum = 0;
-                            decimal.TryParse(excel.Rows[i]["报价--总价（万元）"].ToString(), out priceSum);
-                            info.QuotedPriceSum = priceSum;
+                            info.QuotedPriceSum = excel.Rows[i]["报价--总价（万元）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["报价--总价（万元）"].ToString();
 
                             info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim() == "" ? "-" : excel.Rows[i]["初步评审是否被否决"].ToString();
                             info.InputDate = DateTime.Now;
@@ -1387,10 +1377,7 @@ namespace TenderInfo.Controllers
                             info.ProductManufacturer = excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString();
 
                             info.QuotedPriceUnit = 0;
-
-                            decimal priceSum = 0;
-                            decimal.TryParse(excel.Rows[i]["投标总价（万元）"].ToString(), out priceSum);
-                            info.QuotedPriceSum = priceSum;
+                            info.QuotedPriceSum = excel.Rows[i]["投标总价（万元）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标总价（万元）"].ToString();
 
                             info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim() == "" ? "-" : excel.Rows[i]["初步评审是否被否决"].ToString();
                             info.InputDate = DateTime.Now;
@@ -1632,7 +1619,7 @@ namespace TenderInfo.Controllers
                 }
             }
 
-            var accountList = result.OrderByDescending(o => o.AccountID).ToList();
+            var accountList = result.OrderBy(o => o.AccountID).ToList();
             #endregion
 
             var filename = "台账统计信息" + App_Code.Commen.GetDateTimeString();
@@ -1780,7 +1767,7 @@ namespace TenderInfo.Controllers
                     cells[fourRow, 47].SetStyle(style1);
                     cells[fourRow, 48].PutValue(item.ClarifyDisposeInfo);
                     cells[fourRow, 48].SetStyle(style1);
-                    cells[fourRow, 49].PutValue(item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 49].PutValue(item.ClarifyReplyDate==null?"":item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
                     cells[fourRow, 49].SetStyle(style1);
                     fourRow += 1;
                 }
@@ -2260,7 +2247,7 @@ namespace TenderInfo.Controllers
                 }
             }
 
-            var accountList = result.OrderByDescending(o => o.AccountID).ToList();
+            var accountList = result.OrderBy(o => o.AccountID).ToList();
             #endregion
 
             var filename = "台账统计信息" + accountType + App_Code.Commen.GetDateTimeString();
@@ -2891,7 +2878,7 @@ namespace TenderInfo.Controllers
                 }
             }
 
-            var accountList = result.OrderByDescending(o => o.AccountID).ToList();
+            var accountList = result.OrderBy(o => o.AccountID).ToList();
             #endregion
 
             var filename = "台账统计信息--" + accountType + App_Code.Commen.GetDateTimeString();
