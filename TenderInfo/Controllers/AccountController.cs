@@ -17,7 +17,7 @@ namespace TenderInfo.Controllers
         // GET: Account
         private Models.DB db = new Models.DB();
 
-        #region view
+        #region 视图
         public ViewResult Material()
         {
             return View();

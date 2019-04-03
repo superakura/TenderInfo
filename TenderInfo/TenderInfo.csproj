@@ -565,7 +565,9 @@
     <Content Include="ueditor\third-party\zeroclipboard\ZeroClipboard.swf" />
     <Content Include="ueditor\ueditor.all.min.js" />
     <Content Include="ueditor\ueditor.config.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\AuthorityInfo\Index.cshtml" />
     <Content Include="Views\Dept\iFrameDeptTree.cshtml" />
     <Content Include="Views\Dept\iFrameDeptTreeNoRole.cshtml" />
@@ -610,8 +612,13 @@
     <Compile Include="Migrations\201902280609553_edit.Designer.cs">
       <DependentUpon>201902280609553_edit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904030552509_edit1.cs" />
+    <Compile Include="Migrations\201904030552509_edit1.Designer.cs">
+      <DependentUpon>201904030552509_edit1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountApprove.cs" />
     <Compile Include="Models\AccountChild.cs" />
     <Compile Include="Models\AuthorityInfo.cs" />
     <Compile Include="Models\CheckReportFile.cs" />
@@ -708,6 +715,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201902280609553_edit.resx">
       <DependentUpon>201902280609553_edit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904030552509_edit1.resx">
+      <DependentUpon>201904030552509_edit1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

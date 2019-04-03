@@ -162,7 +162,7 @@ namespace TenderInfo.Controllers
                 FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1,
                     userNum,
                     DateTime.Now,
-                    DateTime.Now.AddMinutes(1),
+                    DateTime.Now.AddMinutes(20),
                     true,
                     userAuthorityString);//写入用户角色
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);

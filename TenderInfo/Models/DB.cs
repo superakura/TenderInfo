@@ -32,8 +32,9 @@ namespace TenderInfo.Models
         public virtual DbSet<Log> Log { get; set; }//日志信息表
         #endregion
 
-        public virtual DbSet<Account> Account { get; set; }//招标台账信息子表--（工程、服务）
-        public virtual DbSet<AccountChild> AccountChild { get; set; }//招标台账信息子表--（工程、服务）
+        public virtual DbSet<Account> Account { get; set; }//招标台账信息表
+        public virtual DbSet<AccountChild> AccountChild { get; set; }//招标台账信息子表
+        public virtual DbSet<AccountApprove> AccountApproves { get; set; }//招标台账信息修改审批表
 
         public virtual DbSet<ProgressInfo> ProgressInfo { get; set; }//招标进度
         public virtual DbSet<GroupLeader> GroupLeader { get; set; }//招标组长信息表
@@ -46,5 +47,7 @@ namespace TenderInfo.Models
 
         public virtual DbSet<SampleDelegation> SampleDelegation { get; set; }//送样委托表
         public virtual DbSet<CheckReportFile> CheckReportFile { get; set; }//送样委托检验报告文件表
+
+
     }
 }

@@ -266,5 +266,11 @@ namespace TenderInfo.Models
         /// </summary>
         [StringLength(50)]
         public string QualificationExamMethod { get; set; }
+
+        /// <summary>
+        /// 是否完成
+        /// </summary>
+        [StringLength(50)]
+        public string IsComplete { get; set; }
     }
 }
