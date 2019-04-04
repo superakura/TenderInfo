@@ -10,6 +10,7 @@
 <span id="userRoleEdit" class="hidden">
     @ViewBag.editRole
 </span>
+@*投标人信息*@
 <div class="modal fade" id="FirstModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -74,6 +75,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxVetoReasonEdit">否决原因</label>
+                                        <textarea id="tbxVetoReasonEdit" name="tbxVetoReasonEdit" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -87,6 +96,7 @@
         </div>
     </div>
 </div>
+@*评标委员会*@
 <div class="modal fade" id="SecondModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -156,6 +166,7 @@
         </div>
     </div>
 </div>
+@*招标文件联审*@
 <div class="modal fade" id="ThirdModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -206,6 +217,7 @@
         </div>
     </div>
 </div>
+@*澄清*@
 <div class="modal fade" id="FourModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -304,12 +316,13 @@
         </div>
     </div>
 </div>
+@*异议处理*@
 <div class="modal fade" id="FiveModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h5 class="modal-title">澄清（修改）</h5>
+                <h5 class="modal-title">异议处理</h5>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -483,12 +496,6 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxTenderRangeEdit">招标范围</label>
-                                <input id="tbxTenderRangeEdit" name="tbxTenderRangeEdit" class="form-control input-sm" placeholder="招标范围" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
                                 <label for="ddlTenderModeEdit">招标方式</label>
                                 <select id="ddlTenderModeEdit" name="ddlTenderModeEdit" class="form-control input-sm">
                                     <option value="公开招标">公开招标</option>
@@ -507,8 +514,11 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="tbxSupplyPeriodEdit">供货期</label>
-                                <input id="tbxSupplyPeriodEdit" name="tbxSupplyPeriodEdit" class="form-control input-sm" placeholder="供货期" />
+                                <label for="ddlQualificationExamMethod">资格审查方式</label>
+                                <select id="ddlQualificationExamMethod" name="ddlQualificationExamMethod" class="form-control input-sm">
+                                    <option value="资格预审">资格预审</option>
+                                    <option value="资格后审">资格后审</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -566,6 +576,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxTenderRangeEdit">招标范围</label>
+                                <textarea id="tbxTenderRangeEdit" name="tbxTenderRangeEdit" class="form-control" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tbxSupplyPeriodEdit">供货期</label>
+                                <textarea id="tbxSupplyPeriodEdit" name="tbxSupplyPeriodEdit" class="form-control" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -586,6 +610,7 @@
                                                 <th rowspan="2" class="text-center" style="vertical-align:middle">产品制造商（代理、贸易商投标时填写）</th>
                                                 <th colspan="2" rowspan="1" class="text-center">报价</th>
                                                 <th rowspan="2" class="text-center" style="vertical-align:middle">初步评审是否被否决</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">否决原因</th>
                                             </tr>
                                             <tr>
                                                 <th class="text-center">单价（元）</th>
@@ -642,15 +667,6 @@
                             <div class="form-group">
                                 <label for="tbxSaveCapitalEdit">与控制价比节约资金（万元）</label>
                                 <input id="tbxSaveCapitalEdit" name="tbxSaveCapitalEdit" class="form-control input-sm" placeholder="与控制价比节约资金（万元）" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="ddlQualificationExamMethod">资格审查方式</label>
-                                <select id="ddlQualificationExamMethod" name="ddlQualificationExamMethod" class="form-control input-sm">
-                                    <option value="资格预审">资格预审</option>
-                                    <option value="资格后审">资格后审</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -827,12 +843,12 @@
                         <button type="button" id="btnReturn" class="btn bg-black">
                             <i class="glyphicon glyphicon-share-alt"></i> 返回
                         </button>
-                        @*@if (User.IsInRole("新建招标台账"))
+                        @if (User.IsInRole("新建招标台账"))
                         {
                             <button type="button" id="btnDel" class="btn btn-danger">
                                 <i class="glyphicon glyphicon-remove"></i> 删除
                             </button>
-                        }*@
+                        }
                     </div>
                 </form>
             </div>
@@ -854,12 +870,14 @@
                     list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
                     list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
                 }
+                var reason = valueOfElement["VetoReason"] === null ? "" : valueOfElement["VetoReason"];
                 list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
                 list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
                 list += "<td>" + valueOfElement["ProductManufacturer"] + "</td>";
                 list += "<td>" + valueOfElement["QuotedPriceUnit"] + "</td>";
                 list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
                 list += "<td>" + valueOfElement["NegationExplain"] + "</td>";
+                list += "<td>" + reason + "</td>";
                 list += "</tr>";
             });
             $("#tableFirst").empty().append(list);
@@ -1310,6 +1328,7 @@
                 $("#tbxQuotedPriceUnitEdit").val(result.QuotedPriceUnit);
                 $("#tbxQuotedPriceSumEdit").val(result.QuotedPriceSum);
                 $("#ddlNegationExplain").val(result.NegationExplain);
+                $("#tbxVetoReasonEdit").val(result.VetoReason);
             });
         });
         $(document).on("click", ".btnFirstDel", function () {

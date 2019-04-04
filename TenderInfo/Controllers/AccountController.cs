@@ -702,6 +702,7 @@ namespace TenderInfo.Controllers
                 decimal.TryParse(Request.Form["tbxQuotedPriceUnitEdit"], out quotedPriceUnitEdit);
                 var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"];
                 var negationExplain = Request.Form["ddlNegationExplain"] ?? "-";
+                var vetoReason = Request.Form["tbxVetoReasonEdit"] ?? "-";
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var info = new Models.AccountChild();
@@ -715,6 +716,7 @@ namespace TenderInfo.Controllers
                 info.QuotedPriceUnit = quotedPriceUnitEdit;
                 info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
                 info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
+                info.VetoReason = vetoReason == string.Empty ? "-" : vetoReason;
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
@@ -743,6 +745,7 @@ namespace TenderInfo.Controllers
                 decimal.TryParse(Request.Form["tbxQuotedPriceUnitEdit"], out quotedPriceUnitEdit);
                 var quotedPriceSumEdit = Request.Form["tbxQuotedPriceSumEdit"];
                 var negationExplain = Request.Form["ddlNegationExplain"] ?? "-";
+                var vetoReason = Request.Form["tbxVetoReasonEdit"] ?? "-";
 
                 var userInfo = App_Code.Commen.GetUserFromSession();
                 var info = db.AccountChild.Find(accountChildID);
@@ -753,6 +756,7 @@ namespace TenderInfo.Controllers
                 info.QuotedPriceUnit = quotedPriceUnitEdit;
                 info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
                 info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
+                info.VetoReason = vetoReason == string.Empty ? "-" : vetoReason;
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;

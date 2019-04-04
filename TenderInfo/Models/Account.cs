@@ -272,5 +272,10 @@ namespace TenderInfo.Models
         /// </summary>
         [StringLength(50)]
         public string IsComplete { get; set; }
+
+        /// <summary>
+        /// 中标通知书发出时间--可空
+        /// </summary>
+        public DateTime? TenderSuccessFileDate { get; set; }
     }
 }
