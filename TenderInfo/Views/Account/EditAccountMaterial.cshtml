@@ -421,6 +421,106 @@
         </div>
     </div>
 </div>
+@*项目前期沟通记录*@
+<div class="modal fade" id="ConnectModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">项目前期沟通记录</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="ConnectForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountConnectID" name="tbxAccountConnectID" type="text" class="hidden" />
+                            <input id="tbxAccountChildConnectID" name="tbxAccountChildConnectID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxConnectPersonEdit">
+                                            对接人
+                                        </label>
+                                        <input id="tbxConnectPersonEdit" name="tbxConnectPersonEdit" class="form-control input-sm" placeholder="对接人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxConnectDateTimeEdit">
+                                            对接时间
+                                        </label>
+                                        <input id="tbxConnectDateTimeEdit" name="tbxConnectDateTimeEdit" class="form-control input-sm accountDate" placeholder="对接时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxConnectContentEdit">
+                                            对接内容
+                                        </label>
+                                        <textarea id="tbxConnectContentEdit" name="tbxConnectContentEdit" class="form-control" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxConnectExistingProblemsEdit">
+                                            存在问题
+                                        </label>
+                                        <textarea id="tbxConnectExistingProblemsEdit" name="tbxConnectExistingProblemsEdit" class="form-control" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnConnectSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*使用单位名称*@
+<div class="modal fade" id="DeptModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">使用单位名称</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="DeptForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountDeptID" name="tbxAccountDeptID" type="text" class="hidden" />
+                            <input id="tbxAccountChildDeptID" name="tbxAccountChildDeptID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlUsingDeptEdit">使用单位</label>
+                                        <select id="ddlUsingDeptEdit" name="ddlUsingDeptEdit" class="form-control input-sm DeptSelect"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnDeptSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @Html.Partial("ImportModal")
 <div class="box box-danger">
     <div class="box-header">
@@ -468,12 +568,12 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        @*<div class="col-md-3">
                             <div class="form-group">
                                 <label for="ddlUsingDeptEdit">使用单位</label>
                                 <select id="ddlUsingDeptEdit" name="ddlUsingDeptEdit" class="form-control input-sm DeptSelect"></select>
                             </div>
-                        </div>
+                        </div>*@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="ddlProjectResponsibleDeptEdit">项目主责部门</label>
@@ -587,6 +687,51 @@
                             <div class="form-group">
                                 <label for="tbxSupplyPeriodEdit">供货期</label>
                                 <textarea id="tbxSupplyPeriodEdit" name="tbxSupplyPeriodEdit" class="form-control" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            使用单位名称
+                            <button id="btnDeptAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" style="vertical-align:middle">操作</th>
+                                                <th class="text-center" style="vertical-align:middle">使用单位名称</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableDept"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            项目前期沟通记录
+                            <button id="btnConnectAdd" type="button" class="btn btn-success btn-sm">新增</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" style="vertical-align:middle">操作</th>
+                                                <th class="text-center" style="vertical-align:middle">对接人</th>
+                                                <th class="text-center" style="vertical-align:middle">对接时间</th>
+                                                <th class="text-center" style="vertical-align:middle">对接内容</th>
+                                                <th class="text-center" style="vertical-align:middle">存在问题</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableConnect"></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -950,6 +1095,8 @@
             $("#FourModal textarea").val("");
             $("#FiveModal input").val("");
             $("#FiveModal textarea").val("");
+            $("#ConnectModal input,#ConnectModal textarea").val("");
+            $("#DeptModal input").val("");
         }
 
         GetInfo();
@@ -959,6 +1106,8 @@
         GetThirdTable();
         GetFourTable();
         GetFiveTable();
+        GetConnectTable();
+        GetDeptTable();
 
         SetBtnState();
         function SetBtnState() {
@@ -967,6 +1116,7 @@
             }
         }
 
+        //子表新增按钮
         $("#btnFirstAdd").click(function () {
             ClearInfo();
             $("#tbxAccountFirstID").val($("#tbxAccountIDEdit").val());
@@ -991,6 +1141,16 @@
             ClearInfo();
             $("#tbxAccountFiveID").val($("#tbxAccountIDEdit").val());
             $('#FiveModal').modal('show');
+        });
+        $("#btnConnectAdd").click(function () {
+            ClearInfo();
+            $("#tbxAccountConnectID").val($("#tbxAccountIDEdit").val());
+            $('#ConnectModal').modal('show');
+        });
+        $("#btnDeptAdd").click(function () {
+            ClearInfo();
+            $("#tbxAccountDeptID").val($("#tbxAccountIDEdit").val());
+            $('#DeptModal').modal('show');
         });
 
         //First提交
@@ -1238,6 +1398,104 @@
             });
         });
 
+        //Connect提交
+        $("#btnConnectSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    if ($("#tbxAccountChildConnectID").val() !== "") {
+                        //update
+                        $("#ConnectForm").ajaxSubmit({
+                            url: "/Account/UpdateConnect",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#ConnectModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetConnectTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                    else {
+                        //insert
+                        $("#ConnectForm").ajaxSubmit({
+                            url: "/Account/InsertConnect",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#ConnectModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetConnectTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        //Dept提交
+        $("#btnDeptSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    if ($("#tbxAccountChildDeptID").val() !== "") {
+                        //update
+                        $("#DeptForm").ajaxSubmit({
+                            url: "/Account/UpdateDept",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#DeptModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetDeptTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                    else {
+                        //insert
+                        $("#DeptForm").ajaxSubmit({
+                            url: "/Account/InsertDept",
+                            type: "post",
+                            success: function (result) {
+                                if (result === "ok") {
+                                    $("#DeptModal").modal("hide");
+                                    toastr.success("操作成功！", "提示");
+                                    GetDeptTable();
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                toastr.error(error, "提示");
+                                return;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
         function GetThirdTable() {
             var accountID = $("#tbxAccountIDEdit").val();
             $.post("/Account/GetListEdit", { "accountID": accountID, "type": "Third" }, function (result) {
@@ -1312,6 +1570,50 @@
                     list += "</tr>";
                 });
                 $("#tableFive").empty().append(list);
+            });
+        }
+
+        function GetConnectTable() {
+            var accountID = $("#tbxAccountIDEdit").val();
+            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "Connect" }, function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnConnectEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnConnectDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
+                    list += "<td>" + valueOfElement["ConnectPerson"] + "</td>";
+                    list += "<td>" + getJsonDateShort(valueOfElement["ConnectDateTime"]) + "</td>";
+                    list += "<td>" + valueOfElement["ConnectContent"] + "</td>";
+                    list += "<td>" + valueOfElement["ConnectExistingProblems"] + "</td>";
+
+                    list += "</tr>";
+                });
+                $("#tableConnect").empty().append(list);
+            });
+        }
+
+        function GetDeptTable() {
+            var accountID = $("#tbxAccountIDEdit").val();
+            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "Dept" }, function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnDeptEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnDeptDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
+                    list += "<td>" + valueOfElement["UsingDeptName"] + "</td>";
+                    list += "</tr>";
+                });
+                $("#tableDept").empty().append(list);
             });
         }
 
@@ -1494,6 +1796,73 @@
                         if (result === "ok") {
                             toastr.success("操作成功！", "提示");
                             GetFiveTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".btnConnectEdit", function () {
+            ClearInfo();
+            var id = $(this).attr("data-uid");
+            $('#ConnectModal').modal('show');
+            $("#tbxAccountChildConnectID").val(id);
+            var args = { "tbxAccountChildID": id };
+            $.post("/Account/GetOneEdit", args, function (result) {
+                $("#tbxConnectPersonEdit").val(result.ConnectPerson);
+                $("#tbxConnectDateTimeEdit").val(getJsonDateShort(result.ConnectDateTime));
+                $("#tbxConnectContentEdit").val(result.ConnectContent);
+                $("#tbxConnectExistingProblemsEdit").val(result.ConnectExistingProblems);
+            });
+        });
+        $(document).on("click", ".btnConnectDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "tbxAccountChildID": id };
+                    $.post("/Account/DelEdit", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetConnectTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".btnDeptEdit", function () {
+            ClearInfo();
+            var id = $(this).attr("data-uid");
+            $('#DeptModal').modal('show');
+            $("#tbxAccountChildDeptID").val(id);
+            var args = { "tbxAccountChildID": id };
+            $.post("/Account/GetOneEdit", args, function (result) {
+                $("#ddlUsingDeptEdit").val(result.UsingDeptID);
+            });
+        });
+        $(document).on("click", ".btnDeptDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "tbxAccountChildID": id };
+                    $.post("/Account/DelEdit", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetDeptTable();
                         }
                         else {
                             console.log(error);

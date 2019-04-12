@@ -1174,14 +1174,39 @@ namespace TenderInfo.Controllers
         }
 
         [HttpPost]
-        public string DelEdit()
+        public string InsertConnect()
         {
             try
             {
-                var accountChildID = 0;
-                int.TryParse(Request.Form["tbxAccountChildID"], out accountChildID);
-                var info = db.AccountChild.Find(accountChildID);
-                db.AccountChild.Remove(info);
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxAccountConnectID"], out accountID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = new Models.AccountChild();
+
+                info.TableType = "Connect";
+                info.AccountID = accountID;
+
+                var connectPerson = Request.Form["tbxConnectPersonEdit"] ?? "-";
+                info.ConnectPerson = connectPerson.Trim() == string.Empty ? "-" : connectPerson;
+
+                if (Request.Form["tbxConnectDateTimeEdit"] != string.Empty)
+                {
+                    info.ConnectDateTime = Convert.ToDateTime(Request.Form["tbxConnectDateTimeEdit"]);
+                }
+                else
+                {
+                    info.ConnectDateTime = null;
+                }
+                var connectContent = Request.Form["tbxConnectContentEdit"] ?? "-";
+                info.ConnectContent = connectContent.Trim() == string.Empty ? "-" : connectContent;
+
+                var connectExistingProblems = Request.Form["tbxConnectExistingProblemsEdit"] ?? "-";
+                info.ConnectExistingProblems = connectExistingProblems.Trim() == string.Empty ? "-" : connectExistingProblems;
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.AccountChild.Add(info);
                 db.SaveChanges();
                 return "ok";
             }
@@ -1191,6 +1216,113 @@ namespace TenderInfo.Controllers
             }
         }
 
+        [HttpPost]
+        public string UpdateConnect()
+        {
+            try
+            {
+                var accountChildID = 0;
+                int.TryParse(Request.Form["tbxAccountChildConnectID"], out accountChildID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = db.AccountChild.Find(accountChildID);
+
+                var connectPerson = Request.Form["tbxConnectPersonEdit"] ?? "-";
+                info.ConnectPerson = connectPerson.Trim() == string.Empty ? "-" : connectPerson;
+
+                if (Request.Form["tbxConnectDateTimeEdit"] != string.Empty)
+                {
+                    info.ConnectDateTime = Convert.ToDateTime(Request.Form["tbxConnectDateTimeEdit"]);
+                }
+                else
+                {
+                    info.ConnectDateTime = null;
+                }
+                var connectContent = Request.Form["tbxConnectContentEdit"] ?? "-";
+                info.ConnectContent = connectContent.Trim() == string.Empty ? "-" : connectContent;
+
+                var connectExistingProblems = Request.Form["tbxConnectExistingProblemsEdit"] ?? "-";
+                info.ConnectExistingProblems = connectExistingProblems.Trim() == string.Empty ? "-" : connectExistingProblems;
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string InsertDept()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxAccountDeptID"], out accountID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = new Models.AccountChild();
+
+                info.TableType = "Dept";
+                info.AccountID = accountID;
+
+                if (Request.Form["ddlUsingDeptEdit"] != null)
+                {
+                    var usingDeptID = 0;
+                    int.TryParse(Request.Form["ddlUsingDeptEdit"], out usingDeptID);
+                    info.UsingDeptID = usingDeptID;
+                    info.UsingDeptName = db.DeptInfo.Find(usingDeptID).DeptName;
+                }
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.AccountChild.Add(info);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpPost]
+        public string UpdateDept()
+        {
+            try
+            {
+                var accountChildID = 0;
+                int.TryParse(Request.Form["tbxAccountChildDeptID"], out accountChildID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = db.AccountChild.Find(accountChildID);
+
+                if (Request.Form["ddlUsingDeptEdit"] != null)
+                {
+                    var usingDeptID = 0;
+                    int.TryParse(Request.Form["ddlUsingDeptEdit"], out usingDeptID);
+                    info.UsingDeptID = usingDeptID;
+                    info.UsingDeptName = db.DeptInfo.Find(usingDeptID).DeptName;
+                }
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 获取招标台账子表单项信息
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetOneEdit()
         {
@@ -1207,6 +1339,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 获取招标台账子表列表
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetListEdit()
         {
@@ -1216,12 +1352,57 @@ namespace TenderInfo.Controllers
                 int.TryParse(Request.Form["accountID"], out accountID);
                 var type = Request.Form["type"];
 
+                ////将物资、框架历史的使用单位信息，写入台账子表的单位使用信息,用于转移历史数据
+                ////将历史单一一项使用单位信息，变为多个使用单位信息
+                //if (type == "Dept")
+                //{
+                //    var infoAccount = db.Account.Find(accountID);
+                //    var infoChild = db.AccountChild.Where(w => w.AccountID == accountID && w.TableType == "Dept").ToList();
+                //    if (infoChild.Count == 0)
+                //    {
+                //        if (infoAccount.UsingDeptID != 0)
+                //        {
+                //            var child = new Models.AccountChild();
+                //            child.UsingDeptID = infoAccount.UsingDeptID;
+                //            child.UsingDeptName = infoAccount.UsingDeptName;
+                //            child.TableType = "Dept";
+                //            child.AccountID = accountID;
+                //            child.InputDate = DateTime.Now;
+                //            child.InputPerson = App_Code.Commen.GetUserFromSession().UserID;
+
+                //            db.AccountChild.Add(child);
+                //            db.SaveChanges();
+                //        }
+                //    }
+                //}
                 var info = db.AccountChild.Where(w => w.TableType == type && w.AccountID == accountID).ToList();
                 return Json(info);
             }
             catch (Exception ex)
             {
                 return Json(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 删除招标台账子表单项信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string DelEdit()
+        {
+            try
+            {
+                var accountChildID = 0;
+                int.TryParse(Request.Form["tbxAccountChildID"], out accountChildID);
+                var info = db.AccountChild.Find(accountChildID);
+                db.AccountChild.Remove(info);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
             }
         }
 
@@ -1692,15 +1873,15 @@ namespace TenderInfo.Controllers
                 //当子表数据小于最大行子表时，补齐子表剩余行的边框
                 if (rowsorder > firstList.Count)
                 {
-                    var reduceCount = startmergepos+firstList.Count;
+                    var reduceCount = startmergepos + firstList.Count;
                     for (int i = 0; i < rowsorder - firstList.Count; i++)
                     {
-                        cells[reduceCount+i, 18].SetStyle(style1);
-                        cells[reduceCount+i, 19].SetStyle(style1);
-                        cells[reduceCount+i, 20].SetStyle(style1);
-                        cells[reduceCount+i, 21].SetStyle(style1);
-                        cells[reduceCount+i, 22].SetStyle(style1);
-                        cells[reduceCount+i, 23].SetStyle(style1);
+                        cells[reduceCount + i, 18].SetStyle(style1);
+                        cells[reduceCount + i, 19].SetStyle(style1);
+                        cells[reduceCount + i, 20].SetStyle(style1);
+                        cells[reduceCount + i, 21].SetStyle(style1);
+                        cells[reduceCount + i, 22].SetStyle(style1);
+                        cells[reduceCount + i, 23].SetStyle(style1);
                     }
                 }
 
@@ -1721,8 +1902,8 @@ namespace TenderInfo.Controllers
                 }
                 if (rowsorder > secondList.Count)
                 {
-                    var reduceCount = startmergepos+secondList.Count;
-                    for (int i = 0; i <rowsorder-secondList.Count; i++)
+                    var reduceCount = startmergepos + secondList.Count;
+                    for (int i = 0; i < rowsorder - secondList.Count; i++)
                     {
                         cells[reduceCount + i, 32].SetStyle(style1);
                         cells[reduceCount + i, 33].SetStyle(style1);
@@ -1771,7 +1952,7 @@ namespace TenderInfo.Controllers
                     cells[fourRow, 47].SetStyle(style1);
                     cells[fourRow, 48].PutValue(item.ClarifyDisposeInfo);
                     cells[fourRow, 48].SetStyle(style1);
-                    cells[fourRow, 49].PutValue(item.ClarifyReplyDate==null?"":item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
+                    cells[fourRow, 49].PutValue(item.ClarifyReplyDate == null ? "" : item.ClarifyReplyDate.Value.ToString("yyyy-MM-dd"));
                     cells[fourRow, 49].SetStyle(style1);
                     fourRow += 1;
                 }
