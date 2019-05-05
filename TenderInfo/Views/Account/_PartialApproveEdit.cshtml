@@ -1,0 +1,193 @@
+﻿
+<div class="modal fade" id="NewApproveEditModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">招标台账修改申请</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="NewApproveEditForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxNewApproveEditAccountID" name="tbxNewApproveEditAccountID" type="text" class="form-control" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxApproveEditAccountName" id="tbxApproveEditAccountName"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxApproveReason">修改原因</label>
+                                        <input id="tbxApproveReason" name="tbxApproveReason" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnNewApproveEditSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ApproveEditModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">招标台账修改查看/审批</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <label id="lblApproveEditAccountID" class="hidden"></label>
+                    <table class="table table-bordered table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>提交人</th>
+                                <th>提交时间</th>
+                                <th>修改原因</th>
+                                <th>审核状态</th>
+                                <th>审核人</th>
+                                <th>审核时间</th>
+                                <th>回退原因</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableApproveEditInfoList"></tbody>
+                    </table>
+                    @if (User.IsInRole("新建招标台账"))
+                    {
+                        <div class="form-horizontal">
+                            <form id="ApproveEditForm" method="post" enctype="multipart/form-data">
+                                <input id="tbxApproveEditAccountID" name="tbxApproveEditAccountID" type="text" class="form-control hidden" />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="tbxApproveBackReason">回退原因</label>
+                                            <input id="tbxApproveBackReason" name="tbxApproveBackReason" type="text" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    @if (User.IsInRole("新建招标台账"))
+                    {
+                        <button type="button" id="btnApproveEditOKSubmit" class="btn btn-primary">
+                            <i class="glyphicon glyphicon-ok"></i> 同意
+                        </button>
+                        <button type="button" id="btnApproveEditBackSubmit" class="btn btn-danger">
+                            <i class="glyphicon glyphicon-remove"></i> 回退
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function GetApproveEditList() {
+        $.post("/Account/GetEditApproveList", { accountID: $("#lblApproveEditAccountID").text() },
+            function (data, textStatus, jqXHR) {
+                var list = "";
+                $.each(data, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    list += "<td>" + (indexInArray + 1) + "</td>";
+                    list += "<td>" + valueOfElement.SubmitPersonName + "</td>";
+                    list += "<td>" + getJsonDateShort(valueOfElement.SubmitTime) + "</td>";
+                    list += "<td>" + valueOfElement.SubmitEditReason + "</td>";
+                    list += "<td>" + valueOfElement.ApproveState + "</td>";
+                    list += "<td>" + valueOfElement.ApprovePersonName + "</td>";
+                    list += "<td>" + getJsonDateShort(valueOfElement.ApproveTime) + "</td>";
+                    list += "<td>" + valueOfElement.ApproveBackReason + "</td>";
+                    list += "</td>";
+                });
+                $("#tableApproveEditInfoList").empty().append(list);
+            }
+        );
+    }
+
+    $(function () {
+        $("#btnNewApproveEditSubmit").click(function () {
+            Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $("#NewApproveEditForm").ajaxSubmit({
+                        url: "/Account/InsertApproveEdit",
+                        type: "post",
+                        success: function (result) {
+                            if (result === "ok") {
+                                toastr.success("操作成功！", "提示");
+                                $('#NewApproveEditModal').modal('hide');
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                        },
+                        error: function (error) {
+                            toastr.error(error, "提示");
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+        $("#btnApproveEditOKSubmit").click(function () {
+            Ewin.confirm({ message: "确定要同意吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $.post("/Account/ApproveEdit", { accountID: $("#tbxApproveEditAccountID").val(), approveType: "ok", backReason: "" },
+                        function (data, textStatus, jqXHR) {
+                            if (data === "ok") {
+                                toastr.success("操作成功！", "提示");
+                                $('#ApproveEditModal').modal('hide');
+                                $("#bsTable").bootstrapTable('refresh');
+                            }
+                        }
+                    );
+                }
+            });
+        });
+
+        $("#btnApproveEditBackSubmit").click(function () {
+            if($("#tbxApproveBackReason").val() == "")
+            {
+                toastr.error("回退必须填写原因！", "提示");
+            }
+            else
+            {
+                Ewin.confirm({ message: "确定要回退吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
+                    }
+                    else {
+                        $.post("/Account/ApproveEdit", { accountID: $("#tbxApproveEditAccountID").val(), approveType: "back", backReason: $("#tbxApproveBackReason").val() },
+                            function (data, textStatus, jqXHR) {
+                                if (data === "ok") {
+                                    toastr.success("操作成功！", "提示");
+                                    $('#ApproveEditModal').modal('hide');
+                                    $("#bsTable").bootstrapTable('refresh');
+                                }
+                            }
+                        );
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -620,6 +620,14 @@
     <Compile Include="Migrations\201904040107223_edit2.Designer.cs">
       <DependentUpon>201904040107223_edit2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904240224115_edit3.cs" />
+    <Compile Include="Migrations\201904240224115_edit3.Designer.cs">
+      <DependentUpon>201904240224115_edit3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904240655547_edit4.cs" />
+    <Compile Include="Migrations\201904240655547_edit4.Designer.cs">
+      <DependentUpon>201904240655547_edit4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountApprove.cs" />
@@ -699,6 +707,7 @@
     <Content Include="Views\TechnicSpecifiction\Search.cshtml" />
     <Content Include="Views\Home\LoginFormAD.cshtml" />
     <Content Include="Views\Test\LogInfo.cshtml" />
+    <Content Include="Views\Account\_PartialApproveEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -725,6 +734,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904040107223_edit2.resx">
       <DependentUpon>201904040107223_edit2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904240224115_edit3.resx">
+      <DependentUpon>201904240224115_edit3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904240655547_edit4.resx">
+      <DependentUpon>201904240655547_edit4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

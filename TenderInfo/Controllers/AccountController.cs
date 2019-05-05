@@ -684,6 +684,133 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// 台账完成提交
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CompeletSubmit()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxAccountIDEdit"], out accountID);
+                var info = db.Account.Find(accountID);
+                var userInfo = App_Code.Commen.GetUserFromSession();
+
+                info.CompleteTime = DateTime.Now;
+                info.IsComplete = "是";
+
+                var approve = new Models.AccountApprove();
+                approve.AccountID = accountID;
+                approve.SubmitPersonID = userInfo.UserID;
+                approve.SubmitPersonName = userInfo.UserName;
+                approve.SubmitTime = DateTime.Now;
+                approve.ApproveState = "提交台账完成";
+                db.AccountApproves.Add(approve);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 新增台账修改申请
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string InsertApproveEdit()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxNewApproveEditAccountID"], out accountID);
+                var approveReason = Request.Form["tbxApproveReason"].ToString();
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+
+                var info = new Models.AccountApprove();
+                info.AccountID = accountID;
+                info.SubmitEditReason = approveReason;
+                info.SubmitPersonID = userInfo.UserID;
+                info.SubmitPersonName = userInfo.UserName;
+                info.SubmitTime = DateTime.Now;
+                info.ApproveState = "等待审核";
+                db.AccountApproves.Add(info);
+
+                var infoAccount = db.Account.Find(accountID);
+                infoAccount.IsComplete = "修改审核";
+
+                db.SaveChanges();
+
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 获取台账修改审核信息列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetEditApproveList()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["accountID"], out accountID);
+
+                var approveInfo = db.AccountApproves.Where(w => w.AccountID == accountID).OrderByDescending(o=>o.AccountApproveID).ToList();
+
+                return Json(approveInfo);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 台账修改审批
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string ApproveEdit()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["accountID"], out accountID);
+                var approveType = Request.Form["approveType"].ToString();
+                var backReason= Request.Form["backReason"].ToString();
+                var userInfo = App_Code.Commen.GetUserFromSession();
+
+                var info = db.AccountApproves.Where(w => w.AccountID == accountID).OrderByDescending(o => o.AccountApproveID).FirstOrDefault();
+                info.ApproveState =approveType=="ok"? "审核通过" : "审核回退";
+                info.ApprovePersonID = userInfo.UserID;
+                info.ApprovePersonName = userInfo.UserName;
+                info.ApproveTime = DateTime.Now;
+                info.ApproveBackReason = backReason;
+
+                var infoAccount = db.Account.Find(accountID);
+                infoAccount.IsComplete = approveType == "ok" ? "否" : "是";
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         #endregion
 
         #region CrudChild
@@ -921,8 +1048,13 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 澄清/修改--新增
+        /// </summary>
+        /// <param name="clarifyFile"></param>
+        /// <returns></returns>
         [HttpPost]
-        public string InsertFour()
+        public string InsertFour(HttpPostedFileBase clarifyFile)
         {
             try
             {
@@ -971,6 +1103,19 @@ namespace TenderInfo.Controllers
                 var clarifyDisposeInfo = Request.Form["tbxClarifyDisposeInfoEdit"].Trim() ?? "-";
                 info.ClarifyDisposeInfo = clarifyDisposeInfo.Trim() == string.Empty ? "-" : clarifyDisposeInfo;
 
+                if (clarifyFile != null)
+                {
+                    var fileExt = Path.GetExtension(clarifyFile.FileName).ToLower();
+                    var fileName = Path.GetFileNameWithoutExtension(clarifyFile.FileName).ToLower();
+                    var dateString = App_Code.Commen.GetDateTimeString();
+                    var newName = fileName + dateString + fileExt;
+                    var filePath = Request.MapPath("~/FileUpload");
+                    var fullName = Path.Combine(filePath, newName);
+                    clarifyFile.SaveAs(fullName);
+
+                    info.ClarifyFile = newName;
+                }
+
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
                 db.AccountChild.Add(info);
@@ -983,8 +1128,13 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 澄清/修改--更新(更新附件时，删除旧的上传文件)
+        /// </summary>
+        /// <param name="clarifyFile"></param>
+        /// <returns></returns>
         [HttpPost]
-        public string UpdateFour()
+        public string UpdateFour(HttpPostedFileBase clarifyFile)
         {
             try
             {
@@ -1030,6 +1180,28 @@ namespace TenderInfo.Controllers
                 var clarifyDisposeInfo = Request.Form["tbxClarifyDisposeInfoEdit"].Trim() ?? "-";
                 info.ClarifyDisposeInfo = clarifyDisposeInfo.Trim() == string.Empty ? "-" : clarifyDisposeInfo;
 
+                if (clarifyFile != null)
+                {
+                    var filePath = Request.MapPath("~/FileUpload");
+
+                    var fileOld = info.ClarifyFile;
+                    //删除旧的上传文件
+                    var fullNameOld = Path.Combine(filePath, fileOld ?? "");
+                    if (System.IO.File.Exists(fullNameOld))
+                    {
+                        System.IO.File.Delete(fullNameOld);
+                    }
+
+                    var fileExt = Path.GetExtension(clarifyFile.FileName).ToLower();
+                    var fileName = Path.GetFileNameWithoutExtension(clarifyFile.FileName).ToLower();
+                    var dateString = App_Code.Commen.GetDateTimeString();
+                    var newName = fileName + dateString + fileExt;
+                    var fullName = Path.Combine(filePath, newName);
+                    clarifyFile.SaveAs(fullName);
+
+                    info.ClarifyFile = newName;
+                }
+
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
                 db.SaveChanges();
@@ -1041,8 +1213,13 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 异议处理--新增
+        /// </summary>
+        /// <param name="dissentFile"></param>
+        /// <returns></returns>
         [HttpPost]
-        public string InsertFive()
+        public string InsertFive(HttpPostedFileBase dissentFile)
         {
             try
             {
@@ -1097,6 +1274,19 @@ namespace TenderInfo.Controllers
                 var dissentDisposeInfo = Request.Form["tbxDissentDisposeInfoEdit"] ?? "-";
                 info.DissentDisposeInfo = dissentDisposeInfo.Trim() == string.Empty ? "-" : dissentDisposeInfo;
 
+                if (dissentFile != null)
+                {
+                    var fileExt = Path.GetExtension(dissentFile.FileName).ToLower();
+                    var fileName = Path.GetFileNameWithoutExtension(dissentFile.FileName).ToLower();
+                    var dateString = App_Code.Commen.GetDateTimeString();
+                    var newName = fileName + dateString + fileExt;
+                    var filePath = Request.MapPath("~/FileUpload");
+                    var fullName = Path.Combine(filePath, newName);
+                    dissentFile.SaveAs(fullName);
+
+                    info.DissentFile = newName;
+                }
+
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
                 db.AccountChild.Add(info);
@@ -1109,8 +1299,13 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 异议处理--更新(更新附件时，删除旧的上传文件)
+        /// </summary>
+        /// <param name="dissentFile"></param>
+        /// <returns></returns>
         [HttpPost]
-        public string UpdateFive()
+        public string UpdateFive(HttpPostedFileBase dissentFile)
         {
             try
             {
@@ -1161,6 +1356,28 @@ namespace TenderInfo.Controllers
 
                 var dissentDisposeInfo = Request.Form["tbxDissentDisposeInfoEdit"] ?? "-";
                 info.DissentDisposeInfo = dissentDisposeInfo.Trim() == string.Empty ? "-" : dissentDisposeInfo;
+
+                if (dissentFile != null)
+                {
+                    var filePath = Request.MapPath("~/FileUpload");
+
+                    var fileOld = info.DissentFile;
+                    //删除旧的上传文件
+                    var fullNameOld = Path.Combine(filePath, fileOld ?? "");
+                    if (System.IO.File.Exists(fullNameOld))
+                    {
+                        System.IO.File.Delete(fullNameOld);
+                    }
+
+                    var fileExt = Path.GetExtension(dissentFile.FileName).ToLower();
+                    var fileName = Path.GetFileNameWithoutExtension(dissentFile.FileName).ToLower();
+                    var dateString = App_Code.Commen.GetDateTimeString();
+                    var newName = fileName + dateString + fileExt;
+                    var fullName = Path.Combine(filePath, newName);
+                    dissentFile.SaveAs(fullName);
+
+                    info.DissentFile = newName;
+                }
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
@@ -1396,6 +1613,23 @@ namespace TenderInfo.Controllers
                 var accountChildID = 0;
                 int.TryParse(Request.Form["tbxAccountChildID"], out accountChildID);
                 var info = db.AccountChild.Find(accountChildID);
+
+                var filePath = Request.MapPath("~/FileUpload");
+
+                //删除旧的上传文件
+                var fileClarify = info.ClarifyFile;
+                var fileDissent = info.DissentFile;
+                var fullNameClarify = Path.Combine(filePath, fileClarify ?? "");
+                var fullNameDissent = Path.Combine(filePath, fileDissent ?? "");
+                if (System.IO.File.Exists(fullNameClarify))
+                {
+                    System.IO.File.Delete(fullNameClarify);
+                }
+                if (System.IO.File.Exists(fullNameDissent))
+                {
+                    System.IO.File.Delete(fullNameDissent);
+                }
+
                 db.AccountChild.Remove(info);
                 db.SaveChanges();
                 return "ok";

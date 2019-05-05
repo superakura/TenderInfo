@@ -268,10 +268,15 @@ namespace TenderInfo.Models
         public string QualificationExamMethod { get; set; }
 
         /// <summary>
-        /// 是否完成
+        /// 是否完成，【是】，【否】,【修改审核】
         /// </summary>
         [StringLength(50)]
         public string IsComplete { get; set; }
+
+        /// <summary>
+        /// 完成提交时间
+        /// </summary>
+        public DateTime? CompleteTime { get; set; }
 
         /// <summary>
         /// 中标通知书发出时间--可空

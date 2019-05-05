@@ -22,7 +22,7 @@ namespace TenderInfo.Models
         public int AccountID { get; set; }
 
         /// <summary>
-        /// 审批人员状态
+        /// 审批状态
         /// </summary>
         [StringLength(50)]
         public string ApproveState { get; set; }
@@ -30,7 +30,7 @@ namespace TenderInfo.Models
         /// <summary>
         /// 审批时间
         /// </summary>
-        public DateTime ApproveTime { get; set; }
+        public DateTime? ApproveTime { get; set; }
 
         /// <summary>
         /// 审批人员ID

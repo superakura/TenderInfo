@@ -54,6 +54,32 @@
             "&tenderStartDateEnd=" + tenderStartDateEnd +
             "&projectName=" + escape(projectName);//项目名称
     };
+    var newApproveEdit = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        //console.log(row.account.AccountID);
+        $('#NewApproveEditModal').modal('show');
+        $('#tbxNewApproveEditAccountID').val(row.account.AccountID);
+        $('#tbxApproveEditAccountName').text(row.account.ProjectName);
+        $('#tbxApproveReason').val("");
+    };
+    var approveEdit = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        $('#ApproveEditModal').modal('show');
+        $("#tbxApproveEditAccountID").val(row.account.AccountID);
+        $("#lblApproveEditAccountID").text(row.account.AccountID);
+        $('#tbxApproveBackReason').val("");
+
+        GetApproveEditList();
+
+        if (row.account.IsComplete == "修改审核") {
+            $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").show();
+        }
+        else {
+            $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").hide();
+        }
+    };
 
     $(function () {
         function getQueryString(name) {
@@ -88,10 +114,31 @@
                     colspan: 1,
                     valign: "middle",
                     visible: true,
-                    //width: 600,
                     formatter: function (value, row, index) {
                         //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
                         var html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')">' + row.account.ProjectName + '</a >';
+                        return html;
+                    }
+                },
+                {
+                    field: 'account.IsComplete',
+                    title: '是否完成',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle"
+                },
+                {
+                    title: '修改申请',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        var html = '<a href="#" onclick="approveEdit(' + row.account.AccountID + ')">查看</a >';
+                        html += '&nbsp;&nbsp;';
+                        if (row.account.IsComplete == "是") {
+                            html += '<a href="#" onclick="newApproveEdit(' + row.account.AccountID + ')">申请</a >';
+                        }
                         return html;
                     }
                 },
