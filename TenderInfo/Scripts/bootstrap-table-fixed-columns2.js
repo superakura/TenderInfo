@@ -126,7 +126,7 @@
             }
 
             that.$fixedHeader.find('th[data-field="' + visibleFields[index] + '"]')
-                .find('.fht-cell').width($this.innerWidth());
+                .find('.fht-cell').width($this.innerWidth() - 1);//高源修改2019-05-14
             that.$fixedHeader.find('th[data-field="' + visibleFields[index] + '"]').height(80);//高源修改2018-07-31
             headerWidth += $this.outerWidth();
         });
@@ -159,7 +159,7 @@
             that.$fixedBody.find('tr:eq(' + i + ')').height($(this).height() - 0.5);
             var thattds = this;
             that.$fixedBody.find('tr:eq(' + i + ')').find('td').each(function (j) {
-                $(this).width($($(thattds).find('td')[j]).width() + 1);
+                $(this).width($($(thattds).find('td')[j]).width());
             });
         });
 

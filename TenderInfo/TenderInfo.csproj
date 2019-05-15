@@ -708,6 +708,7 @@
     <Content Include="Views\Home\LoginFormAD.cshtml" />
     <Content Include="Views\Test\LogInfo.cshtml" />
     <Content Include="Views\Account\_PartialApproveEdit.cshtml" />
+    <Content Include="Views\Account\_PartialTextShow.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

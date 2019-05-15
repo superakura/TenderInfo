@@ -102,226 +102,239 @@
         immediately after the control sidebar -->
         <div class="control-sidebar-bg"></div>
 
-        <script>
-            function getQueryString(name) {
-                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-                var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
-                var r = window.location.search.substr(1).match(reg);
-                var q = window.location.pathname.substr(1).match(reg_rewrite);
-                if (r != null) {
-                    return unescape(r[2]);
-                } else if (q != null) {
-                    return unescape(q[2]);
-                } else {
-                    return null;
+    </div>
+    <script>
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            var q = window.location.pathname.substr(1).match(reg_rewrite);
+            if (r != null) {
+                return unescape(r[2]);
+            } else if (q != null) {
+                return unescape(q[2]);
+            } else {
+                return null;
+            }
+        }
+
+        function getParam(paramName) {
+            paramValue = "", isFound = !1;
+            if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue == "" && (paramValue = null), paramValue;
+        }
+
+        var ngConfig = {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            transformRequest: function (obj) {
+                var str = [];
+                for (var p in obj) {
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                }
+                return str.join("&");
+            }
+        };
+
+        //设置全局Ajax超时转跳
+        $.ajaxSetup({
+            statusCode: {
+                499: function () {
+                    toastr.error("登录超时，请重新登录！", "提示");
+                    setTimeout(function () {
+                        window.location.href = "/Home/Login";
+                        //window.location.href = "/Home/LoginFormAD";
+                    }, 1500);
                 }
             }
+        });
 
-            function getParam(paramName) {
-                paramValue = "", isFound = !1;
-                if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
-                    arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
-                    while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
-                }
-                return paramValue == "" && (paramValue = null), paramValue;
+        //获取cookie
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1);
+                if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
             }
+            return "";
+        }
 
-            var ngConfig = {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                transformRequest: function (obj) {
-                    var str = [];
-                    for (var p in obj) {
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                }
-            };
+        //设置cookie
+        function setCookie(cname, cvalue, exMinute) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exMinute * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
 
-            //设置全局Ajax超时转跳
-            $.ajaxSetup({
-                statusCode: {
-                    499: function () {
-                        toastr.error("登录超时，请重新登录！", "提示");
-                        setTimeout(function () {
-                            window.location.href = "/Home/Login";
-                            //window.location.href = "/Home/LoginFormAD";
-                        }, 1500);
-                    }
-                }
-            });
+        //删除cookies
+        function delCookie(name) {
+            var exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            var cval = getCookie(name);
+            if (cval != null)
+                document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+        }
 
-            //获取cookie
-            function getCookie(cname) {
-                var name = cname + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ') c = c.substring(1);
-                    if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
-                }
-                return "";
-            }
+        //toastr提示控件设置
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-center-center",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "2000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
 
-            //设置cookie
-            function setCookie(cname, cvalue, exMinute) {
-                var d = new Date();
-                d.setTime(d.getTime() + (exMinute * 60 * 1000));
-                var expires = "expires=" + d.toUTCString();
-                document.cookie = cname + "=" + cvalue + "; " + expires;
-            }
-
-            //删除cookies
-            function delCookie(name) {
-                var exp = new Date();
-                exp.setTime(exp.getTime() - 1);
-                var cval = getCookie(name);
-                if (cval != null)
-                    document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
-            }
-
-            //toastr提示控件设置
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
-                "positionClass": "toast-center-center",
-                "preventDuplicates": true,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "2000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-
-            //json日期时间格式化
-            function getJsonDateTime(jsonDate) {
-                if (jsonDate !== null) {
-                    var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
-                    var date = new Date(milliseconds);
-                    return date.toLocaleString();
-                }
-                else {
-                    return "";
-                }
-            }
-
-            //json日期时间格式化
-            function getJsonDateTimeMinute(jsonDate) {
-                if (jsonDate !== null) {
-                    var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
-                    var date = new Date(milliseconds);
-                    var month = (date.getMonth() + 1) < 10 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1);
-                    var day = date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate();
-                    var hour = date.getHours() < 10 ? ("0" + date.getHours()) : date.getHours();
-                    var minute = date.getMinutes() < 10 ? ("0" + date.getMinutes()) : date.getMinutes();
-                    return date.getFullYear() + '-' + month + '-' + day + " " + hour + ":" + minute;
-                }
-                else {
-                    return "";
-                }
-            }
-
-            //json日期格式化
-            function getJsonDate(jsonDate) {
+        //json日期时间格式化
+        function getJsonDateTime(jsonDate) {
+            if (jsonDate !== null) {
                 var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
                 var date = new Date(milliseconds);
-                return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
+                return date.toLocaleString();
             }
-
-            //json日期格式化short
-            function getJsonDateShort(jsonDate) {
-                if (jsonDate !== null) {
-                    var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
-                    var date = new Date(milliseconds);
-                    var month = (date.getMonth() + 1);
-                    return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
-                }
-                else {
-                    return "";
-                }
+            else {
+                return "";
             }
+        }
 
-            $(document).ready(function () {
-                $('.sidebar-menu').tree();
+        //json日期时间格式化
+        function getJsonDateTimeMinute(jsonDate) {
+            if (jsonDate !== null) {
+                var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
+                var date = new Date(milliseconds);
+                var month = (date.getMonth() + 1) < 10 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1);
+                var day = date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate();
+                var hour = date.getHours() < 10 ? ("0" + date.getHours()) : date.getHours();
+                var minute = date.getMinutes() < 10 ? ("0" + date.getMinutes()) : date.getMinutes();
+                return date.getFullYear() + '-' + month + '-' + day + " " + hour + ":" + minute;
+            }
+            else {
+                return "";
+            }
+        }
 
-                //退出系统按钮
-                $("#btnLogOut").click(function () {
-                    Ewin.confirm({ message: "确认要退出系统吗？" }).on(function (e) {
-                        if (!e) {
-                            return;
-                        }
-                        else {
-                            window.location.href = "/Home/LoginOut";
-                        }
-                    });
-                });
+        //json日期格式化
+        function getJsonDate(jsonDate) {
+            var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
+            var date = new Date(milliseconds);
+            return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
+        }
 
-                //从cookie中读取用户姓名和菜单
-                $("#lblUserName").text("欢迎：" + decodeURIComponent(getCookie("cUserName")));
+        //json日期格式化short
+        function getJsonDateShort(jsonDate) {
+            if (jsonDate !== null) {
+                var milliseconds = parseInt(jsonDate.replace(/\D/igm, ""));
+                var date = new Date(milliseconds);
+                var month = (date.getMonth() + 1);
+                return date.getFullYear() + '-' + (month < 10 ? "0" + month : month) + '-' + (date.getDate() < 10 ? ("0" + date.getDate()) : date.getDate());
+            }
+            else {
+                return "";
+            }
+        }
 
-                //从数据库中获取菜单
-                $.post("/Home/GetMenu", "", function (result) {
-                    var menuInfo = "";
-                    $.each(result, function (indexInArray, valueOfElement) {
-                        var url = valueOfElement[4];
-                        var icon = valueOfElement[3];
-                        var text = valueOfElement[6];
-                        var subMenu = valueOfElement[7];
-                        if (subMenu.length > 0) {
-                            menuInfo += "<li class='treeview'><a href='#'><i class='" + icon + "'></i> <span> " + text + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a>";
-                            var chidMenuInfo = "<ul class='treeview-menu'>";
-                            $.each(subMenu, function (index, value) {
-                                chidMenuInfo += "<li><a href='" + value.MenuUrl + "'><i class='" + value.MenuIcon + "'></i> <span> " + value.MenuName + " </span></a></li>";
-                            });
-                            chidMenuInfo += "</ul></li>";
-                            menuInfo += chidMenuInfo;
-                        }
-                        else {
-                            menuInfo += "<li><a href='" + url + "'><i class='" + icon + "'></i><span> " + text + " </span></a></li>";
-                        }
-                    });
-                    $("#menuList").empty().append(menuInfo);
-                    //设置菜单活动项
-                    var string = document.location.pathname;
-                    var url = string.split("/");
-                    if ($('a[href*="' + "/" + url[1] + '"]').size() > 1) {
-                        $('a[href="' + "/" + url[1] + "/" + url[2] + '"]').parents('.treeview-menu').parent().addClass('active').siblings().removeClass('active');
+        function splitLengthRule(val) {
+            var rs = [];
+            if (val < 7) {
+                rs[0] = val;
+            } else {
+                var reg = /.{7}/g;
+                var rs = val.match(reg);//注意如果s的长度小于4,那么rs=null
+                rs.push(val.substring(rs.join('').length));
+            }
+            return rs;
 
-                        $('a[href="' + "/" + url[1] + "/" + url[2] + '"]').parent().addClass('active').siblings().removeClass('active');
+        }
+
+        $(document).ready(function () {
+            $('.sidebar-menu').tree();
+
+            //退出系统按钮
+            $("#btnLogOut").click(function () {
+                Ewin.confirm({ message: "确认要退出系统吗？" }).on(function (e) {
+                    if (!e) {
+                        return;
                     }
                     else {
-                        $($('a[href*="' + "/" + url[1] + '"]')).parents('.treeview-menu').parent().addClass('active').siblings().removeClass('active');
-
-                        $($('a[href*="' + "/" + url[1] + '"]')).parent().addClass('active').siblings().removeClass('active');
+                        window.location.href = "/Home/LoginOut";
                     }
                 });
-
-                function getCookie2(name) {
-                    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-                    if (arr = document.cookie.match(reg))
-                        return unescape(arr[2]);
-                    else
-                        return null;
-                }
-
-                function CheckCookie() {
-                    console.log(getCookie(".ASPXAUTH"));
-                    //console.log(getCookie("ASP.NET_SessionId"));
-                    //if (getCookie(".ASPXAUTH") === "") {
-                    //    toastr.error("登录超时，请重新登录！", "提示");
-                    //    setTimeout(function () {
-                    //        window.location.href = "/Home/Login";
-                    //        //window.location.href = "/Home/LoginFormAD";
-                    //    }, 1500);
-                    //}
-                }
-                //setInterval(CheckCookie, 1000);
             });
-        </script>
-    </div>
+
+            //从cookie中读取用户姓名和菜单
+            $("#lblUserName").text("欢迎：" + decodeURIComponent(getCookie("cUserName")));
+
+            //从数据库中获取菜单
+            $.post("/Home/GetMenu", "", function (result) {
+                var menuInfo = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    var url = valueOfElement[4];
+                    var icon = valueOfElement[3];
+                    var text = valueOfElement[6];
+                    var subMenu = valueOfElement[7];
+                    if (subMenu.length > 0) {
+                        menuInfo += "<li class='treeview'><a href='#'><i class='" + icon + "'></i> <span> " + text + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a>";
+                        var chidMenuInfo = "<ul class='treeview-menu'>";
+                        $.each(subMenu, function (index, value) {
+                            chidMenuInfo += "<li><a href='" + value.MenuUrl + "'><i class='" + value.MenuIcon + "'></i> <span> " + value.MenuName + " </span></a></li>";
+                        });
+                        chidMenuInfo += "</ul></li>";
+                        menuInfo += chidMenuInfo;
+                    }
+                    else {
+                        menuInfo += "<li><a href='" + url + "'><i class='" + icon + "'></i><span> " + text + " </span></a></li>";
+                    }
+                });
+                $("#menuList").empty().append(menuInfo);
+                //设置菜单活动项
+                var string = document.location.pathname;
+                var url = string.split("/");
+                if ($('a[href*="' + "/" + url[1] + '"]').size() > 1) {
+                    $('a[href="' + "/" + url[1] + "/" + url[2] + '"]').parents('.treeview-menu').parent().addClass('active').siblings().removeClass('active');
+
+                    $('a[href="' + "/" + url[1] + "/" + url[2] + '"]').parent().addClass('active').siblings().removeClass('active');
+                }
+                else {
+                    $($('a[href*="' + "/" + url[1] + '"]')).parents('.treeview-menu').parent().addClass('active').siblings().removeClass('active');
+
+                    $($('a[href*="' + "/" + url[1] + '"]')).parent().addClass('active').siblings().removeClass('active');
+                }
+            });
+
+            function getCookie2(name) {
+                var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+                if (arr = document.cookie.match(reg))
+                    return unescape(arr[2]);
+                else
+                    return null;
+            }
+
+            function CheckCookie() {
+                console.log(getCookie(".ASPXAUTH"));
+                //console.log(getCookie("ASP.NET_SessionId"));
+                //if (getCookie(".ASPXAUTH") === "") {
+                //    toastr.error("登录超时，请重新登录！", "提示");
+                //    setTimeout(function () {
+                //        window.location.href = "/Home/Login";
+                //        //window.location.href = "/Home/LoginFormAD";
+                //    }, 1500);
+                //}
+            }
+            //setInterval(CheckCookie, 1000);
+        });
+    </script>
 </body>
 </html>

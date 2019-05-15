@@ -9,9 +9,25 @@
     .bootstrap-table .table > thead > tr > th {
         vertical-align: middle;
     }
+    /*.fixed-table-container tbody td {
+        border-left: 1px solid #000000;
+    }
+    .table > tbody > tr > td, .table > tfoot > tr > td {
+        border-top: 1px solid #000000;
+    }
+    .bootstrap-table .table > thead > tr > th {
+        vertical-align: bottom;
+        border-bottom: 1px solid #000000;
+    }
+    .fixed-table-container thead th {
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border-left: 1px solid #000000;
+    }*/
 </style>
 <div class="table-responsive" style="z-index: 1;">
-    <table id="bsTable" class="text-nowrap" style="word-break:break-all;"></table>
+    <table id="bsTable" class="text-nowrap" style="word-break:break-all; word-wrap:break-all;"></table>
 </div>
 <script>
     var editModel = function (id) {
@@ -80,6 +96,12 @@
             $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").hide();
         }
     };
+    var textShowEvent = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        $('#textShowModal').modal('show');
+        $("#textShow").text(row.account.TenderRange);
+    };
 
     $(function () {
         function getQueryString(name) {
@@ -103,7 +125,6 @@
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    //width: 45,
                     formatter: function (value, row, index) {
                         return index + 1;
                     }
@@ -116,7 +137,14 @@
                     visible: true,
                     formatter: function (value, row, index) {
                         //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        var html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')">' + row.account.ProjectName + '</a >';
+                        var html = "";
+                        if (row.account.ProjectName.length <= 20) {
+                            html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')">' + row.account.ProjectName + '</a >';
+                        }
+                        else {
+                            html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')" data-toggle="tooltip" data-placement="bottom" title="' + row.account.ProjectName + '">' + row.account.ProjectName.substr(0, 20) + '...' + '</a > ';
+                        }
+                        //var html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')">' + row.account.ProjectName + '</a >';
                         return html;
                     }
                 },
@@ -198,6 +226,25 @@
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
+                    //width: 150,
+                    formatter: function (value, row, index) {
+                        ////这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.account.TenderRange.length <= 8) {
+                            return row.account.TenderRange;
+                        }
+                        else
+                        {
+                            var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderRange + '">' + row.account.TenderRange.substr(0, 8) + '...' + '</a > ';
+                            return html;
+                        }
+                        
+                        //var rs = splitLengthRule(row.account.TenderRange);
+                        //var html = "";
+                        //$.each(rs, function (indexInArray, valueOfElement) {
+                        //    html += valueOfElement+"</br>";
+                        //});
+                        //return html;
+                    },
                     title: '招标范围'
                 },
                 {
@@ -219,6 +266,16 @@
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
+                    formatter: function (value, row, index) {
+                        ////这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.account.TenderRange.length <= 8) {
+                            return row.account.TenderRange;
+                        }
+                        else {
+                            var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.SupplyPeriod + '">' + row.account.SupplyPeriod.substr(0, 8) + '...' + '</a > ';
+                            return html;
+                        }
+                    },
                     title: '供货期'
                 },
                 {
@@ -426,7 +483,17 @@
                     rowspan: 2,
                     colspan: 1,
                     valign: "middle",
-                    title: '招标失败原因'
+                    title: '招标失败原因',
+                    formatter: function (value, row, index) {
+                        //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.account.TenderFailReason.length <= 8) {
+                            return row.account.TenderFailReason;
+                        }
+                        else {
+                            var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderFailReason + '">' + row.account.TenderFailReason.substr(0, 8) + '...' + '</a > ';
+                            return html;
+                        }
+                    }
                 },
                 {
                     title: '澄清（修改）',
@@ -739,7 +806,13 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + valueOfElement.ClarifyReason + "</td></tr>";
+                            if (valueOfElement.ClarifyReason.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.ClarifyReason + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.ClarifyReason + '">' + valueOfElement.ClarifyReason.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.ClarifyReason + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -811,7 +884,13 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + valueOfElement.ClarifyDisposeInfo + "</td></tr>";
+                            if (valueOfElement.ClarifyDisposeInfo.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.ClarifyDisposeInfo + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.ClarifyDisposeInfo + '">' + valueOfElement.ClarifyDisposeInfo.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.ClarifyDisposeInfo + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -901,7 +980,13 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + valueOfElement.DissentReason + "</td></tr>";
+                            if (valueOfElement.DissentReason.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.DissentReason + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.DissentReason + '">' + valueOfElement.DissentReason.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.DissentReason + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
@@ -973,7 +1058,13 @@
                     formatter: function (value, row, index) {
                         var list = "<table class='table  table-bordered'>";
                         $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
-                            list += "<tr><td>" + valueOfElement.DissentDisposeInfo + "</td></tr>";
+                            if (valueOfElement.DissentDisposeInfo.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.DissentDisposeInfo + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.DissentDisposeInfo + '">' + valueOfElement.DissentDisposeInfo.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.DissentDisposeInfo + "</td></tr>";
                         });
                         list += "</table>";
                         return list;
