@@ -595,17 +595,16 @@
                             <div class="form-group">
                                 <label for="tbxProjectResponsiblePersonEdit">招标项目负责人</label>
                                 <input id="tbxProjectResponsiblePersonEdit" name="tbxProjectResponsiblePersonEdit" class="form-control input-sm" placeholder="项目文件编号" />
-                                @*<select id="ddlProjectResponsiblePersonEdit" name="ddlProjectResponsiblePersonEdit" class="form-control input-sm"></select>*@
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         @*<div class="col-md-3">
-                            <div class="form-group">
-                                <label for="ddlUsingDeptEdit">使用单位</label>
-                                <select id="ddlUsingDeptEdit" name="ddlUsingDeptEdit" class="form-control input-sm DeptSelect"></select>
-                            </div>
-                        </div>*@
+                <div class="form-group">
+                    <label for="ddlUsingDeptEdit">使用单位</label>
+                    <select id="ddlUsingDeptEdit" name="ddlUsingDeptEdit" class="form-control input-sm DeptSelect"></select>
+                </div>
+            </div>*@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="ddlProjectResponsibleDeptEdit">项目主责部门</label>
@@ -845,6 +844,11 @@
                                 <label for="tbxSaveCapitalEdit">与控制价比节约资金（万元）</label>
                                 <input id="tbxSaveCapitalEdit" name="tbxSaveCapitalEdit" class="form-control input-sm" placeholder="与控制价比节约资金（万元）" />
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img src="~/Content/控制价公式.PNG" class="pull-right" />
                         </div>
                     </div>
 
@@ -1918,6 +1922,23 @@
             });
         });
 
+        //对editAccountForm表单进行前端验证
+        var editAccountForm = $("#EditAccountForm").validate({
+            rules: {
+                tbxApplyPersonEdit: { required: true, maxlength: 50 },//申请人
+                tbxTenderRangeEdit: { required: true },//招标范围
+                tbxSupplyPeriodEdit: { required: true },//供货期
+                tbxProgramAcceptDateEdit: { required: true },//收到方案日期
+                tbxTenderFileSaleStartDateEdit: { required: true },//发售招标文件开始日期
+                tbxTenderFileSaleEndDateEdit: { required: true },//发售招标文件截止日期
+                tbxTenderStartDateEdit: { required: true },//开标日期
+                tbxPlanInvestPriceEdit: { required: true },//预计投资（万元）
+                tbxTenderRestrictUnitPriceEdit: { required: true },//招标控制--单价
+                tbxTenderRestrictSumPriceEdit: { required: true },//招标控制--总价
+                tbxTenderFailReasonEdit: { required: true}//招标失败原因
+            }
+        });
+
         $("#btnSave").click(function () {
             var usingDeptEditVal = $("#ddlUsingDeptEdit").val();
             var projectResponsibleDeptEditVal = $("#ddlProjectResponsibleDeptEdit").val();
@@ -1951,34 +1972,36 @@
         });
 
         $("#btnSubmit").click(function () {
-            var usingDeptEditVal = $("#ddlUsingDeptEdit").val();
+            var tenderInfoEdit = $("#ddlTenderInfoEdit").val();
             var projectResponsibleDeptEditVal = $("#ddlProjectResponsibleDeptEdit").val();
 
-            if (usingDeptEditVal === null || projectResponsibleDeptEditVal === null) {
-                toastr.error("使用单位、项目主责部门必须填写！", "提示");
+            if (tenderInfoEdit === null||projectResponsibleDeptEditVal === null) {
+                toastr.error("招标情况、项目主责部门必须填写！", "提示");
             }
             else {
-                Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
-                    if (!e) {
-                        return;
-                    }
-                    else {
-                        $("#EditAccountForm").ajaxSubmit({
-                            url: "/Account/CompeletSubmit",
-                            type: "post",
-                            success: function (result) {
-                                if (result === "ok") {
-                                    toastr.success("操作成功！", "提示");
-                                    BackView();
+                if (editAccountForm.form()) {
+                    Ewin.confirm({ message: "确定要提交吗？" }).on(function (e) {
+                        if (!e) {
+                            return;
+                        }
+                        else {
+                            $("#EditAccountForm").ajaxSubmit({
+                                url: "/Account/CompeletSubmit",
+                                type: "post",
+                                success: function (result) {
+                                    if (result === "ok") {
+                                        toastr.success("操作成功！", "提示");
+                                        BackView();
+                                    }
+                                },
+                                error: function (error) {
+                                    toastr.error(error, "提示");
+                                    return;
                                 }
-                            },
-                            error: function (error) {
-                                toastr.error(error, "提示");
-                                return;
-                            }
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
+                }
             }
         });
 

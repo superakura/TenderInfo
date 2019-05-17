@@ -126,7 +126,7 @@
             }
 
             that.$fixedHeader.find('th[data-field="' + visibleFields[index] + '"]')
-                .find('.fht-cell').width($this.innerWidth() - 1);//高源修改2019-05-14
+                .find('.fht-cell').width($this.innerWidth());//高源修改2019-05-14
             that.$fixedHeader.find('th[data-field="' + visibleFields[index] + '"]').height(80);//高源修改2018-07-31
             headerWidth += $this.outerWidth();
         });
@@ -150,7 +150,7 @@
         }
 
         this.$fixedBody.css({
-            width: this.$fixedHeader.width(),
+            width: this.$fixedHeader.width()+1,
             height: height,
             top: top + 1
         }).show();

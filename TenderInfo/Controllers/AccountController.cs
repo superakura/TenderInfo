@@ -1795,7 +1795,10 @@ namespace TenderInfo.Controllers
                             info.TenderPerson = excel.Rows[i]["投标人"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标人"].ToString();
                             info.ProductManufacturer = excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["产品制造商（代理、贸易商投标时填写）"].ToString();
 
-                            info.QuotedPriceUnit = 0;
+                            decimal quotedPriceUnit = 0;
+                            decimal.TryParse(excel.Rows[i]["投标单价（元）"].ToString(), out quotedPriceUnit);
+                            info.QuotedPriceUnit = quotedPriceUnit;
+
                             info.QuotedPriceSum = excel.Rows[i]["投标总价（万元）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标总价（万元）"].ToString();
 
                             info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim() == "" ? "-" : excel.Rows[i]["初步评审是否被否决"].ToString();

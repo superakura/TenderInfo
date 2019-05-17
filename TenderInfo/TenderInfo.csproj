@@ -418,6 +418,7 @@
     <Content Include="Content\zTreeStyle\img\zTreeStandard.gif" />
     <Content Include="Content\zTreeStyle\img\zTreeStandard.png" />
     <Content Include="Content\zTreeStyle\zTreeStyle.css" />
+    <Content Include="Content\控制价公式.PNG" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

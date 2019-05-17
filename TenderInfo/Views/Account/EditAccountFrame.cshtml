@@ -50,6 +50,14 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
+                                        <label for="tbxQuotedPriceUnitEdit">投标单价（元）</label>
+                                        <input id="tbxQuotedPriceUnitEdit" name="tbxQuotedPriceUnitEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
                                         <label for="tbxQuotedPriceSumEdit">投标总价（万元）</label>
                                         <input id="tbxQuotedPriceSumEdit" name="tbxQuotedPriceSumEdit" type="text" class="form-control" />
                                     </div>
@@ -618,6 +626,7 @@
                                                 <th class="text-center" style="vertical-align:middle">购买招标文件潜在投标人</th>
                                                 <th class="text-center" style="vertical-align:middle">投标人</th>
                                                 <th class="text-center" style="vertical-align:middle">产品制造商（代理、贸易商投标时填写）</th>
+                                                <th class="text-center">投标单价（元）</th>
                                                 <th class="text-center">投标总价（万元）</th>
                                                 <th class="text-center" style="vertical-align:middle">初步评审是否被否决</th>
                                             </tr>
@@ -682,6 +691,11 @@
                                     <option value="资格后审">资格后审</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img src="~/Content/控制价公式.PNG" class="pull-right" />
                         </div>
                     </div>
 
@@ -910,6 +924,7 @@
                 list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
                 list += "<td>" + valueOfElement["TenderPerson"] + "</td>";
                 list += "<td>" + valueOfElement["ProductManufacturer"] + "</td>";
+                list += "<td>" + valueOfElement["QuotedPriceUnit"] + "</td>";
                 list += "<td>" + valueOfElement["QuotedPriceSum"] + "</td>";
                 list += "<td>" + valueOfElement["NegationExplain"] + "</td>";
                 list += "</tr>";
