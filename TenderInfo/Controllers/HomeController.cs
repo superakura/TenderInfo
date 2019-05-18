@@ -159,20 +159,22 @@ namespace TenderInfo.Controllers
                 }
                 userAuthorityString = userAuthorityString.Substring(0, userAuthorityString.Length - 1);
 
+                //写入用户角色
                 FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1,
                     userNum,
                     DateTime.Now,
-                    DateTime.Now.AddMinutes(20),
+                    DateTime.Now.AddMinutes(2),
                     true,
-                    userAuthorityString);//写入用户角色
+                    userAuthorityString);
+
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
                 System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-                if (authTicket.IsPersistent)
-                {
-                    authCookie.Expires = authTicket.Expiration;
-                }
-                authCookie.HttpOnly = false;
-                //authCookie.Domain = "/";
+                //if (authTicket.IsPersistent)
+                //{
+                //    authCookie.Expires = authTicket.Expiration;
+                //}
+                authCookie.Expires = authTicket.Expiration;
+                //authCookie.HttpOnly = false;
 
                 System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
                 #endregion
@@ -456,6 +458,16 @@ namespace TenderInfo.Controllers
             {
                 return ex.Message;
             }
+        }
+
+        /// <summary>
+        /// ajax请求循环
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string CheckAjax()
+        {
+            return "ok";
         }
     }
 }

@@ -314,26 +314,31 @@
                 }
             });
 
-            function getCookie2(name) {
-                var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
-                if (arr = document.cookie.match(reg))
-                    return unescape(arr[2]);
-                else
-                    return null;
-            }
-
             function CheckCookie() {
                 console.log(getCookie(".ASPXAUTH"));
                 //console.log(getCookie("ASP.NET_SessionId"));
-                //if (getCookie(".ASPXAUTH") === "") {
-                //    toastr.error("登录超时，请重新登录！", "提示");
-                //    setTimeout(function () {
-                //        window.location.href = "/Home/Login";
-                //        //window.location.href = "/Home/LoginFormAD";
-                //    }, 1500);
-                //}
+                if (getCookie(".ASPXAUTH") === "") {
+                    clearInterval(timerAjax);
+                    alert("登录超时，请重新登录！");
+                    window.location.href = "/Home/Login";
+                    //toastr.error("登录超时，请重新登录！", "提示");
+                    //setTimeout(function () {
+                    //    window.location.href = "/Home/Login";
+                    //    //window.location.href = "/Home/LoginFormAD";
+                    //}, 1500);
+                }
             }
-            //setInterval(CheckCookie, 1000);
+
+            function CheckAjax() {
+                $.post("/Home/CheckAjax", {},
+                    function (data, textStatus, jqXHR) {
+                        console.log(data);
+                    }
+                );
+            }
+
+            var timerAjax=setInterval(CheckCookie, 10*1000);
+            //setInterval(CheckAjax, 10*1000);
         });
     </script>
 </body>

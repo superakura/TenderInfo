@@ -1,0 +1,594 @@
+﻿@*投标人信息*@
+<div class="modal fade" id="FirstModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">信息录入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="FirstForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountFirstID" name="tbxAccountFirstID" type="text" class="hidden" />
+                            <input id="tbxAccountChildFirstID" name="tbxAccountChildFirstID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFilePlanPayPersonEdit">购买招标文件潜在投标人</label>
+                                        <input id="tbxTenderFilePlanPayPersonEdit" name="tbxTenderFilePlanPayPersonEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderPersonEdit">投标人</label>
+                                        <input id="tbxTenderPersonEdit" name="tbxTenderPersonEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxProductManufacturerEdit">产品制造商（代理、贸易商投标时填写）</label>
+                                        <input id="tbxProductManufacturerEdit" name="tbxProductManufacturerEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxQuotedPriceUnitEdit">报价--单价（元）</label>
+                                        <input id="tbxQuotedPriceUnitEdit" name="tbxQuotedPriceUnitEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxQuotedPriceSumEdit">报价--总价（万元）</label>
+                                        <input id="tbxQuotedPriceSumEdit" name="tbxQuotedPriceSumEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlNegationExplain">初步评审是否被否决</label>
+                                        <select class="form-control" id="ddlNegationExplain" name="ddlNegationExplain">
+                                            <option value="否" selected>否</option>
+                                            <option value="是">是</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxVetoReasonEdit">否决原因</label>
+                                        <textarea id="tbxVetoReasonEdit" name="tbxVetoReasonEdit" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnFirstSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*评标委员会*@
+<div class="modal fade" id="SecondModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">评标委员会</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="SecondForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountSecondID" name="tbxAccountSecondID" type="text" class="hidden" />
+                            <input id="tbxAccountChildSecondID" name="tbxAccountChildSecondID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationPersonNameEdit">姓名</label>
+                                        <input id="tbxEvaluationPersonNameEdit" name="tbxEvaluationPersonNameEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlEvaluationPersonDeptEdit">单位</label>
+                                        <select id="ddlEvaluationPersonDeptEdit" name="ddlEvaluationPersonDeptEdit" class="form-control input-sm DeptSelect"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlIsEvaluationDirectorEdit">是否评标委员会主任</label>
+                                        <select id="ddlIsEvaluationDirectorEdit" name="ddlIsEvaluationDirectorEdit" class="form-control">
+                                            <option value="否" selected>否</option>
+                                            <option value="是">是</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationTimeEdit">评审时间（小时）</label>
+                                        <input id="tbxEvaluationTimeEdit" name="tbxEvaluationTimeEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxEvaluationCostEdit">评审费</label>
+                                        <input id="tbxEvaluationCostEdit" name="tbxEvaluationCostEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnSecondSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*招标文件联审*@
+<div class="modal fade" id="ThirdModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">招标文件联审</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="ThirdForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountThirdID" name="tbxAccountThirdID" type="text" class="hidden" />
+                            <input id="tbxAccountChildThirdID" name="tbxAccountChildThirdID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFileAuditPersonNameEdit">姓名</label>
+                                        <input id="tbxTenderFileAuditPersonNameEdit" name="tbxTenderFileAuditPersonNameEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlTenderFileAuditPersonDeptEdit">单位</label>
+                                        <select id="ddlTenderFileAuditPersonDeptEdit" name="ddlTenderFileAuditPersonDeptEdit" class="form-control input-sm DeptSelect"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderFileAuditCostEdit">费用</label>
+                                        <input id="tbxTenderFileAuditCostEdit" name="tbxTenderFileAuditCostEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnThirdSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*澄清*@
+<div class="modal fade" id="FourModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">澄清（修改）</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="FourForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountFourID" name="tbxAccountFourID" type="text" class="hidden" />
+                            <input id="tbxAccountChildFourID" name="tbxAccountChildFourID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyLaunchPersonEdit">
+                                            提起人
+                                        </label>
+                                        <input id="tbxClarifyLaunchPersonEdit" name="tbxClarifyLaunchPersonEdit" class="form-control input-sm" placeholder="提起人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyLaunchDateEdit">
+                                            提出时间
+                                        </label>
+                                        <input id="tbxClarifyLaunchDateEdit" name="tbxClarifyLaunchDateEdit" class="form-control input-sm accountDate" placeholder="提出时间" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyAcceptDateEdit">
+                                            受理时间
+                                        </label>
+                                        <input id="tbxClarifyAcceptDateEdit" name="tbxClarifyAcceptDateEdit" class="form-control input-sm accountDate" placeholder="受理时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyDisposePersonEdit">
+                                            处理人
+                                        </label>
+                                        <input id="tbxClarifyDisposePersonEdit" name="tbxClarifyDisposePersonEdit" class="form-control input-sm" placeholder="处理人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="ddlIsClarifyEdit">澄清/修改</label>
+                                        <select id="ddlIsClarifyEdit" name="ddlIsClarifyEdit" class="form-control input-sm">
+                                            <option value="澄清">澄清</option>
+                                            <option value="修改">修改</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyReplyDateEdit">
+                                            答复时间
+                                        </label>
+                                        <input id="tbxClarifyReplyDateEdit" name="tbxClarifyReplyDateEdit" class="form-control input-sm accountDate" placeholder="答复时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblClarifyFile">附件</label><br />
+                                        <a id="lblClarifyFile"></a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="clarifyFile">【澄清/修改】附件上传</label>
+                                        <input id="clarifyFile" name="clarifyFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyReasonEdit">
+                                            事由
+                                        </label>
+                                        <textarea id="tbxClarifyReasonEdit" name="tbxClarifyReasonEdit" class="form-control input-sm" rows="5" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxClarifyDisposeInfoEdit">
+                                            处理情况
+                                        </label>
+                                        <textarea id="tbxClarifyDisposeInfoEdit" name="tbxClarifyDisposeInfoEdit" class="form-control input-sm" rows="5" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnFourSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*异议处理*@
+<div class="modal fade" id="FiveModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">异议处理</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="FiveForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountFiveID" name="tbxAccountFiveID" type="text" class="hidden" />
+                            <input id="tbxAccountChildFiveID" name="tbxAccountChildFiveID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentLaunchPersonEdit">
+                                            提起人
+                                        </label>
+                                        <input id="tbxDissentLaunchPersonEdit" name="tbxDissentLaunchPersonEdit" class="form-control input-sm" placeholder="提起人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentLaunchPersonPhoneEdit">
+                                            联系方式
+                                        </label>
+                                        <input id="tbxDissentLaunchPersonPhoneEdit" name="tbxDissentLaunchPersonPhoneEdit" class="form-control input-sm" placeholder="联系方式" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentLaunchDateEdit">
+                                            异议时间
+                                        </label>
+                                        <input id="tbxDissentLaunchDateEdit" name="tbxDissentLaunchDateEdit" class="form-control input-sm accountDate" placeholder="异议时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentAcceptDateEdit">
+                                            受理时间
+                                        </label>
+                                        <input id="tbxDissentAcceptDateEdit" name="tbxDissentAcceptDateEdit" class="form-control input-sm accountDate" placeholder="受理时间" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentAcceptPersonEdit">
+                                            受理人
+                                        </label>
+                                        <input id="tbxDissentAcceptPersonEdit" name="tbxDissentAcceptPersonEdit" class="form-control input-sm" placeholder="受理人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentDisposePersonEdit">
+                                            处理人
+                                        </label>
+                                        <input id="tbxDissentDisposePersonEdit" name="tbxDissentDisposePersonEdit" class="form-control input-sm" placeholder="处理人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxDissentReplyDateEdit">
+                                            答复时间
+                                        </label>
+                                        <input id="tbxDissentReplyDateEdit" name="tbxDissentReplyDateEdit" class="form-control input-sm accountDate" placeholder="答复时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblDissentFile">附件</label><br />
+                                        <a id="lblDissentFile"></a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="dissentFile">异议处理文件</label>
+                                        <input id="dissentFile" name="dissentFile" type="file" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxDissentReasonEdit">
+                                            事由
+                                        </label>
+                                        <textarea id="tbxDissentReasonEdit" name="tbxDissentReasonEdit" class="form-control" rows="6" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxDissentDisposeInfoEdit">
+                                            处理情况
+                                        </label>
+                                        <textarea id="tbxDissentDisposeInfoEdit" name="tbxDissentDisposeInfoEdit" class="form-control" rows="6" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnFiveSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*项目前期沟通记录*@
+<div class="modal fade" id="ConnectModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">项目前期沟通记录</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="ConnectForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountConnectID" name="tbxAccountConnectID" type="text" class="hidden" />
+                            <input id="tbxAccountChildConnectID" name="tbxAccountChildConnectID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxConnectPersonEdit">
+                                            对接人
+                                        </label>
+                                        <input id="tbxConnectPersonEdit" name="tbxConnectPersonEdit" class="form-control input-sm" placeholder="对接人" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tbxConnectDateTimeEdit">
+                                            对接时间
+                                        </label>
+                                        <input id="tbxConnectDateTimeEdit" name="tbxConnectDateTimeEdit" class="form-control input-sm accountDate" placeholder="对接时间" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxConnectContentEdit">
+                                            对接内容
+                                        </label>
+                                        <textarea id="tbxConnectContentEdit" name="tbxConnectContentEdit" class="form-control" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxConnectExistingProblemsEdit">
+                                            存在问题
+                                        </label>
+                                        <textarea id="tbxConnectExistingProblemsEdit" name="tbxConnectExistingProblemsEdit" class="form-control" rows="3" cols="60"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnConnectSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*使用单位名称*@
+<div class="modal fade" id="DeptModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">使用单位名称</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="DeptForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountDeptID" name="tbxAccountDeptID" type="text" class="hidden" />
+                            <input id="tbxAccountChildDeptID" name="tbxAccountChildDeptID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ddlUsingDeptEdit">使用单位</label>
+                                        <select id="ddlUsingDeptEdit" name="ddlUsingDeptEdit" class="form-control input-sm DeptSelect"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnDeptSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*中标人信息*@
+<div class="modal fade" id="TenderSuccessModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">信息录入</h5>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="form-horizontal">
+                        <form id="TenderSuccessForm" method="post" enctype="multipart/form-data">
+                            <input id="tbxAccountTenderSuccessID" name="tbxAccountTenderSuccessID" type="text" class="hidden" />
+                            <input id="tbxAccountChildTenderSuccessID" name="tbxAccountChildTenderSuccessID" type="text" class="hidden" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderSuccessPersonEdit">中标人名称</label>
+                                        <input id="tbxTenderSuccessPersonEdit" name="tbxTenderSuccessPersonEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderSuccessPersonStartDateEdit">中标候选人公示开始时间</label>
+                                        <input id="tbxTenderSuccessPersonStartDateEdit" name="tbxTenderSuccessPersonStartDateEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tbxTenderSuccessPersonEndDateEdit">中标候选人公示结束时间</label>
+                                        <input id="tbxTenderSuccessPersonEndDateEdit" name="tbxTenderSuccessPersonEndDateEdit" type="text" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnTenderSuccessSubmit" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-ok"></i> 提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
