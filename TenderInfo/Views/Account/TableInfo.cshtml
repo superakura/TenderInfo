@@ -1,0 +1,1178 @@
+﻿
+<link href="~/Content/bootstrap-table-fixed-columns2.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap-table-fixed-columns2.js"></script>
+<style>
+    #bsTable th {
+        vertical-align: middle;
+    }
+
+    .bootstrap-table .table > thead > tr > th {
+        vertical-align: middle;
+    }
+    /*.fixed-table-container tbody td {
+        border-left: 1px solid #000000;
+    }
+    .table > tbody > tr > td, .table > tfoot > tr > td {
+        border-top: 1px solid #000000;
+    }
+    .bootstrap-table .table > thead > tr > th {
+        vertical-align: bottom;
+        border-bottom: 1px solid #000000;
+    }
+    .fixed-table-container thead th {
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border-left: 1px solid #000000;
+    }*/
+</style>
+<div class="table-responsive" style="z-index: 1;">
+    <table id="bsTable" class="text-nowrap" style="word-break:break-all; word-wrap:break-all;"></table>
+</div>
+<script>
+    var editModel = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        var optionBT = $("#bsTable").bootstrapTable('getOptions');
+
+        var limit = optionBT.pageSize;//页面大小
+        var offSet = optionBT.pageNumber;//页码
+
+        var projectName = $("#tbxProjectNameSearch").val();//项目名称
+        var tenderInfo = $("#ddlTenderInfoSearch").val();//招标情况
+        var tenderFileNum = $("#tbxTenderFileNumSearch").val();//项目文件编号
+        var applyPerson = $("#tbxApplyPersonSearch").val();//申请人
+        var projectResponsiblePerson = $("#ddlProjectResponsiblePersonSearch").val();//招标项目负责人ID
+        var tenderSuccessPerson = $("#tbxTenderSuccessPersonSearch").val();//中标人名称
+
+        var planInvestPriceStart = $("#tbxPlanInvestPriceStartSearch").val();//预计投资范围
+        var planInvestPriceEnd = $("#tbxPlanInvestPriceEndSearch").val();
+        var tenderStartDateStart = $("#tbxTenderStartDateStartSearch").val();//开标日期范围
+        var tenderStartDateEnd = $("#tbxTenderStartDateEndSearch").val();
+
+        var accountType = $("#accountType").text();//台账类型，用于显示
+
+        window.location.href = "/Account/EditAccountMaterial?id=" + row.account.AccountID +
+            "&type=" + accountType +//用于显示台账类型
+            "&offSet=" + offSet +//页码
+            "&limit=" + limit +//页面大小
+
+            "&tenderInfo=" + escape(tenderInfo) +//招标情况
+            "&tenderFileNum=" + escape(tenderFileNum) +//项目文件编号
+            "&applyPerson=" + escape(applyPerson) +//申请人
+            "&tenderSuccessPerson=" + escape(tenderSuccessPerson) +//中标人名称
+
+            "&projectResponsiblePerson=" + projectResponsiblePerson +//招标项目负责人ID
+
+            "&planInvestPriceStart=" + planInvestPriceStart +//预计投资范围--数字
+            "&planInvestPriceEnd=" + planInvestPriceEnd +
+            "&tenderStartDateStart=" + tenderStartDateStart +//开标日期范围--日期
+            "&tenderStartDateEnd=" + tenderStartDateEnd +
+            "&projectName=" + escape(projectName);//项目名称
+    };
+    var newApproveEdit = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        //console.log(row.account.AccountID);
+        $('#NewApproveEditModal').modal('show');
+        $('#tbxNewApproveEditAccountID').val(row.account.AccountID);
+        $('#tbxApproveEditAccountName').text(row.account.ProjectName);
+        $('#tbxApproveReason').val("");
+    };
+    var approveEdit = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        $('#ApproveEditModal').modal('show');
+        $("#tbxApproveEditAccountID").val(row.account.AccountID);
+        $("#lblApproveEditAccountID").text(row.account.AccountID);
+        $('#tbxApproveBackReason').val("");
+
+        GetApproveEditList();
+
+        if (row.account.IsComplete == "修改审核") {
+            $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").show();
+        }
+        else {
+            $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").hide();
+        }
+    };
+    var textShowEvent = function (id) {
+        //根据当前行的id获取当前的行数据
+        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+        $('#textShowModal').modal('show');
+        $("#textShow").text(row.account.TenderRange);
+    };
+
+    $(function () {
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            var q = window.location.pathname.substr(1).match(reg_rewrite);
+            if (r != null) {
+                return unescape(r[2]);
+            } else if (q != null) {
+                return unescape(q[2]);
+            } else {
+                return null;
+            }
+        }
+
+        var columns = [
+            [
+                {
+                    //title: '序号',
+                    title: '',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        return index + 1;
+                    }
+                },
+                {
+                    title: '项目名称',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    visible: true,
+                    formatter: function (value, row, index) {
+                        //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        var html = "";
+                        if (row.account.ProjectName.length <= 20) {
+                            html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')">' + row.account.ProjectName + '</a >';
+                        }
+                        else {
+                            html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')" data-toggle="tooltip" data-placement="bottom" title="' + row.account.ProjectName + '">' + row.account.ProjectName.substr(0, 20) + '...' + '</a > ';
+                        }
+                        //var html = '<a href="#" onclick="editModel(' + row.account.AccountID + ')">' + row.account.ProjectName + '</a >';
+                        return html;
+                    }
+                },
+                {
+                    field: 'account.IsComplete',
+                    title: '是否完成',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle"
+                },
+                {
+                    title: '修改申请',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        var html = '<a href="#" onclick="approveEdit(' + row.account.AccountID + ')">查看</a >';
+                        html += '&nbsp;&nbsp;';
+                        if (row.account.IsComplete == "是") {
+                            html += '<a href="#" onclick="newApproveEdit(' + row.account.AccountID + ')">申请</a >';
+                        }
+                        return html;
+                    }
+                },
+                {
+                    field: 'account.TenderFileNum',
+                    title: '项目文件编号',
+                    rowspan: 2,
+                    colspan: 1,
+                    //width: 200,
+                    valign: "middle",
+                    visible: true
+                },
+                {
+                    field: 'account.IsOnline',
+                    title: '线上/线下',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle"
+                },
+                {
+                    field: 'account.ProjectResponsiblePersonName',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标项目负责人'
+                },
+                {
+                    field: 'account.UsingDeptName',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '使用单位'
+                },
+                {
+                    field: 'account.ProjectResponsibleDeptName',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '项目主责部门'
+                },
+                {
+                    field: 'account.ApplyPerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '申请人'
+                },
+                {
+                    field: 'account.InvestPlanApproveNum',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '投资计划批复文号'
+                },
+                {
+                    field: 'account.TenderRange',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    //width: 150,
+                    formatter: function (value, row, index) {
+                        ////这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.account.TenderRange != null) {
+                            if (row.account.TenderRange.length <= 8) {
+                                return row.account.TenderRange;
+                            }
+                            else {
+                                var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderRange + '">' + row.account.TenderRange.substr(0, 8) + '...' + '</a > ';
+                                return html;
+                            }
+                        }
+                    },
+                    title: '招标范围'
+                },
+                {
+                    field: 'account.TenderMode',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标方式'
+                },
+                {
+                    field: 'account.BidEvaluation',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '评标方法'
+                },
+                {
+                    field: 'account.SupplyPeriod',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        ////这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.account.SupplyPeriod != null) {
+                            if (row.account.SupplyPeriod.length <= 8) {
+                                return row.account.SupplyPeriod;
+                            }
+                            else {
+                                var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.SupplyPeriod + '">' + row.account.SupplyPeriod.substr(0, 8) + '...' + '</a > ';
+                                return html;
+                            }
+                        }
+                    },
+                    title: '供货期'
+                },
+                {
+                    field: 'account.TenderProgramAuditDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标方案联审时间',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.TenderProgramAuditDate);
+                    }
+                },
+                {
+                    field: 'account.ProgramAcceptDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '收到方案日期',
+                    formatter: function (value, row, index) {
+                        return getJsonDateShort(row.account.ProgramAcceptDate);
+                    }
+                },
+                {
+                    field: 'account.TenderFileSaleStartDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '发售招标文件开始日期',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderFileSaleStartDate);
+                    }
+                },
+                {
+                    field: 'account.TenderFileSaleEndDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '发售招标文件截止日期',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderFileSaleEndDate);
+                    }
+                },
+                {
+                    field: 'account.TenderStartDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '开标日期',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderStartDate);
+                    }
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    title: '购买招标文件潜在投标人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px", "vertical-align": "top" },
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFilePlanPayPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    title: '投标人',
+                    switchable: false,
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px", "vertical-align": "top" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    title: '产品制造商（代理、贸易商投标时填写）',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px", "vertical-align": "top" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ProductManufacturer + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    title: '报价',
+                    colspan: 2,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    rowspan: 2,
+                    colspan: 1,
+                    title: '初步评审是否被否决',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px", "vertical-align": "top" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.NegationExplain + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    field: 'account.TenderSuccessPerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '中标人名称'
+                },
+                {
+                    field: 'account.PlanInvestPrice',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '预计投资（万元）'
+                },
+                {
+                    field: 'account.QualificationExamMethod',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '资格审查方式'
+                },
+                {
+                    title: '招标控制价',
+                    colspan: 2,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    title: '中标金额（万元）',
+                    colspan: 2,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    field: 'account.SaveCapital',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '与控制价比节约资金（万元）'
+                },
+                {
+                    title: '评标委员会',
+                    colspan: 5,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    title: '招标文件联审',
+                    colspan: 4,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    field: 'account.TenderFailReason',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标失败原因',
+                    formatter: function (value, row, index) {
+                        //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
+                        if (row.account.TenderFailReason != null) {
+                            if (row.account.TenderFailReason.length <= 8) {
+                                return row.account.TenderFailReason;
+                            }
+                            else {
+                                var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderFailReason + '">' + row.account.TenderFailReason.substr(0, 8) + '...' + '</a > ';
+                                return html;
+                            }
+                        }
+                    }
+                },
+                {
+                    title: '澄清（修改）',
+                    colspan: 8,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    title: '异议处理',
+                    colspan: 9,
+                    rowspan: 1,
+                    align: "center"
+                },
+                {
+                    field: 'account.ContractNum',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '合同编号'
+                },
+                {
+                    field: 'account.ContractPrice',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '合同金额'
+                },
+                {
+                    field: 'account.RelativePerson',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '相对人名称'
+                },
+                {
+                    field: 'account.TenderInfo',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '招标情况'
+                },
+                {
+                    field: 'account.TenderRemark',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '备注'
+                },
+                {
+                    field: 'account.InsertDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        return getJsonDateTime(row.account.InsertDate);
+                    },
+                    visible: false,
+                    title: '台账建立时间'
+                }
+            ],
+            [
+                {
+                    valign: "top",
+                    title: '单价（元）',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.QuotedPriceUnit + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '总价（万元）',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFirst, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.QuotedPriceSum + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    field: 'account.TenderRestrictUnitPrice',
+                    valign: "middle",
+                    title: '单价（元）'
+                },
+                {
+                    field: 'account.TenderRestrictSumPrice',
+                    valign: "middle",
+                    title: '总价（万元）'
+                },
+                {
+                    field: 'account.TenderSuccessUnitPrice',
+                    valign: "middle",
+                    title: '单价（元）'
+                },
+                {
+                    field: 'account.TenderSuccessSumPrice',
+                    valign: "middle",
+                    title: '总价（万元）'
+                },
+                {
+                    valign: "top",
+                    title: '姓名',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationPersonName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '单位',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationPersonDeptName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '是否评标委员会主任',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.IsEvaluationDirector === "" ? "-" : valueOfElement.IsEvaluationDirector) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '评审时间（小时）',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationTime + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '评审费',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildSecond, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.EvaluationCost + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '姓名',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildThird, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFileAuditPersonName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '单位',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildThird, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFileAuditPersonDeptName + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    field: 'account.TenderFileAuditTime',
+                    valign: "middle",
+                    title: '联审时间（小时）'
+                },
+                {
+                    valign: "top",
+                    title: '费用',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildThird, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.TenderFileAuditCost + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '提起人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ClarifyLaunchPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '提出时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.ClarifyLaunchDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyLaunchDate)) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '事由',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            if (valueOfElement.ClarifyReason.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.ClarifyReason + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.ClarifyReason + '">' + valueOfElement.ClarifyReason.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.ClarifyReason + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '受理时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.ClarifyAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyAcceptDate)) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '处理人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.ClarifyDisposePerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '澄清/修改',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.IsClarify + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '处理情况',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            if (valueOfElement.ClarifyDisposeInfo.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.ClarifyDisposeInfo + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.ClarifyDisposeInfo + '">' + valueOfElement.ClarifyDisposeInfo.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.ClarifyDisposeInfo + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '答复时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFour, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.ClarifyReplyDate === null ? "-" : getJsonDateShort(valueOfElement.ClarifyReplyDate)) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '提起人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentLaunchPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '提起人联系方式',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentLaunchPersonPhone + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '异议时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.DissentLaunchDate === null ? "-" : getJsonDateShort(valueOfElement.DissentLaunchDate)) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '事由',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            if (valueOfElement.DissentReason.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.DissentReason + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.DissentReason + '">' + valueOfElement.DissentReason.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.DissentReason + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '受理时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.DissentAcceptDate === null ? "-" : getJsonDateShort(valueOfElement.DissentAcceptDate)) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '受理人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentAcceptPerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '处理人',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + valueOfElement.DissentDisposePerson + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '处理情况',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            if (valueOfElement.DissentDisposeInfo.length <= 20) {
+                                list += "<tr><td>" + valueOfElement.DissentDisposeInfo + "</td></tr>";
+                            }
+                            else {
+                                list += '<tr><td><a href="#" data-toggle="tooltip" data-placement="bottom" title="' + valueOfElement.DissentDisposeInfo + '">' + valueOfElement.DissentDisposeInfo.substr(0, 20) + '...' + '</a ></td></tr>';
+                            }
+                            //list += "<tr><td>" + valueOfElement.DissentDisposeInfo + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                },
+                {
+                    valign: "top",
+                    title: '答复时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap",
+                            css: { "padding": "0px" }
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        var list = "<table class='table  table-bordered'>";
+                        $.each(row.accountChildFive, function (indexInArray, valueOfElement) {
+                            list += "<tr><td>" + (valueOfElement.DissentReplyDate === null ? "-" : getJsonDateShort(valueOfElement.DissentReplyDate)) + "</td></tr>";
+                        });
+                        list += "</table>";
+                        return list;
+                    }
+                }
+            ]
+        ];
+
+        //初始化BS-Table
+        $('#bsTable').bootstrapTable({
+            url: '/Account/GetList',         //请求后台的URL（*）
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'post',                     //请求方式（*）
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: false,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: false,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            queryParams: queryParams,           //传递参数（*）
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [5, 10, 15, 20],        //可供选择的每页的行数（*）
+            search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: false,                //是否启用点击选中行
+            height: 700,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "AccountID",          //每一行的唯一标识，一般为主键列
+            showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                   //是否显示父子表
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+            showExport: false,                     //是否显示导出
+            rowStyle: function (row, index) {
+                if (row.account.TenderInfo === "一次失败" || row.account.TenderInfo === "一次失败转谈判" || row.account.TenderInfo === "二次失败" || row.account.TenderInfo === "二次失败转谈判" || row.account.TenderInfo === "三次失败" || row.account.TenderInfo === "三次失败转谈判" || row.account.TenderInfo === "四次失败" || row.account.TenderInfo === "四次失败转谈判") {
+                    return { classes: "warning" };
+                }
+                else {
+                    if (row.account.TenderInfo === "终止") {
+                        return { classes: "danger" };
+                    }
+                    else {
+                        return { classes:""}
+                    }
+                }
+            },
+            fixedColumns: true,
+            fixedNumber: 2,
+            columns: columns
+        })
+            .on('all.bs.table', function (e, name, args) {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+        //如果是返回页面，重新设置返回的参数
+        if (getQueryString("offSet") !== null) {
+            var tenderInfo = unescape(getQueryString("tenderInfo"));//招标情况
+            var projectName = unescape(getQueryString("projectName"));//项目名称
+            var applyPerson = unescape(getQueryString("applyPerson"));//申请人
+            var tenderFileNum = unescape(getQueryString("tenderFileNum"));//项目文件编号
+            var tenderSuccessPerson = unescape(getQueryString("tenderSuccessPerson"));//中标人名称
+
+            var projectResponsiblePerson = getQueryString("projectResponsiblePerson");//招标项目负责人ID
+            var planInvestPriceStart = getQueryString("planInvestPriceStart");//预计投资范围--数字
+            var planInvestPriceEnd = getQueryString("planInvestPriceEnd");
+            var tenderStartDateStart = getQueryString("tenderStartDateStart");//开标日期范围--日期
+            var tenderStartDateEnd = getQueryString("tenderStartDateEnd");
+
+            var offSet = getQueryString("offSet");//页码
+            var limit = getQueryString("limit");//页面大小
+
+            $("#tbxProjectNameSearch").val(projectName);//项目名称
+            $("#ddlTenderInfoSearch").val(tenderInfo);//招标情况
+            $("#tbxApplyPersonSearch").val(applyPerson);//申请人
+            $("#tbxTenderFileNumSearch").val(tenderFileNum);//项目文件编号
+            $("#tbxTenderSuccessPersonSearch").val(tenderSuccessPerson);//中标人名称
+
+            $("#ddlProjectResponsiblePersonSearch").val(projectResponsiblePerson);//招标项目负责人ID
+            $("#tbxPlanInvestPriceStartSearch").val(planInvestPriceStart);//预计投资范围--数字
+            $("#tbxPlanInvestPriceEndSearch").val(planInvestPriceEnd);
+            $("#tbxTenderStartDateStartSearch").val(tenderStartDateStart);//开标日期范围--日期
+            $("#tbxTenderStartDateEndSearch").val(tenderStartDateEnd);
+
+            //设置页面为返回参数，重新刷新页面
+            $('#bsTable').bootstrapTable('refreshOptions', { pageNumber: offSet, pageSize: limit });
+            $("#bsTable").bootstrapTable('refresh');
+        }
+    });
+</script>

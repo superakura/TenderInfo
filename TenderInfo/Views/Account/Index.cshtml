@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "招标管理台账--物资";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<span id="userRole" class="hidden">
+    @if (User.IsInRole("招标管理"))
+    {
+        @:招标管理
+    }
+</span>
+<span id="accountType" class=""></span>
+@*<span id="accountType" class="hidden">物资</span>*@
+
+@Html.Partial("NewAccountModal")
+@Html.Partial("_PartialApproveEdit")
+<div class="box box-danger">
+    <div class="box-header">
+        <h3 class="box-title">招标管理台账--物资</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="collapse">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body">
+        @Html.Partial("SearchInfo", ViewData["type"] = "物资")
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                @if (User.IsInRole("新建招标台账"))
+                {
+                    <div id="toolbar" class="btn-group">
+                        <button id="btnAdd" type="button" class="btn btn-info">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                    </div>
+                }
+                @Html.Partial("TableInfo")
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return decodeURI(r[2]); return null; //返回参数值
+    }
+    $("#accountType").text(getUrlParam("accountType"));
+</script>

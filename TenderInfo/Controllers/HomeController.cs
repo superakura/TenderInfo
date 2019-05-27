@@ -163,18 +163,13 @@ namespace TenderInfo.Controllers
                 FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(1,
                     userNum,
                     DateTime.Now,
-                    DateTime.Now.AddMinutes(2),
+                    DateTime.Now.AddMinutes(40),
                     true,
                     userAuthorityString);
 
                 string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
                 System.Web.HttpCookie authCookie = new System.Web.HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-                //if (authTicket.IsPersistent)
-                //{
-                //    authCookie.Expires = authTicket.Expiration;
-                //}
                 authCookie.Expires = authTicket.Expiration;
-                //authCookie.HttpOnly = false;
 
                 System.Web.HttpContext.Current.Response.Cookies.Add(authCookie);
                 #endregion
@@ -432,42 +427,6 @@ namespace TenderInfo.Controllers
         {
             var userDomainName = App_Code.Commen.GetADUserName();
             return Redirect("http://10.126.10.96:9001/start.aspx?userName=" + userDomainName);
-        }
-
-        /// <summary>
-        /// 判断session是否过期
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public string CheckSession()
-        {
-            try
-            {
-                var cookie = HttpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
-                var ticket = FormsAuthentication.Decrypt(cookie.Value);
-                if (ticket == null)
-                {
-                    return "errorSession";
-                }
-                else
-                {
-                    return System.Web.HttpContext.Current.Session[".ASPXAUTH"].ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        /// <summary>
-        /// ajax请求循环
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public string CheckAjax()
-        {
-            return "ok";
         }
     }
 }

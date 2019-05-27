@@ -711,6 +711,9 @@
     <Content Include="Views\Account\_PartialApproveEdit.cshtml" />
     <Content Include="Views\Account\_PartialTextShow.cshtml" />
     <Content Include="Views\Account\_PartialModalEdit.cshtml" />
+    <Content Include="Views\Account\_PartialInsertVersion.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\TableInfo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

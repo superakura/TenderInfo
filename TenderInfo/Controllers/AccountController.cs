@@ -18,6 +18,16 @@ namespace TenderInfo.Controllers
         private Models.DB db = new Models.DB();
 
         #region 视图
+        public ViewResult Index()
+        {
+            return View();
+        }
+
+        public ViewResult TableInfo()
+        {
+            return View();
+        }
+
         public ViewResult Material()
         {
             return View();
@@ -811,9 +821,118 @@ namespace TenderInfo.Controllers
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// 评标复议插入数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string InsertVersion()
+        {
+            try
+            {
+                var id = 0;
+                int.TryParse(Request.Form["id"], out id);
+
+                //评标委员会信息
+                var listEvaluation = db.AccountChild.Where(w => w.AccountID == id && w.TableType == "second").ToList();
+                //投标人信息
+                var listTenderPerson= db.AccountChild.Where(w => w.AccountID == id && w.TableType == "first").ToList();
+                //中标人信息
+                var listTenderSuccess= db.AccountChild.Where(w => w.AccountID == id && w.TableType == "tenderSuccess").ToList();
+
+                var evealuationVersionTemp = 0;
+                int.TryParse(listEvaluation.Last().EvaluationVersion,out evealuationVersionTemp);
+                var tenderPersonVersionTemp = 0;
+                int.TryParse(listEvaluation.Last().EvaluationVersion,out tenderPersonVersionTemp);
+                var tenderSuccessVersionTemp = 0;
+                int.TryParse(listEvaluation.Last().EvaluationVersion,out tenderSuccessVersionTemp);
+
+                var listEvaluationLast = listEvaluation.Where(w => w.EvaluationVersion == evealuationVersionTemp.ToString());
+                var listTenderPersonLast = listTenderPerson.Where(w => w.TenderPersonVersion == tenderPersonVersionTemp.ToString());
+                var listTenderSuccessLast = listTenderSuccess.Where(w => w.TenderSuccessPersonVersion == tenderSuccessVersionTemp.ToString());
+
+                var evealuationVersion = evealuationVersionTemp + 1;
+                var tenderPersonVersion = tenderPersonVersionTemp + 1;
+                var tenderSuccessVersion = tenderSuccessVersionTemp + 1;
+
+                var insertEvaluationList = new List<Models.AccountChild>();
+                foreach (var item in listEvaluationLast)
+                {
+                    var info = new Models.AccountChild();
+                    info.TableType = "second";
+                    info.AccountID = id;
+
+                    info.EvaluationPersonName = item.EvaluationPersonName;
+                    info.EvaluationPersonDeptID = item.EvaluationPersonDeptID;
+                    info.EvaluationPersonDeptName =item.EvaluationPersonDeptName;
+                    info.IsEvaluationDirector = item.IsEvaluationDirector;
+                    info.EvaluationCost = item.EvaluationCost;
+                    info.EvaluationTime = item.EvaluationTime;
+
+                    info.EvaluationVersion = evealuationVersion.ToString();
+                    info.InputDate = DateTime.Now;
+                    info.InputPerson = item.InputPerson;
+                    insertEvaluationList.Add(info);
+                }
+                db.AccountChild.AddRange(insertEvaluationList);
+
+                var insertTenderPersonList = new List<Models.AccountChild>();
+                foreach (var item in listTenderPersonLast)
+                {
+                    var info = new Models.AccountChild();
+
+                    info.TableType = "first";
+                    info.AccountID = id;
+
+                    info.TenderFilePlanPayPerson = item.TenderFilePlanPayPerson;
+                    info.TenderPerson = item.TenderPerson;
+                    info.ProductManufacturer = item.ProductManufacturer;
+                    info.QuotedPriceUnit = item.QuotedPriceUnit;
+                    info.QuotedPriceSum = item.QuotedPriceSum;
+                    info.NegationExplain = item.NegationExplain;
+                    info.VetoReason = item.VetoReason;
+
+                    info.TenderPersonVersion = tenderPersonVersion.ToString();
+                    info.InputDate = DateTime.Now;
+                    info.InputPerson = item.InputPerson;
+                    insertTenderPersonList.Add(info);
+                }
+                db.AccountChild.AddRange(insertTenderPersonList);
+
+                var insertTenderSuccessList = new List<Models.AccountChild>();
+                foreach (var item in listTenderSuccessLast)
+                {
+                    var info = new Models.AccountChild();
+
+                    info.TableType = "TenderSuccess";
+                    info.AccountID = id;
+                    info.TenderSuccessPerson = item.TenderSuccessPerson;
+                    info.TenderSuccessPersonStartDate = item.TenderSuccessPersonStartDate;
+                    info.TenderSuccessPersonEndDate = item.TenderSuccessPersonEndDate;
+                    info.TenderSuccessPersonVersion = tenderSuccessVersion.ToString();
+
+                    info.InputDate = DateTime.Now;
+                    info.InputPerson = item.InputPerson;
+                    insertTenderSuccessList.Add(info);
+                }
+                db.AccountChild.AddRange(insertTenderSuccessList);
+
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         #endregion
 
         #region CrudChild
+        /// <summary>
+        /// 投标人信息--新增
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string InsertFirst()
         {
@@ -844,6 +963,7 @@ namespace TenderInfo.Controllers
                 info.QuotedPriceSum = quotedPriceSumEdit == string.Empty ? "-" : quotedPriceSumEdit;
                 info.NegationExplain = negationExplain == string.Empty ? "-" : negationExplain;
                 info.VetoReason = vetoReason == string.Empty ? "-" : vetoReason;
+                info.TenderPersonVersion = "0";
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
@@ -857,6 +977,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 投标人信息-修改
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string UpdateFirst()
         {
@@ -896,6 +1020,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 评标委员会--新增
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string InsertSecond()
         {
@@ -926,6 +1054,7 @@ namespace TenderInfo.Controllers
                 info.IsEvaluationDirector = isEvaluationDirectorEdit;
                 info.EvaluationCost = evaluationCostEdit;
                 info.EvaluationTime = evaluationTime;
+                info.EvaluationVersion = "0";
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;
@@ -939,6 +1068,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 评标委员会--修改
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string UpdateSecond()
         {
@@ -979,6 +1112,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 招标文件联审--新增
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string InsertThird()
         {
@@ -1015,6 +1152,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 招标文件联审--修改
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string UpdateThird()
         {
@@ -1390,6 +1531,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 前期沟通记录--新增
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string InsertConnect()
         {
@@ -1433,6 +1578,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 前期沟通记录--修改
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string UpdateConnect()
         {
@@ -1472,6 +1621,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 使用单位--新增
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string InsertDept()
         {
@@ -1506,6 +1659,10 @@ namespace TenderInfo.Controllers
             }
         }
 
+        /// <summary>
+        /// 使用单位--修改
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public string UpdateDept()
         {
@@ -1524,6 +1681,99 @@ namespace TenderInfo.Controllers
                     info.UsingDeptID = usingDeptID;
                     info.UsingDeptName = db.DeptInfo.Find(usingDeptID).DeptName;
                 }
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 中标人信息--新增
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string InsertTenderSuccess()
+        {
+            try
+            {
+                var accountID = 0;
+                int.TryParse(Request.Form["tbxAccountTenderSuccessID"], out accountID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = new Models.AccountChild();
+
+                info.TableType = "TenderSuccess";
+                info.AccountID = accountID;
+                info.TenderSuccessPerson = Request.Form["tbxTenderSuccessPersonEdit"];
+                if (Request.Form["tbxTenderSuccessPersonStartDateEdit"] != string.Empty)
+                {
+                    info.TenderSuccessPersonStartDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessPersonStartDateEdit"]);
+                }
+                else
+                {
+                    info.TenderSuccessPersonStartDate = null;
+                }
+                if (Request.Form["tbxTenderSuccessPersonEndDateEdit"] != string.Empty)
+                {
+                    info.TenderSuccessPersonEndDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessPersonEndDateEdit"]);
+                }
+                else
+                {
+                    info.TenderSuccessPersonEndDate = null;
+                }
+                info.TenderSuccessPersonVersion = "0";
+
+                info.InputDate = DateTime.Now;
+                info.InputPerson = userInfo.UserID;
+                db.AccountChild.Add(info);
+                db.SaveChanges();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 中标人信息--修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public string UpdateTenderSuccess()
+        {
+            try
+            {
+                var accountChildID = 0;
+                int.TryParse(Request.Form["tbxAccountChildTenderSuccessID"], out accountChildID);
+
+                var userInfo = App_Code.Commen.GetUserFromSession();
+                var info = db.AccountChild.Find(accountChildID);
+
+                info.TenderSuccessPerson = Request.Form["tbxTenderSuccessPersonEdit"];
+                if (Request.Form["tbxTenderSuccessPersonStartDateEdit"] != string.Empty)
+                {
+                    info.TenderSuccessPersonStartDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessPersonStartDateEdit"]);
+                }
+                else
+                {
+                    info.TenderSuccessPersonStartDate = null;
+                }
+                if (Request.Form["tbxTenderSuccessPersonEndDateEdit"] != string.Empty)
+                {
+                    info.TenderSuccessPersonEndDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessPersonEndDateEdit"]);
+                }
+                else
+                {
+                    info.TenderSuccessPersonEndDate = null;
+                }
+                info.TenderSuccessPersonVersion = "0";
 
                 info.InputDate = DateTime.Now;
                 info.InputPerson = userInfo.UserID;

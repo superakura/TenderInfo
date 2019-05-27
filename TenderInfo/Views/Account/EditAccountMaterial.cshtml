@@ -278,6 +278,7 @@
                                     <table class="table table-bordered table-condensed table-hover">
                                         <thead>
                                             <tr>
+                                                <th class="text-center">编辑</th>
                                                 <th class="text-center">中标人名称</th>
                                                 <th class="text-center">中标候选人公示开始时间</th>
                                                 <th class="text-center">中标候选人公示结束时间</th>
@@ -487,25 +488,24 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="tbxContractNumEdit">合同编号</label>
-                                <input id="tbxContractNumEdit" name="tbxContractNumEdit" class="form-control input-sm" placeholder="合同编号" />
+                        @*<div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="tbxContractNumEdit">合同编号</label>
+                                    <input id="tbxContractNumEdit" name="tbxContractNumEdit" class="form-control input-sm" placeholder="合同编号" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="tbxContractPriceEdit">合同金额</label>
-                                <input id="tbxContractPriceEdit" name="tbxContractPriceEdit" class="form-control input-sm" placeholder="合同金额" />
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="tbxContractPriceEdit">合同金额</label>
+                                    <input id="tbxContractPriceEdit" name="tbxContractPriceEdit" class="form-control input-sm" placeholder="合同金额" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="tbxRelativePersonEdit">相对人名称</label>
-                                <input id="tbxRelativePersonEdit" name="tbxRelativePersonEdit" class="form-control input-sm" placeholder="相对人名称" />
-                            </div>
-                        </div>
-
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="tbxRelativePersonEdit">相对人名称</label>
+                                    <input id="tbxRelativePersonEdit" name="tbxRelativePersonEdit" class="form-control input-sm" placeholder="相对人名称" />
+                                </div>
+                            </div>*@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -519,6 +519,9 @@
                         </button>
                         <button type="button" id="btnSubmit" class="btn btn-primary">
                             <i class="glyphicon glyphicon-ok"></i> 提交
+                        </button>
+                        <button type="button" id="btnInsertVersion" class="btn btn-warning">
+                            <i class="glyphicon glyphicon-erase"></i> 评标复议
                         </button>
                         <button type="button" id="btnReturn" class="btn bg-black">
                             <i class="glyphicon glyphicon-share-alt"></i> 返回
@@ -646,6 +649,7 @@
         GetFiveTable();
         GetConnectTable();
         GetDeptTable();
+        GetTenderSuccessTable();
 
         SetBtnState();
         function SetBtnState() {
@@ -1215,6 +1219,29 @@
             });
         }
 
+        function GetTenderSuccessTable() {
+            var accountID = $("#tbxAccountIDEdit").val();
+            $.post("/Account/GetListEdit", { "accountID": accountID, "type": "TenderSuccess" }, function (result) {
+                var list = "";
+                $.each(result, function (indexInArray, valueOfElement) {
+                    list += "<tr>";
+                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                        list += "<td></td>";
+                    }
+                    else {
+                        list += "<td><a href='javascript:void(0)' class='btnTenderSuccessEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnTenderSuccessDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    }
+                    list += "<td>" + valueOfElement["TenderSuccessPerson"] + "</td>";
+                    list += "<td>" + getJsonDateShort(valueOfElement["TenderSuccessPersonStartDate"]) + "</td>";
+                    list += "<td>" + getJsonDateShort(valueOfElement["TenderSuccessPersonEndDate"]) + "</td>";
+                    list += "<td>" + valueOfElement["TenderSuccessPersonVersion"] + "</td>";
+                    list += "</tr>";
+                });
+                $("#tableTenderSuccess").empty().append(list);
+            });
+        }
+
         $(document).on("click", ".btnFirstEdit", function () {
             ClearInfo();
             var id = $(this).attr("data-uid");
@@ -1473,6 +1500,40 @@
             });
         });
 
+        $(document).on("click", ".btnTenderSuccessEdit", function () {
+            ClearInfo();
+            var id = $(this).attr("data-uid");
+            $('#TenderSuccessModal').modal('show');
+            $("#tbxAccountChildTenderSuccessID").val(id);
+            var args = { "tbxAccountChildID": id };
+            $.post("/Account/GetOneEdit", args, function (result) {
+                $("#tbxTenderSuccessPersonEdit").val(result.TenderSuccessPerson);
+                $("#tbxTenderSuccessPersonStartDateEdit").val(getJsonDateShort(result.TenderSuccessPersonStartDate));
+                $("#tbxTenderSuccessPersonEndDateEdit").val(getJsonDateShort(result.TenderSuccessPersonEndDate));
+            });
+        });
+        $(document).on("click", ".btnTenderSuccessDel", function () {
+            var id = $(this).attr("data-uid");
+            Ewin.confirm({ message: "确认要删除吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    var args = { "tbxAccountChildID": id };
+                    $.post("/Account/DelEdit", args, function (result) {
+                        if (result === "ok") {
+                            toastr.success("操作成功！", "提示");
+                            GetTenderSuccessTable();
+                        }
+                        else {
+                            console.log(error);
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
         //对editAccountForm表单进行前端验证
         var editAccountForm = $("#EditAccountForm").validate({
             rules: {
@@ -1566,11 +1627,29 @@
                     return;
                 }
                 else {
-
                     $.post("/Account/Del", { id: $("#tbxAccountIDEdit").val() }, function (result) {
                         if (result == "ok") {
                             toastr.success("操作成功！", "提示");
                             BackView();
+                        }
+                        else {
+                            toastr.error(error, "提示");
+                        }
+                    });
+                }
+            });
+        });
+
+        $("#btnInsertVersion").click(function () {
+            Ewin.confirm({ message: "确定要进行评标复议吗？" }).on(function (e) {
+                if (!e) {
+                    return;
+                }
+                else {
+                    $.post("/Account/InsertVersion", { id: $("#tbxAccountIDEdit").val() }, function (result) {
+                        if (result == "ok") {
+                            toastr.success("操作成功！", "提示");
+                            window.location.reload();
                         }
                         else {
                             toastr.error(error, "提示");

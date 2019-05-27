@@ -1,0 +1,54 @@
+﻿
+<div class="form-horizontal">
+                <br />
+                <form id="InsertVersionForm" method="post" enctype="multipart/form-data">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            评标复议信息
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th colspan=6 class="text-center">评标人信息</th>
+                                            </tr>
+                                            <tr>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">操作</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">投标人</th>
+                                                <th colspan="2" rowspan="1" class="text-center">报价</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">初步评审是否被否决</th>
+                                                <th rowspan="2" class="text-center" style="vertical-align:middle">否决原因</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">单价（元）</th>
+                                                <th class="text-center">总价（万元）</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableFirstVersion"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="4" class="text-center">中标人</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">操作</th>
+                                                <th class="text-center">中标人名称</th>
+                                                <th class="text-center">中标候选人公示开始时间</th>
+                                                <th class="text-center">中标候选人公示结束时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableTenderSuccess"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
