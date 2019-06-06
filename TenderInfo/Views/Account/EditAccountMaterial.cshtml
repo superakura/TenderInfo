@@ -10,6 +10,7 @@
 <span id="userRoleEdit" class="hidden">
     @ViewBag.editRole
 </span>
+@Html.Partial("_PartialApproveEdit")
 @Html.Partial("_PartialModalEdit")
 @Html.Partial("ImportModal")
 <div class="box box-danger">
@@ -170,7 +171,15 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="lblIsComplete">是否状态【是，否，修改审核】</label>
+                                <br />
+                                <span id="lblIsComplete" class="label label-info">@ViewBag.IsComplete</span>
+                            </div>
+                        </div>
                     </div>
+                    @*招标范围-供货期*@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -523,6 +532,12 @@
                         <button type="button" id="btnInsertVersion" class="btn btn-warning">
                             <i class="glyphicon glyphicon-erase"></i> 评标复议
                         </button>
+                        <button type="button" id="btnApproveList" class="btn btn-default">
+                            查看修改记录
+                        </button>
+                        <button type="button" id="btnNewApprove" class="btn btn-default">
+                            申请修改
+                        </button>
                         <button type="button" id="btnReturn" class="btn bg-black">
                             <i class="glyphicon glyphicon-share-alt"></i> 返回
                         </button>
@@ -543,15 +558,21 @@
     function GetFirstTable() {
         var accountID = $("#tbxAccountIDEdit").val();
         $.post("/Account/GetListEdit", { "accountID": accountID, "type": "first" }, function (result) {
+            console.log($("#lblIsComplete").text().trim());
             var list = "";
             $.each(result, function (indexInArray, valueOfElement) {
                 list += "<tr>";
-                if ($("#userRoleEdit").text().trim() !== "yes") {
+                if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text().trim() !== "否") {
                     list += "<td></td>";
                 }
                 else {
-                    list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
-                    list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    //if ($("#lblIsComplete").text().trim() === "否") {
+                        list += "<td><a href='javascript:void(0)' class='btnFirstEdit' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-pencil'></i></a>";
+                        list += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' class='btnFirstDel' data-uid='" + valueOfElement["AccountChildID"] + "'><i class='glyphicon glyphicon-remove'></i></a></td>";
+                    //}
+                    //else {
+                    //    list += "<td></td>";
+                    //}
                 }
                 var reason = valueOfElement["VetoReason"] === null ? "" : valueOfElement["VetoReason"];
                 list += "<td>" + valueOfElement["TenderFilePlanPayPerson"] + "</td>";
@@ -573,7 +594,7 @@
             var list = "";
             $.each(result, function (indexInArray, valueOfElement) {
                 list += "<tr>";
-                if ($("#userRoleEdit").text().trim() !== "yes") {
+                if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                     list += "<td></td>";
                 }
                 else {
@@ -653,10 +674,10 @@
 
         SetBtnState();
         function SetBtnState() {
-            if ($("#userRoleEdit").text().trim() !== "yes") {
+            if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text()!="否") {
                 $("#btnFirstImport,#btnFirstRemove,#btnSecondImport,#btnSecondRemove,#btnFirstAdd,#btnSecondAdd,#btnThirdAdd,#btnFourAdd,#btnFiveAdd").hide();
-                $("#btnDeptAdd,#btnConnectAdd").hide();
-                $("#btnSubmit,#btnSave").hide();
+                $("#btnDeptAdd,#btnConnectAdd,#btnTenderSuccessAdd").hide();
+                $("#btnSubmit,#btnSave,#btnInsertVersion,#btnNewApprove").hide();
             }
         }
 
@@ -1102,7 +1123,7 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                    if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                         list += "<td></td>";
                     }
                     else {
@@ -1124,7 +1145,7 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                    if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                         list += "<td></td>";
                     }
                     else {
@@ -1152,7 +1173,7 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                    if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                         list += "<td></td>";
                     }
                     else {
@@ -1181,7 +1202,7 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                    if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                         list += "<td></td>";
                     }
                     else {
@@ -1205,7 +1226,7 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                    if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                         list += "<td></td>";
                     }
                     else {
@@ -1225,7 +1246,7 @@
                 var list = "";
                 $.each(result, function (indexInArray, valueOfElement) {
                     list += "<tr>";
-                    if ($("#userRoleEdit").text().trim() !== "yes") {
+                    if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text() != "否") {
                         list += "<td></td>";
                     }
                     else {
@@ -1552,11 +1573,11 @@
         });
 
         $("#btnSave").click(function () {
-            var usingDeptEditVal = $("#ddlUsingDeptEdit").val();
+            //var usingDeptEditVal = $("#ddlUsingDeptEdit").val();
             var projectResponsibleDeptEditVal = $("#ddlProjectResponsibleDeptEdit").val();
 
-            if (usingDeptEditVal === null || projectResponsibleDeptEditVal === null) {
-                toastr.error("使用单位、项目主责部门必须填写！", "提示");
+            if (projectResponsibleDeptEditVal === null) {
+                toastr.error("项目主责部门必须填写！", "提示");
             }
             else {
                 Ewin.confirm({ message: "确定要保存吗？" }).on(function (e) {
@@ -1598,12 +1619,24 @@
                         }
                         else {
                             $("#EditAccountForm").ajaxSubmit({
-                                url: "/Account/CompeletSubmit",
+                                url: "/Account/Update",
                                 type: "post",
                                 success: function (result) {
                                     if (result === "ok") {
-                                        toastr.success("操作成功！", "提示");
-                                        BackView();
+                                        $("#EditAccountForm").ajaxSubmit({
+                                            url: "/Account/CompeletSubmit",
+                                            type: "post",
+                                            success: function (result) {
+                                                if (result === "ok") {
+                                                    toastr.success("操作成功！", "提示");
+                                                    BackView();
+                                                }
+                                            },
+                                            error: function (error) {
+                                                toastr.error(error, "提示");
+                                                return;
+                                            }
+                                        });
                                     }
                                 },
                                 error: function (error) {
@@ -1611,6 +1644,7 @@
                                     return;
                                 }
                             });
+                            
                         }
                     });
                 }
@@ -1657,6 +1691,29 @@
                     });
                 }
             });
+        });
+
+        $("#btnApproveList").click(function () {
+            $('#ApproveEditModal').modal('show');
+            $("#tbxApproveEditAccountID").val(@ViewBag.id);
+            $("#lblApproveEditAccountID").text(@ViewBag.id);
+            $('#tbxApproveBackReason').val("");
+
+            GetApproveEditList();
+
+            if ($("#lblIsComplete").text() == "修改审核") {
+                $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").show();
+            }
+            else {
+                $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").hide();
+            }
+        });
+
+        $("#btnNewApprove").click(function () {
+            $('#NewApproveEditModal').modal('show');
+            $('#tbxNewApproveEditAccountID').val(@ViewBag.id);
+            $('#tbxApproveEditAccountName').text($("#tbxProjectNameEdit").val());
+            $('#tbxApproveReason').val("");
         });
 
         function BackView() {
@@ -1715,7 +1772,7 @@
                 $("#tbxTenderFileSaleStartDateEdit").val(getJsonDateTimeMinute(result.TenderFileSaleStartDate));
                 $("#tbxTenderFileSaleEndDateEdit").val(getJsonDateTimeMinute(result.TenderFileSaleEndDate));
                 $("#tbxTenderStartDateEdit").val(getJsonDateTimeMinute(result.TenderStartDate));
-
+                $("#tbxTenderSuccessFileDateEdit").val(getJsonDateTimeMinute(result.TenderSuccessFileDate));
 
                 $("#tbxTenderSuccessPersonEdit").val(result.TenderSuccessPerson);
                 $("#tbxPlanInvestPriceEdit").val(result.PlanInvestPrice);
@@ -1738,6 +1795,19 @@
                 $("#ddlTenderInfoEdit").val(result.TenderInfo);
 
                 $("#tbxTenderRemarkEdit").val(result.TenderRemark);
+                //$("#lblIsComplete").text(result.IsComplete);
+
+                if (result.IsComplete == "是") {
+                    $("#btnSubmit,#btnSave,#btnInsertVersion").hide();
+                }
+                else {
+                    $("#btnNewApprove").hide();
+                    
+                }
+                if (result.IsComplete == "修改审核") {
+                    $("#btnSubmit,#btnSave,#btnInsertVersion").hide();
+                    $("#btnNewApprove").hide();
+                }
             });
         }
     });

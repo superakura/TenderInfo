@@ -70,32 +70,32 @@
             "&tenderStartDateEnd=" + tenderStartDateEnd +
             "&projectName=" + escape(projectName);//项目名称
     };
-    var newApproveEdit = function (id) {
-        //根据当前行的id获取当前的行数据
-        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
-        //console.log(row.account.AccountID);
-        $('#NewApproveEditModal').modal('show');
-        $('#tbxNewApproveEditAccountID').val(row.account.AccountID);
-        $('#tbxApproveEditAccountName').text(row.account.ProjectName);
-        $('#tbxApproveReason').val("");
-    };
-    var approveEdit = function (id) {
-        //根据当前行的id获取当前的行数据
-        var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
-        $('#ApproveEditModal').modal('show');
-        $("#tbxApproveEditAccountID").val(row.account.AccountID);
-        $("#lblApproveEditAccountID").text(row.account.AccountID);
-        $('#tbxApproveBackReason').val("");
+    //var newApproveEdit = function (id) {
+    //    //根据当前行的id获取当前的行数据
+    //    var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+    //    //console.log(row.account.AccountID);
+    //    $('#NewApproveEditModal').modal('show');
+    //    $('#tbxNewApproveEditAccountID').val(row.account.AccountID);
+    //    $('#tbxApproveEditAccountName').text(row.account.ProjectName);
+    //    $('#tbxApproveReason').val("");
+    //};
+    //var approveEdit = function (id) {
+    //    //根据当前行的id获取当前的行数据
+    //    var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
+    //    $('#ApproveEditModal').modal('show');
+    //    $("#tbxApproveEditAccountID").val(row.account.AccountID);
+    //    $("#lblApproveEditAccountID").text(row.account.AccountID);
+    //    $('#tbxApproveBackReason').val("");
 
-        GetApproveEditList();
+    //    GetApproveEditList();
 
-        if (row.account.IsComplete == "修改审核") {
-            $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").show();
-        }
-        else {
-            $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").hide();
-        }
-    };
+    //    if (row.account.IsComplete == "修改审核") {
+    //        $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").show();
+    //    }
+    //    else {
+    //        $("#ApproveEditForm,#btnApproveEditOKSubmit,#btnApproveEditBackSubmit").hide();
+    //    }
+    //};
     var textShowEvent = function (id) {
         //根据当前行的id获取当前的行数据
         var row = $("#bsTable").bootstrapTable('getRowByUniqueId', id);
@@ -156,7 +156,7 @@
                     colspan: 1,
                     valign: "middle"
                 },
-                {
+                @*{
                     title: '修改申请',
                     rowspan: 2,
                     colspan: 1,
@@ -164,13 +164,17 @@
                     formatter: function (value, row, index) {
                         //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
                         var html = '<a href="#" onclick="approveEdit(' + row.account.AccountID + ')">查看</a >';
-                        html += '&nbsp;&nbsp;';
-                        if (row.account.IsComplete == "是") {
-                            html += '<a href="#" onclick="newApproveEdit(' + row.account.AccountID + ')">申请</a >';
+                        
+                        var boolEdit ="@User.Identity";
+                        if (boolEdit == "True") {
+                            if (row.account.IsComplete == "是") {
+                                html += '&nbsp;&nbsp;';
+                                html += '<a href="#" onclick="newApproveEdit(' + row.account.AccountID + ')">申请</a >';
+                            }
                         }
                         return html;
                     }
-                },
+                },*@
                 {
                     field: 'account.TenderFileNum',
                     title: '项目文件编号',
@@ -230,13 +234,14 @@
                     //width: 150,
                     formatter: function (value, row, index) {
                         ////这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        if (row.account.TenderRange.length <= 8) {
-                            return row.account.TenderRange;
-                        }
-                        else
-                        {
-                            var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderRange + '">' + row.account.TenderRange.substr(0, 8) + '...' + '</a > ';
-                            return html;
+                        if (row.account.TenderRange != null) {
+                            if (row.account.TenderRange.length <= 8) {
+                                return row.account.TenderRange;
+                            }
+                            else {
+                                var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderRange + '">' + row.account.TenderRange.substr(0, 8) + '...' + '</a > ';
+                                return html;
+                            }
                         }
                         
                         //var rs = splitLengthRule(row.account.TenderRange);
@@ -269,12 +274,14 @@
                     valign: "middle",
                     formatter: function (value, row, index) {
                         ////这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        if (row.account.TenderRange.length <= 8) {
-                            return row.account.TenderRange;
-                        }
-                        else {
-                            var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.SupplyPeriod + '">' + row.account.SupplyPeriod.substr(0, 8) + '...' + '</a > ';
-                            return html;
+                        if (row.account.SupplyPeriod != null) {
+                            if (row.account.SupplyPeriod.length <= 8) {
+                                return row.account.SupplyPeriod;
+                            }
+                            else {
+                                var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.SupplyPeriod + '">' + row.account.SupplyPeriod.substr(0, 8) + '...' + '</a > ';
+                                return html;
+                            }
                         }
                     },
                     title: '供货期'
@@ -342,6 +349,21 @@
                     },
                     formatter: function (value, row, index) {
                         return getJsonDateTimeMinute(row.account.TenderStartDate);
+                    }
+                },
+                {
+                    field: 'account.TenderSuccessFileDate',
+                    rowspan: 2,
+                    colspan: 1,
+                    valign: "middle",
+                    title: '中标通知书发出时间',
+                    cellStyle: function (value, row, index) {
+                        return {
+                            classes: "text-nowrap"
+                        };
+                    },
+                    formatter: function (value, row, index) {
+                        return getJsonDateTimeMinute(row.account.TenderSuccessFileDate);
                     }
                 },
                 {
@@ -487,12 +509,14 @@
                     title: '招标失败原因',
                     formatter: function (value, row, index) {
                         //这里的三个参数：value表示当前行当前列的值；row表示当前行的数据；index表示当前行的索引（从0开始）。
-                        if (row.account.TenderFailReason.length <= 8) {
-                            return row.account.TenderFailReason;
-                        }
-                        else {
-                            var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderFailReason + '">' + row.account.TenderFailReason.substr(0, 8) + '...' + '</a > ';
-                            return html;
+                        if (row.account.TenderFailReason != null) {
+                            if (row.account.TenderFailReason.length <= 8) {
+                                return row.account.TenderFailReason;
+                            }
+                            else {
+                                var html = '<a href="#" data-toggle="tooltip" data-placement="top" title="' + row.account.TenderFailReason + '">' + row.account.TenderFailReason.substr(0, 8) + '...' + '</a > ';
+                                return html;
+                            }
                         }
                     }
                 },

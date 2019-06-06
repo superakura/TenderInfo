@@ -15,5 +15,8 @@ namespace TenderInfo.Models
         public List<AccountChild> accountChildFour { get; set; }
         public List<AccountChild> accountChildFive { get; set; }
         public List<AccountChild> accountChildSix { get; set; }
+        public List<AccountChild> accountChildConnect { get; set; }
+        public List<AccountChild> accountChildDept { get; set; }
+        public List<AccountChild> accountChildTenderSuccess { get; set; }
     }
 }

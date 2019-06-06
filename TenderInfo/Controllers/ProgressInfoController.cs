@@ -261,6 +261,7 @@ namespace TenderInfo.Controllers
                     infoAccount.TenderFileSaleStartDate = info.TenderFileSaleStartDate;
                     infoAccount.TenderFileSaleEndDate = info.TenderFileSaleEndDate;
                     infoAccount.TenderStartDate = info.TenderStartDate;
+                    infoAccount.TenderSuccessFileDate = info.TenderSuccessFileDate;
                     infoAccount.TenderRemark = info.Remark;
                 }
 

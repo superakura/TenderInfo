@@ -65,7 +65,7 @@ namespace TenderInfo.Controllers
             {
                 ViewBag.editRole = "no";
             }
-
+            ViewBag.IsComplete = accountInfo.IsComplete;
             return View();
         }
 
@@ -389,11 +389,15 @@ namespace TenderInfo.Controllers
                 foreach (var item in accountList)
                 {
                     var viewList = new Models.ViewAccout();
-                    var accountChildFirst = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "first").ToList();
+                    var accountChildFirst = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "first"&&w.TenderPersonVersion=="0").ToList();
                     var accountChildSecond = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "second").ToList();
                     var accountChildThird = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "third").ToList();
                     var accountChildFour = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "four").ToList();
                     var accountChildFive = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "five").ToList();
+                    var accountChildConnect = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "Connect").ToList();
+                    var accountChildDept = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "Dept").ToList();
+                    var accountChildTenderSuccess = db.AccountChild.Where(w => w.AccountID == item.AccountID && w.TableType == "TenderSuccess").ToList();
+
                     viewList.AccountID = item.AccountID;
                     viewList.account = item;
                     viewList.accountChildFirst = accountChildFirst;
@@ -401,6 +405,9 @@ namespace TenderInfo.Controllers
                     viewList.accountChildThird = accountChildThird;
                     viewList.accountChildFour = accountChildFour;
                     viewList.accountChildFive = accountChildFive;
+                    viewList.accountChildConnect = accountChildConnect;
+                    viewList.accountChildDept = accountChildDept;
+                    viewList.accountChildTenderSuccess = accountChildTenderSuccess;
                     list.Add(viewList);
                 }
 
@@ -540,6 +547,14 @@ namespace TenderInfo.Controllers
                 {
                     info.TenderStartDate = null;
                 }
+                if (Request.Form["tbxTenderSuccessFileDateEdit"] != string.Empty)
+                {
+                    info.TenderSuccessFileDate = Convert.ToDateTime(Request.Form["tbxTenderSuccessFileDateEdit"]);
+                }
+                else
+                {
+                    info.TenderSuccessFileDate = null;
+                }
                 #endregion
 
                 #region 中标人名称~与控制价比节约资金（元）
@@ -601,6 +616,7 @@ namespace TenderInfo.Controllers
                     infoProgress.TenderFileSaleStartDate = info.TenderFileSaleStartDate;
                     infoProgress.TenderFileSaleEndDate = info.TenderFileSaleEndDate;
                     infoProgress.TenderStartDate = info.TenderStartDate;
+                    infoProgress.TenderSuccessFileDate = info.TenderSuccessFileDate;
                     infoProgress.Remark = info.TenderRemark;
                 }
 
@@ -2026,8 +2042,8 @@ namespace TenderInfo.Controllers
                             info.QuotedPriceUnit = priceOne;
 
                             info.QuotedPriceSum = excel.Rows[i]["报价--总价（万元）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["报价--总价（万元）"].ToString();
-
                             info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim() == "" ? "-" : excel.Rows[i]["初步评审是否被否决"].ToString();
+                            info.VetoReason = excel.Rows[i]["否决原因"].ToString().Trim() == "" ? "-" : excel.Rows[i]["否决原因"].ToString();
                             info.InputDate = DateTime.Now;
                             info.InputPerson = userInfo.UserID;
 
@@ -2052,6 +2068,7 @@ namespace TenderInfo.Controllers
                             info.QuotedPriceSum = excel.Rows[i]["投标总价（万元）"].ToString().Trim() == "" ? "-" : excel.Rows[i]["投标总价（万元）"].ToString();
 
                             info.NegationExplain = excel.Rows[i]["初步评审是否被否决"].ToString().Trim() == "" ? "-" : excel.Rows[i]["初步评审是否被否决"].ToString();
+                            info.VetoReason = excel.Rows[i]["否决原因"].ToString().Trim() == "" ? "-" : excel.Rows[i]["否决原因"].ToString();
                             info.InputDate = DateTime.Now;
                             info.InputPerson = userInfo.UserID;
 

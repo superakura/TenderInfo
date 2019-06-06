@@ -133,7 +133,10 @@
                             if (result === "ok") {
                                 toastr.success("操作成功！", "提示");
                                 $('#NewApproveEditModal').modal('hide');
-                                $("#bsTable").bootstrapTable('refresh');
+                                $("#btnNewApprove").hide();
+                                $("#lblIsComplete").text("修改审核");
+                                window.location.reload();
+                                //$("#bsTable").bootstrapTable('refresh');
                             }
                         },
                         error: function (error) {
@@ -156,7 +159,9 @@
                             if (data === "ok") {
                                 toastr.success("操作成功！", "提示");
                                 $('#ApproveEditModal').modal('hide');
-                                $("#bsTable").bootstrapTable('refresh');
+                                $("#lblIsComplete").text("否");
+                                window.location.reload();
+                                //$("#bsTable").bootstrapTable('refresh');
                             }
                         }
                     );
@@ -181,7 +186,9 @@
                                 if (data === "ok") {
                                     toastr.success("操作成功！", "提示");
                                     $('#ApproveEditModal').modal('hide');
-                                    $("#bsTable").bootstrapTable('refresh');
+                                    $("#lblIsComplete").text("是");
+                                    window.location.reload();
+                                    //$("#bsTable").bootstrapTable('refresh');
                                 }
                             }
                         );
