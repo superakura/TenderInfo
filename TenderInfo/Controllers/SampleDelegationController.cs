@@ -125,7 +125,8 @@ namespace TenderInfo.Controllers
                              {
                                  s.SampleDelegationID,
                                  s.SampleName,
-                                 s.SampleNum,
+                                 //2019-06-10修改，样品数量在开标时间前对项目负责人保密
+                                 SampleNum = isShow == 0 ? s.SampleNum : s.StartTenderDate <= DateTime.Now ? s.SampleNum : null,
                                  s.SampleTechnicalRequirement,
                                  s.StartTenderDate,
                                  FirstCodingFileName = s.CheckResultAllError == "全否" ? s.FirstCodingFileName : isShow == 0 ? s.FirstCodingFileName : s.StartTenderDate <= DateTime.Now ? s.FirstCodingFileName : "",
@@ -187,7 +188,8 @@ namespace TenderInfo.Controllers
                     var viewRow = new Models.ViewSampleDelegation();
                     var checkFile = db.CheckReportFile.Where(w => w.SampleDelegationID == item.SampleDelegationID).ToList();
                     viewRow.sampleDelegation = item;
-                    if (User.IsInRole("样品检测业务员查看"))
+                    //2019-06-10修改：样品检验报告在开标时间前对除上传人外的其他人保密。仅显示是否上传。
+                    if (!User.IsInRole("检验报告录入"))
                     {
                         if (item.CheckResultAllError == "全否")
                         {
@@ -209,7 +211,8 @@ namespace TenderInfo.Controllers
                     {
                         viewRow.checkReportFile = checkFile;
                     }
-
+                    //2019-06-10修改：样品检验报告在开标时间前对除上传人外的其他人保密。仅显示是否上传。
+                    viewRow.checkReportFileCount = checkFile.Count();
                     viewList.Add(viewRow);
                 }
                 return Json(new { total = result.Count(), rows = viewList });

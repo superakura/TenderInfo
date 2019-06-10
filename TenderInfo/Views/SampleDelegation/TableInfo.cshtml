@@ -1,5 +1,6 @@
 ﻿<table id="bsTable"></table>
 <script>
+    
     $(function () {
         var pageRole = $("#userRole").text();
 
@@ -208,7 +209,7 @@
                     }
                     else {
                         var args = { "id": row.sampleDelegation.SampleDelegationID };
-                        
+
                         $.post("/SampleDelegation/SetCheckFileAllError", encodeURIComponent(JSON.stringify(args)), function (result) {
                             if (result === "ok") {
                                 toastr.success("操作成功！", "提示");
@@ -493,7 +494,8 @@
                                 return "";
                             }
                         }
-                        return '<a class="upload" href="javascript: void (0)" title="上传">上传</a>';
+                        return '<a class="upload" href="javascript:void (0)" title="上传">上传</a>';
+                        //return '<button class="upload btn btn-danger btn-xs">上传</button>';
                     },
                     valign: "middle",
                     align: "center",
@@ -552,7 +554,8 @@
                     });
                 case "样品检测业务员查看":
                     return $.grep(tempArray, function (ele, index) {
-                        return index !== 15 && index !== 16;
+                        //return index !== 14 && index !== 15;
+                        return index !== 15 && index !== 16
                     });
                 case "一次编码表录入":
                     return $.grep(tempArray, function (ele, index) {
@@ -816,7 +819,22 @@
                         return list;
                     },
                     events: checkFileEvents
-                }];
+                },
+                //2019-06-10修改：样品检验报告在开标时间前对除上传人外的其他人保密。仅显示是否上传。
+                {
+                    title: '检验报告是否上传',
+                    valign: "middle",
+                    formatter: function (value, row, index) {
+                        if (row.checkReportFileCount == 0) {
+                            return "未上传";
+                        }
+                        else {
+                            return "已上传";
+                        }
+                        //return row.checkReportFileCount;
+                    }
+                }
+            ];
             console.log(tempArray);
             switch ($("#userRole").text()) {
                 case "检验报告录入":
@@ -842,7 +860,7 @@
             }
         }
 
-        var columns = loadColumns();
+        var columns = loadColumns2();
 
         //初始化BS-Table
         $('#bsTable').bootstrapTable({

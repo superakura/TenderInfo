@@ -533,7 +533,7 @@
                             <i class="glyphicon glyphicon-erase"></i> 评标复议
                         </button>
                         <button type="button" id="btnApproveList" class="btn btn-default">
-                            查看修改记录
+                            查看修改记录/审批
                         </button>
                         <button type="button" id="btnNewApprove" class="btn btn-default">
                             申请修改
@@ -677,7 +677,10 @@
             if ($("#userRoleEdit").text().trim() !== "yes" || $("#lblIsComplete").text()!="否") {
                 $("#btnFirstImport,#btnFirstRemove,#btnSecondImport,#btnSecondRemove,#btnFirstAdd,#btnSecondAdd,#btnThirdAdd,#btnFourAdd,#btnFiveAdd").hide();
                 $("#btnDeptAdd,#btnConnectAdd,#btnTenderSuccessAdd").hide();
-                $("#btnSubmit,#btnSave,#btnInsertVersion,#btnNewApprove").hide();
+                $("#btnSubmit,#btnSave,#btnInsertVersion").hide();
+            }
+            if ($("#userRoleEdit").text().trim() !== "yes") {
+                $("#btnNewApprove").hide();
             }
         }
 

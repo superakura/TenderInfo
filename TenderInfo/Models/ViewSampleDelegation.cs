@@ -9,5 +9,6 @@ namespace TenderInfo.Models
     {
         public object sampleDelegation { get; set; }
         public List<CheckReportFile> checkReportFile { get; set; }
+        public int checkReportFileCount { get; set; }
     }
 }

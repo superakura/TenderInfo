@@ -449,6 +449,7 @@ namespace TenderInfo.Controllers
                 info.TenderFileNum = tenderFileNum;
                 info.PlanInvestPrice = planInvestPriceEdit;
                 info.IsOnline = isOnline;
+                info.IsComplete = "否";
                 info.ProjectResponsiblePersonID = projectResponsiblePersonID;
                 info.ProjectResponsiblePersonName = projectResponsiblePersonName;
                 db.Account.Add(info);
